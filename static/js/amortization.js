@@ -307,24 +307,14 @@
         viewAnnualBtn.addEventListener('click', function () {
             currentViewMode = 'annual';
             viewAnnualBtn.classList.add('active');
-            viewAnnualBtn.style.background = 'var(--accent-primary)';
-            viewAnnualBtn.style.color = '#fff';
-
             viewMonthlyBtn.classList.remove('active');
-            viewMonthlyBtn.style.background = 'transparent';
-            viewMonthlyBtn.style.color = 'var(--text-secondary)';
             renderScheduleTable();
         });
 
         viewMonthlyBtn.addEventListener('click', function () {
             currentViewMode = 'monthly';
             viewMonthlyBtn.classList.add('active');
-            viewMonthlyBtn.style.background = 'var(--accent-primary)';
-            viewMonthlyBtn.style.color = '#fff';
-
             viewAnnualBtn.classList.remove('active');
-            viewAnnualBtn.style.background = 'transparent';
-            viewAnnualBtn.style.color = 'var(--text-secondary)';
             renderScheduleTable();
         });
     }

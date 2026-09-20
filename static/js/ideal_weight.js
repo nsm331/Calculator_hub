@@ -224,12 +224,9 @@
 
         if (isMetric) {
             unitMetricBtn.classList.add('active');
-            unitMetricBtn.style.background = 'var(--accent-primary)';
-            unitMetricBtn.style.color = '#fff';
-
             unitUsBtn.classList.remove('active');
-            unitUsBtn.style.background = 'transparent';
-            unitUsBtn.style.color = 'var(--text-secondary)';
+            unitMetricBtn.setAttribute('aria-selected', 'true');
+            unitUsBtn.setAttribute('aria-selected', 'false');
 
             heightUsContainer.style.display = 'none';
             heightMetricContainer.style.display = 'block';
@@ -248,12 +245,9 @@
             weightAddon.textContent = 'kg';
         } else {
             unitUsBtn.classList.add('active');
-            unitUsBtn.style.background = 'var(--accent-primary)';
-            unitUsBtn.style.color = '#fff';
-
             unitMetricBtn.classList.remove('active');
-            unitMetricBtn.style.background = 'transparent';
-            unitMetricBtn.style.color = 'var(--text-secondary)';
+            unitUsBtn.setAttribute('aria-selected', 'true');
+            unitMetricBtn.setAttribute('aria-selected', 'false');
 
             heightMetricContainer.style.display = 'none';
             heightUsContainer.style.display = 'flex';

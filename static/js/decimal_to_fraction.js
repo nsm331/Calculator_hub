@@ -364,23 +364,17 @@
         isRepeatingMode = repeating;
         if (repeating) {
             modeRepeatingBtn.classList.add('active');
-            modeRepeatingBtn.style.background = 'var(--accent-primary)';
-            modeRepeatingBtn.style.color = '#fff';
-
             modeTerminatingBtn.classList.remove('active');
-            modeTerminatingBtn.style.background = 'transparent';
-            modeTerminatingBtn.style.color = 'var(--text-secondary)';
+            modeRepeatingBtn.setAttribute('aria-selected', 'true');
+            modeTerminatingBtn.setAttribute('aria-selected', 'false');
 
             terminatingContainer.style.display = 'none';
             repeatingContainer.style.display = 'grid';
         } else {
             modeTerminatingBtn.classList.add('active');
-            modeTerminatingBtn.style.background = 'var(--accent-primary)';
-            modeTerminatingBtn.style.color = '#fff';
-
             modeRepeatingBtn.classList.remove('active');
-            modeRepeatingBtn.style.background = 'transparent';
-            modeRepeatingBtn.style.color = 'var(--text-secondary)';
+            modeTerminatingBtn.setAttribute('aria-selected', 'true');
+            modeRepeatingBtn.setAttribute('aria-selected', 'false');
 
             repeatingContainer.style.display = 'none';
             terminatingContainer.style.display = 'grid';

@@ -21,30 +21,29 @@
 <div class="calculator-card">
     <div class="calculator-card-header">
         <span class="card-subtitle-tag">Clinical IBW &amp; Healthy Weight Range Analysis</span>
-    </div>
-
-    <!-- Unit Selector Tabs -->
-    <div class="unit-toggle-tabs" style="display: flex; gap: 8px; margin-bottom: 1.5rem; background: var(--bg-surface-secondary); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); width: fit-content;">
-        <button type="button" id="ibw-unit-us" class="pill-btn active" style="padding: 6px 18px; border: none; border-radius: 4px; background: var(--accent-primary); color: #fff; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
-            US Units (ft, in, lbs)
-        </button>
-        <button type="button" id="ibw-unit-metric" class="pill-btn" style="padding: 6px 18px; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; font-weight: 600;">
-            Metric Units (cm, kg)
-        </button>
+        <!-- Unit Selector Tabs -->
+        <div class="unit-toggle-tabs" role="tablist">
+            <button type="button" id="ibw-unit-us" class="pill-btn active" role="tab" aria-selected="true">
+                US Units (ft, in, lbs)
+            </button>
+            <button type="button" id="ibw-unit-metric" class="pill-btn" role="tab" aria-selected="false">
+                Metric Units (cm, kg)
+            </button>
+        </div>
     </div>
 
     <form id="ibw-form" class="calculator-form" novalidate>
         <div class="form-row">
             <div class="form-group">
                 <label>Biological Sex</label>
-                <div class="radio-pill-group" style="display: flex; gap: 8px;">
-                    <label class="radio-pill-label" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-surface-secondary);">
-                        <input type="radio" name="ibw-gender" value="male" checked style="margin-right: 6px;">
-                        <span>Male</span>
+                <div class="radio-pill-group">
+                    <label class="radio-pill">
+                        <input type="radio" name="ibw-gender" value="male" checked>
+                        <span>&#9794; Male</span>
                     </label>
-                    <label class="radio-pill-label" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-surface-secondary);">
-                        <input type="radio" name="ibw-gender" value="female" style="margin-right: 6px;">
-                        <span>Female</span>
+                    <label class="radio-pill">
+                        <input type="radio" name="ibw-gender" value="female">
+                        <span>&#9792; Female</span>
                     </label>
                 </div>
                 <span class="field-hint">Used for sex-specific clinical coefficients</span>
