@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Scientific Calculator - Online Advanced Engineering & Math Tools | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online scientific calculator with trigonometric, logarithmic, exponential, and algebraic functions. Supports DEG and RAD angle modes." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Scientific Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Scientific Calculator" }}</h1>
+    <p class="page-lead">
+        Professional client-side scientific computation engine supporting trigonometric, transcendental, logarithmic, exponential, and power equations with DEG/RAD precision.
+    </p>
+</div>
+
+<!-- Scientific Calculator Digital Device Card -->
+<div class="calculator-card sci-calc-card">
+    <!-- LCD Display Screen -->
+    <div class="sci-display-screen" id="sci-screen">
+        <div class="sci-status-bar">
+            <button type="button" class="sci-mode-toggle" id="btn-deg-rad" title="Toggle Degrees / Radians">
+                <span class="mode-active" id="mode-deg">DEG</span> / <span id="mode-rad">RAD</span>
+            </button>
+            <span class="sci-memory-indicator" id="sci-mem-indicator" style="display: none;">MEM</span>
+        </div>
+        <div class="sci-formula-line" id="sci-formula">0</div>
+        <div class="sci-main-result" id="sci-output">0</div>
+    </div>
+
+    <!-- Scientific Keypad Matrix -->
+    <div class="sci-keypad">
+        <!-- Memory & Utility Row -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-mem" data-action="mc">MC</button>
+            <button type="button" class="sci-btn sci-btn-mem" data-action="mr">MR</button>
+            <button type="button" class="sci-btn sci-btn-mem" data-action="m-plus">M+</button>
+            <button type="button" class="sci-btn sci-btn-mem" data-action="m-minus">M-</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="backspace" title="Backspace">⌫</button>
+            <button type="button" class="sci-btn sci-btn-danger" data-action="clear">C</button>
+            <button type="button" class="sci-btn sci-btn-danger" data-action="all-clear">AC</button>
+        </div>
+
+        <!-- Functions Row 1 -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="pi">π</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="e">e</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="sin">sin</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="cos">cos</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="tan">tan</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="paren-open">(</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="paren-close">)</button>
+        </div>
+
+        <!-- Functions Row 2 -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="asin">sin⁻¹</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="acos">cos⁻¹</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="atan">tan⁻¹</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="sqrt">√x</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="square">x²</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="power">xʸ</button>
+            <button type="button" class="sci-btn sci-btn-op" data-action="div">÷</button>
+        </div>
+
+        <!-- Digits & Operations Row 3 -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="log">log₁₀</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="ln">ln</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="exp">10ˣ</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="7">7</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="8">8</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="9">9</button>
+            <button type="button" class="sci-btn sci-btn-op" data-action="mul">×</button>
+        </div>
+
+        <!-- Digits & Operations Row 4 -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="fact">n!</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="reciprocal">1/x</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="abs">|x|</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="4">4</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="5">5</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="6">6</button>
+            <button type="button" class="sci-btn sci-btn-op" data-action="sub">−</button>
+        </div>
+
+        <!-- Digits & Operations Row 5 -->
+        <div class="sci-row">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="mod">mod</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="cbrt">∛x</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="neg">±</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="1">1</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="2">2</button>
+            <button type="button" class="sci-btn sci-btn-num" data-num="3">3</button>
+            <button type="button" class="sci-btn sci-btn-op" data-action="add">+</button>
+        </div>
+
+        <!-- Bottom Row (0, Dec, Equals) -->
+        <div class="sci-row sci-row-bottom">
+            <button type="button" class="sci-btn sci-btn-fn" data-action="rand">RND</button>
+            <button type="button" class="sci-btn sci-btn-fn" data-action="e-pow">eˣ</button>
+            <button type="button" class="sci-btn sci-btn-num sci-btn-zero" data-num="0">0</button>
+            <button type="button" class="sci-btn sci-btn-num" data-action="dot">.</button>
+            <button type="button" class="sci-btn sci-btn-equals" data-action="equals" id="btn-equals">=</button>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load scientific.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/scientific.js' %}"></script>
+{% endblock %}

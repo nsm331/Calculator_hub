@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Date Difference Calculator - Days, Weeks, Business Days Between Dates | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate exact time between two dates in years, months, weeks, days, and working business days with leap year precision." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Date Difference Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Date Difference Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate the exact number of days, weeks, months, years, and working business days between two calendar dates with leap year precision.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Gregorian Calendar Date Interval &amp; Business Days Engine</span>
+    </div>
+
+    <form id="date-diff-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="diff-start-date">Start Date</label>
+                <input type="date" id="diff-start-date" class="form-control" value="2026-01-15" required>
+                <span class="field-hint">Initial date of interval</span>
+            </div>
+
+            <div class="form-group">
+                <label for="diff-end-date">End Date</label>
+                <input type="date" id="diff-end-date" class="form-control" value="2026-09-20" required>
+                <span class="field-hint">Terminal date of interval</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label class="checkbox-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13.5px; font-weight: 600;">
+                    <input type="checkbox" id="diff-include-end" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>Include end day in calculation (add 1 full day)</span>
+                </label>
+                <span class="field-hint">Standard convention counts elapsed days ($End - Start$). Checking this counts both bounding days inclusive.</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-diff">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Date Difference
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-diff">Clear</button>
+        </div>
+    </form>
+
+    <!-- Instant Results Display -->
+    <div id="date-diff-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Exact Calendar Difference</span>
+            <span class="result-status-badge badge-normal" id="diff-total-days-badge">248 Days Total</span>
+        </div>
+
+        <!-- Primary Duration Display -->
+        <div class="result-primary-stat" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+            <div class="age-main-display" id="diff-calendar-duration">
+                <span class="age-num" id="diff-res-years">0</span> years 
+                <span class="age-num" id="diff-res-months">8</span> months 
+                <span class="age-num" id="diff-res-days">5</span> days
+            </div>
+            <span class="result-unit-label" id="diff-daynames-info">From Thursday to Sunday</span>
+        </div>
+
+        <!-- Working Days vs Weekend Ratio Bar -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-bar-labels">
+                <span>Working Days (Mon–Fri): <strong id="bar-work-label">177 days (71.4%)</strong></span>
+                <span>Weekend Days (Sat–Sun): <strong id="bar-wend-label">71 days (28.6%)</strong></span>
+            </div>
+            <div class="loan-ratio-bar">
+                <div id="bar-diff-work" style="width: 71.4%; background-color: #2563eb;" title="Business Days"></div>
+                <div id="bar-diff-wend" style="width: 28.6%; background-color: #f59e0b;" title="Weekend Days"></div>
+            </div>
+        </div>
+
+        <!-- Multi-Unit Time Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Calendar Days</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="diff-total-days">248 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Working Business Days</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="diff-business-days">177 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Weekend Days</div>
+                <div class="breakdown-val text-amber" id="diff-weekend-days">71 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Weeks</div>
+                <div class="breakdown-val" id="diff-total-weeks">35 weeks and 3 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Hours</div>
+                <div class="breakdown-val" id="diff-total-hours">5,952 hours</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Percentage of Year Elapsed</div>
+                <div class="breakdown-val" id="diff-year-percent">67.95%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/date_diff.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Auto Loan Calculator - Car Payment, Interest & Trade-in | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Auto Loan Calculator. Calculate monthly car payments, total interest, sales tax, fees, and trade-in equity impact." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Auto Loan Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Auto Loan Calculator" }}</h1>
+    <p class="page-lead">
+        Estimate your exact monthly car loan payment, total interest charges, sales tax liabilities, and trade-in equity impact with complete amortization breakdown.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Vehicle Financing, Trade-In &amp; Sales Tax Calculator</span>
+    </div>
+
+    <form id="auto-loan-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="auto-price">Vehicle Purchase Price</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="auto-price" class="form-control" value="32000" min="1000" max="1000000" step="500" required>
+                </div>
+                <span class="field-hint">Negotiated vehicle purchase price</span>
+            </div>
+
+            <div class="form-group">
+                <label for="auto-term">Loan Term</label>
+                <select id="auto-term" class="form-control">
+                    <option value="24">24 Months (2 Years)</option>
+                    <option value="36">36 Months (3 Years)</option>
+                    <option value="48">48 Months (4 Years)</option>
+                    <option value="60" selected>60 Months (5 Years)</option>
+                    <option value="72">72 Months (6 Years)</option>
+                    <option value="84">84 Months (7 Years)</option>
+                </select>
+                <span class="field-hint">60-month terms balance monthly cost &amp; interest</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="auto-rate">Interest Rate (APR)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="auto-rate" class="form-control" value="5.5" min="0.01" max="30" step="0.05" required>
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">Annual Percentage Rate offered by lender</span>
+            </div>
+
+            <div class="form-group">
+                <label for="auto-down">Cash Down Payment</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="auto-down" class="form-control" value="4000" min="0" step="250">
+                </div>
+                <span class="field-hint">Cash paid upfront towards purchase</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="auto-tradein">Trade-In Vehicle Value</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="auto-tradein" class="form-control" value="6000" min="0" step="500">
+                </div>
+                <span class="field-hint">Allowance offered for current vehicle</span>
+            </div>
+
+            <div class="form-group">
+                <label for="auto-tradein-owed">Amount Owed on Trade-In</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="auto-tradein-owed" class="form-control" value="2000" min="0" step="250">
+                </div>
+                <span class="field-hint">Existing loan payoff on trade-in vehicle</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="auto-tax-rate">State / City Sales Tax Rate</label>
+                <div class="input-with-addon">
+                    <input type="number" id="auto-tax-rate" class="form-control" value="8.0" min="0" max="25" step="0.1">
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">Taxes applied to price after trade-in</span>
+            </div>
+
+            <div class="form-group">
+                <label for="auto-fees">Title, Registration &amp; Dealer Fees</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="auto-fees" class="form-control" value="500" min="0" step="25">
+                </div>
+                <span class="field-hint">Government &amp; documentation charges</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-auto">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Car Payment
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-auto">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Dynamic Auto Loan Results Display -->
+    <div id="auto-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Estimated Monthly Car Payment</span>
+            <span class="result-status-badge badge-finance-status" id="auto-status-badge">60 Months @ 5.50% APR</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-currency-sign">$</span>
+            <span class="result-value-big" id="auto-monthly-payment">510.84</span>
+            <span class="result-unit-label">/ month</span>
+        </div>
+
+        <!-- Visual Payment Ratio Composition Bar -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-bar-labels">
+                <span>Principal: <strong id="bar-auto-p-label">$26,740.00</strong></span>
+                <span>Interest: <strong id="bar-auto-i-label">$3,910.40</strong></span>
+                <span>Sales Tax &amp; Fees: <strong id="bar-auto-tax-label">$2,740.00</strong></span>
+            </div>
+            <div class="loan-ratio-bar">
+                <div id="bar-auto-principal" style="width: 79.5%; background-color: #2563eb;" title="Net Principal Financed"></div>
+                <div id="bar-auto-interest" style="width: 12.0%; background-color: #f59e0b;" title="Total Loan Interest"></div>
+                <div id="bar-auto-tax" style="width: 8.5%; background-color: #38bdf8;" title="Sales Tax &amp; Fees"></div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Auto Financing Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Net Amount Financed</div>
+                <div class="breakdown-val" id="auto-net-loan">$26,740.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Loan Interest</div>
+                <div class="breakdown-val text-amber" id="auto-total-interest">$3,910.40</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">State &amp; Local Sales Tax</div>
+                <div class="breakdown-val" id="auto-sales-tax">$2,240.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Net Trade-in Allowance</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="auto-net-tradein">$4,000.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Loan Payments</div>
+                <div class="breakdown-val" id="auto-total-loan-payments">$30,650.40</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Vehicle Cost (All-In)</div>
+                <div class="breakdown-val" id="auto-total-all-cost">$38,650.40</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/auto_loan.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Calculator Sitemap & Directory - Over 88+ Free Online Calculators | CalculatorHub{% endblock %}
+{% block meta_description %}Explore our comprehensive directory of 88+ free online calculators organized across Financial, Fitness & Health, Math, and Other categories on CalculatorHub.{% endblock %}
+
+{% block content %}
+<div class="sitemap-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <span>Sitemap</span>
+    </div>
+    <h1 class="page-title">Calculators Directory & Sitemap</h1>
+    <p class="page-lead">
+        Browse our comprehensive, categorized directory of over 82 free online calculation utilities. All algorithms are tested for mathematical accuracy and run client-side.
+    </p>
+</div>
+
+<!-- 4 Distinct Columns / CSS Grid Section -->
+<div class="sitemap-grid-container">
+    <!-- Category 1: Financial Calculators (22 Calculators) -->
+    <div class="sitemap-column" id="financial">
+        <div class="sitemap-category-header header-finance">
+            <span class="cat-badge-icon">$</span>
+            <div class="cat-title-group">
+                <h2 class="category-heading">Financial Calculators</h2>
+                <span class="category-count">22 Tools Available</span>
+            </div>
+        </div>
+        <ul class="sitemap-list">
+            <li class="sitemap-item live-item">
+                <a href="{% url 'loan_calculator' %}" class="sitemap-link">
+                    <strong>Loan Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'mortgage_calculator' %}" class="sitemap-link">
+                    <strong>Mortgage Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'auto_loan_calculator' %}" class="sitemap-link">
+                    <strong>Auto Loan Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'compound_interest_calculator' %}" class="sitemap-link">
+                    <strong>Compound Interest Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Amortization Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Refinance Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Retirement Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Investment Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Inflation Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Salary to Hourly Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Income Tax Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Certificate of Deposit (CD) Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">401(k) Retirement Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Annuity Payout Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">APR vs APY Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Credit Card Payoff Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Simple Interest Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Present Value (PV) Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Future Value (FV) Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Home Down Payment Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Paycheck Gross-to-Net Calculator</a></li>
+            <li class="sitemap-item"><a href="#financial" class="sitemap-link">Sales Tax Calculator</a></li>
+        </ul>
+    </div>
+
+    <!-- Category 2: Fitness and Health Calculators (20 Calculators) -->
+    <div class="sitemap-column" id="fitness">
+        <div class="sitemap-category-header header-fitness">
+            <span class="cat-badge-icon">&hearts;</span>
+            <div class="cat-title-group">
+                <h2 class="category-heading">Fitness & Health</h2>
+                <span class="category-count">20 Tools Available</span>
+            </div>
+        </div>
+        <ul class="sitemap-list">
+            <li class="sitemap-item live-item">
+                <a href="{% url 'bmi_calculator' %}" class="sitemap-link">
+                    <strong>BMI Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'calorie_calculator' %}" class="sitemap-link">
+                    <strong>Calorie Needs Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'body_fat_calculator' %}" class="sitemap-link">
+                    <strong>Body Fat Percentage Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'bmr_calculator' %}" class="sitemap-link">
+                    <strong>Basal Metabolic Rate (BMR) Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Ideal Body Weight Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Running Pace Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Target Heart Rate Zones</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Pregnancy Due Date Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Ovulation & Fertility Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Lean Body Mass Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Daily Water Intake Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Macronutrient Ratio Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Sleep Cycle Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Army Body Fat Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Blood Alcohol Content (BAC)</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Total Daily Energy Expenditure (TDEE)</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Calories Burned by Activity</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Conception Date Calculator</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Menstrual Period Tracker</a></li>
+            <li class="sitemap-item"><a href="#fitness" class="sitemap-link">Gestational Age Calculator</a></li>
+        </ul>
+    </div>
+
+    <!-- Category 3: Math Calculators (20 Calculators) -->
+    <div class="sitemap-column" id="math">
+        <div class="sitemap-category-header header-math">
+            <span class="cat-badge-icon">%</span>
+            <div class="cat-title-group">
+                <h2 class="category-heading">Math Calculators</h2>
+                <span class="category-count">20 Tools Available</span>
+            </div>
+        </div>
+        <ul class="sitemap-list">
+            <li class="sitemap-item live-item">
+                <a href="{% url 'percentage_calculator' %}" class="sitemap-link">
+                    <strong>Percentage Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'scientific_calculator' %}" class="sitemap-link">
+                    <strong>Scientific Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'fraction_calculator' %}" class="sitemap-link">
+                    <strong>Fraction Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'binary_hex_converter' %}" class="sitemap-link">
+                    <strong>Binary &amp; Hexadecimal Converter</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Decimal to Fraction Converter</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">2D Function Graphing Tool</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Matrix Operations Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Random Number Generator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Standard Deviation & Variance</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Right Triangle Solver</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Exponent & Power Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Logarithm (Natural & Base 10)</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Permutations & Combinations</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Mean, Median & Mode Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Quadratic Equation Solver</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Circle (Area & Circumference)</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Ratio & Proportion Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">3D Geometric Volume Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Surface Area Calculator</a></li>
+            <li class="sitemap-item"><a href="#math" class="sitemap-link">Modulo Calculator</a></li>
+        </ul>
+    </div>
+
+    <!-- Category 4: Other Calculators (20 Calculators) -->
+    <div class="sitemap-column" id="other">
+        <div class="sitemap-category-header header-other">
+            <span class="cat-badge-icon">&#9881;</span>
+            <div class="cat-title-group">
+                <h2 class="category-heading">Other Calculators</h2>
+                <span class="category-count">20 Tools Available</span>
+            </div>
+        </div>
+        <ul class="sitemap-list">
+            <li class="sitemap-item live-item">
+                <a href="{% url 'age_calculator' %}" class="sitemap-link">
+                    <strong>Age Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'date_difference_calculator' %}" class="sitemap-link">
+                    <strong>Date Difference Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item live-item">
+                <a href="{% url 'time_duration_calculator' %}" class="sitemap-link">
+                    <strong>Time &amp; Duration Calculator</strong>
+                    <span class="live-tag">Active</span>
+                </a>
+            </li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Work Hours & Timesheet</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">College GPA Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Final Grade Needed Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">IPv4 Subnet Mask Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Speed, Distance & Time</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Tip & Split Bill Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Fuel Cost & Mileage Trip Planner</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Physical Density Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Newton Force Calculator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Power & Wattage Converter</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Kinetic & Potential Energy</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Atmospheric Pressure Converter</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Kitchen Cooking Measurements</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Cryptographic Password Generator</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Roman Numeral Converter</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Word & Character Counter</a></li>
+            <li class="sitemap-item"><a href="#other" class="sitemap-link">Unix Epoch Timestamp Converter</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

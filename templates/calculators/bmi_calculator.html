@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"BMI Calculator - Body Mass Index Analysis" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online BMI Calculator calculating Body Mass Index for adults using Metric or US imperial units." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness & Health</a> &rsaquo; 
+        <span>BMI Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"BMI Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate your Body Mass Index (BMI) based on your height and weight. Toggle seamlessly between US Units and Metric standards for instant clinical classification.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <div class="calc-unit-tabs" role="tablist">
+            <button type="button" class="tab-btn active" id="tab-us" data-unit="us" role="tab" aria-selected="true">
+                US Units (ft, in, lbs)
+            </button>
+            <button type="button" class="tab-btn" id="tab-metric" data-unit="metric" role="tab" aria-selected="false">
+                Metric Units (cm, kg)
+            </button>
+        </div>
+    </div>
+
+    <form id="bmi-form" class="calculator-form" novalidate>
+        <!-- Demographics Row -->
+        <div class="form-row form-row-demographics">
+            <div class="form-group">
+                <label for="bmi-age">Age</label>
+                <div class="input-with-addon">
+                    <input type="number" id="bmi-age" class="form-control" value="25" min="2" max="120" required>
+                    <span class="input-addon">years</span>
+                </div>
+                <span class="field-hint">Ages 2 – 120</span>
+            </div>
+
+            <div class="form-group">
+                <label>Biological Sex</label>
+                <div class="radio-pill-group">
+                    <label class="radio-pill">
+                        <input type="radio" name="bmi-gender" value="male" checked>
+                        <span>Male</span>
+                    </label>
+                    <label class="radio-pill">
+                        <input type="radio" name="bmi-gender" value="female">
+                        <span>Female</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- US Units Fields -->
+        <div id="us-inputs-container" class="unit-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bmi-height-ft">Height</label>
+                    <div class="height-dual-inputs">
+                        <div class="input-with-addon">
+                            <input type="number" id="bmi-height-ft" class="form-control" value="5" min="1" max="8" placeholder="5">
+                            <span class="input-addon">ft</span>
+                        </div>
+                        <div class="input-with-addon">
+                            <input type="number" id="bmi-height-in" class="form-control" value="10" min="0" max="11" placeholder="10">
+                            <span class="input-addon">in</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bmi-weight-lbs">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmi-weight-lbs" class="form-control" value="160" min="20" max="1000" step="0.5" placeholder="160">
+                        <span class="input-addon">lbs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Units Fields (Hidden by default) -->
+        <div id="metric-inputs-container" class="unit-section" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bmi-height-cm">Height</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmi-height-cm" class="form-control" value="178" min="50" max="260" step="0.5" placeholder="178">
+                        <span class="input-addon">cm</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bmi-weight-kg">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmi-weight-kg" class="form-control" value="72.5" min="10" max="450" step="0.1" placeholder="72.5">
+                        <span class="input-addon">kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-bmi">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate BMI
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-bmi">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Instant Dynamic Results Display -->
+    <div id="bmi-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Calculation Result</span>
+            <span class="result-status-badge" id="bmi-status-badge">Normal Weight</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-value-big" id="bmi-value-display">22.9</span>
+            <span class="result-unit-label">kg/m²</span>
+        </div>
+
+        <!-- Interactive Visual Gauge Scale -->
+        <div class="bmi-gauge-wrapper">
+            <div class="bmi-gauge-labels">
+                <span>16</span>
+                <span>18.5</span>
+                <span>25</span>
+                <span>30</span>
+                <span>40</span>
+            </div>
+            <div class="bmi-gauge-bar">
+                <div class="gauge-segment seg-under" title="Underweight (&lt; 18.5)"></div>
+                <div class="gauge-segment seg-normal" title="Normal (18.5 - 24.9)"></div>
+                <div class="gauge-segment seg-over" title="Overweight (25 - 29.9)"></div>
+                <div class="gauge-segment seg-obese" title="Obese (&ge; 30)"></div>
+                <div class="gauge-marker" id="bmi-gauge-marker" style="left: 45%;">
+                    <div class="marker-arrow"></div>
+                    <div class="marker-label" id="marker-val">22.9</div>
+                </div>
+            </div>
+            <div class="gauge-legend">
+                <span class="legend-item"><span class="legend-color seg-under"></span> Underweight</span>
+                <span class="legend-item"><span class="legend-color seg-normal"></span> Normal</span>
+                <span class="legend-item"><span class="legend-color seg-over"></span> Overweight</span>
+                <span class="legend-item"><span class="legend-color seg-obese"></span> Obese</span>
+            </div>
+        </div>
+
+        <!-- Detailed Metrics Breakdown -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Healthy BMI Range</div>
+                <div class="breakdown-val">18.5 – 24.9 kg/m²</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Optimal Weight for Height</div>
+                <div class="breakdown-val" id="bmi-healthy-weight-range">128.9 – 174.2 lbs</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">BMI Prime</div>
+                <div class="breakdown-val" id="bmi-prime-val">0.92</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Ponderal Index</div>
+                <div class="breakdown-val" id="bmi-ponderal-val">12.9 kg/m³</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load bmi.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/bmi.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Time & Duration Calculator - Add, Subtract & Measure Elapsed Time | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate duration between two times, add or subtract hours/minutes/seconds, and convert elapsed time to decimal hours for payroll." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Time &amp; Duration Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Time &amp; Duration Calculator" }}</h1>
+    <p class="page-lead">
+        Compute exact elapsed time spans, add or subtract sexagesimal hours, minutes, and seconds from any starting time, and generate decimal hours for payroll and billing.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Time Span, Payroll Decimal Hours &amp; Sexagesimal Arithmetic</span>
+    </div>
+
+    <!-- Mode Selector Switcher Pills -->
+    <div class="unit-toggle-container">
+        <div class="unit-toggle-group">
+            <button type="button" class="unit-toggle-pill active" id="mode-btn-between" data-mode="between">Time Between Two Times</button>
+            <button type="button" class="unit-toggle-pill" id="mode-btn-addsub" data-mode="addsub">Add / Subtract Time</button>
+            <button type="button" class="unit-toggle-pill" id="mode-btn-sum" data-mode="sum">Sum Durations / Timesheet</button>
+        </div>
+    </div>
+
+    <!-- Mode 1: Duration Between Two Times -->
+    <div id="panel-mode-between" class="time-mode-panel">
+        <form id="time-between-form" class="calculator-form" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="flex-between">
+                        <label for="time-start">Start Time</label>
+                        <button type="button" class="btn-text-action" id="btn-start-now">Set to Now</button>
+                    </div>
+                    <input type="time" id="time-start" class="form-control" value="09:00" step="1" required>
+                    <div style="margin-top: 0.5rem;">
+                        <input type="date" id="date-start" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="flex-between">
+                        <label for="time-end">End Time</label>
+                        <button type="button" class="btn-text-action" id="btn-end-now">Set to Now</button>
+                    </div>
+                    <input type="time" id="time-end" class="form-control" value="17:45" step="1" required>
+                    <div style="margin-top: 0.5rem;">
+                        <input type="date" id="date-end" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="btn-calc-between" class="btn btn-primary">Calculate Elapsed Time</button>
+                <button type="button" id="btn-reset-between" class="btn btn-secondary">Reset Times</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Mode 2: Add or Subtract Time -->
+    <div id="panel-mode-addsub" class="time-mode-panel" style="display: none;">
+        <form id="time-addsub-form" class="calculator-form" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="addsub-start-time">Starting Time &amp; Date</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <input type="time" id="addsub-start-time" class="form-control" value="08:30" step="1">
+                        <input type="date" id="addsub-start-date" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Operation</label>
+                    <div class="gender-radio-group">
+                        <label class="radio-card">
+                            <input type="radio" name="addsub_op" value="add" checked id="op-add">
+                            <span class="radio-label">&#43; Add Time</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="addsub_op" value="subtract" id="op-subtract">
+                            <span class="radio-label">&minus; Subtract Time</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem;">
+                <div class="form-group">
+                    <label for="as-days">Days</label>
+                    <input type="number" id="as-days" class="form-control" value="0" min="0" max="1000" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="as-hours">Hours</label>
+                    <input type="number" id="as-hours" class="form-control" value="8" min="0" max="1000" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="as-minutes">Minutes</label>
+                    <input type="number" id="as-minutes" class="form-control" value="30" min="0" max="59" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="as-seconds">Seconds</label>
+                    <input type="number" id="as-seconds" class="form-control" value="0" min="0" max="59" step="1">
+                </div>
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="quick-preset-chips" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem;">
+                <button type="button" class="time-preset-chip" data-h="0" data-m="15">+15m</button>
+                <button type="button" class="time-preset-chip" data-h="0" data-m="30">+30m</button>
+                <button type="button" class="time-preset-chip" data-h="1" data-m="0">+1h</button>
+                <button type="button" class="time-preset-chip" data-h="8" data-m="0">+8h (Workday)</button>
+                <button type="button" class="time-preset-chip" data-d="1" data-h="0" data-m="0">+24h (1 Day)</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="btn-calc-addsub" class="btn btn-primary">Calculate Result Time</button>
+                <button type="button" id="btn-reset-addsub" class="btn btn-secondary">Reset</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Mode 3: Timesheet / Duration Summation -->
+    <div id="panel-mode-sum" class="time-mode-panel" style="display: none;">
+        <form id="time-sum-form" class="calculator-form" novalidate>
+            <div id="sum-rows-container">
+                <!-- Dynamic duration rows -->
+            </div>
+            <div style="margin-top: 0.75rem;">
+                <button type="button" class="btn btn-sm btn-secondary" id="btn-add-sum-row">&#43; Add Time Interval Row</button>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="btn-calc-sum" class="btn btn-primary">Sum Total Hours</button>
+                <button type="button" id="btn-reset-sum" class="btn btn-secondary">Reset Rows</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Unified Results Display Panel -->
+    <div class="calculator-result-panel" id="time-result-panel">
+        <div class="result-hero-box">
+            <div class="result-hero-label" id="time-hero-label">Total Elapsed Duration</div>
+            <div class="result-hero-value" id="time-hero-val">8 hours, 45 minutes, 0 seconds</div>
+            <div class="result-hero-sub" id="time-hero-sub">Equivalent to 8.7500 decimal hours</div>
+        </div>
+
+        <!-- Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Decimal Hours (Payroll)</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="time-decimal-hours">8.750 hrs</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Minutes</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="time-total-minutes">525 minutes</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Seconds</div>
+                <div class="breakdown-val text-amber" id="time-total-seconds">31,500 seconds</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Elapsed Days</div>
+                <div class="breakdown-val" id="time-elapsed-days">0.365 Days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Portion of 24h Day</div>
+                <div class="breakdown-val" id="time-portion-day">36.5% of day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Target Moment / Arrival</div>
+                <div class="breakdown-val" id="time-target-moment">Today, 17:45:00</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/time_duration.js' %}"></script>
+{% endblock %}

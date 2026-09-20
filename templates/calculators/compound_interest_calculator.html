@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Compound Interest Calculator - Future Value & Investment Growth | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate compound interest with periodic deposits, compounding frequency, APY, and annual growth schedule." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Compound Interest Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Compound Interest Calculator" }}</h1>
+    <p class="page-lead">
+        Simulate the exponential growth of your investments over time. Calculate future portfolio value with recurring deposits, adjustable compounding intervals, and annual growth schedules.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Compound Growth, Periodic Annuity &amp; APY Simulator</span>
+    </div>
+
+    <form id="compound-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="ci-principal">Initial Investment (Principal)</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="ci-principal" class="form-control" value="10000" min="0" max="100000000" step="500" required>
+                </div>
+                <span class="field-hint">Initial starting balance at time zero</span>
+            </div>
+
+            <div class="form-group">
+                <label for="ci-rate">Annual Interest Rate (Nominal)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="ci-rate" class="form-control" value="7.5" min="0.01" max="50" step="0.05" required>
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">Expected annual nominal rate of return</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="ci-years">Investment Time Horizon</label>
+                <div class="input-with-addon">
+                    <input type="number" id="ci-years" class="form-control" value="10" min="1" max="60" step="1" required>
+                    <span class="input-addon">Years</span>
+                </div>
+                <span class="field-hint">Duration of continuous compounding</span>
+            </div>
+
+            <div class="form-group">
+                <label for="ci-frequency">Compounding Frequency</label>
+                <select id="ci-frequency" class="form-control">
+                    <option value="365">Daily (365 times/year)</option>
+                    <option value="12" selected>Monthly (12 times/year)</option>
+                    <option value="4">Quarterly (4 times/year)</option>
+                    <option value="2">Semi-Annually (2 times/year)</option>
+                    <option value="1">Annually (1 time/year)</option>
+                </select>
+                <span class="field-hint">How often accrued interest is reinvested</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="ci-addition">Regular Contribution / Deposit</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="ci-addition" class="form-control" value="200" min="0" max="1000000" step="25">
+                </div>
+                <span class="field-hint">Additional money added periodically</span>
+            </div>
+
+            <div class="form-group">
+                <label for="ci-addition-freq">Contribution Frequency</label>
+                <select id="ci-addition-freq" class="form-control">
+                    <option value="12" selected>Every Month</option>
+                    <option value="1">Every Year</option>
+                </select>
+                <span class="field-hint">Interval of periodic deposits</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="ci-timing">Deposit Timing</label>
+                <select id="ci-timing" class="form-control">
+                    <option value="end" selected>End of each period (Ordinary Annuity)</option>
+                    <option value="beginning">Beginning of each period (Annuity Due - Earns immediate interest)</option>
+                </select>
+                <span class="field-hint">Whether deposits occur at start or close of interval</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="ci-calc-btn" class="btn btn-primary">Calculate Growth</button>
+            <button type="button" id="ci-reset-btn" class="btn btn-secondary">Reset Defaults</button>
+        </div>
+    </form>
+
+    <!-- Results Display Panel -->
+    <div class="calculator-result-panel" id="ci-result-panel">
+        <div class="result-hero-box">
+            <div class="result-hero-label">Estimated Future Balance</div>
+            <div class="result-hero-value" id="ci-future-val">$56,589.47</div>
+            <div class="result-hero-sub" id="ci-future-sub">Over 10 years at 7.5% annual interest</div>
+        </div>
+
+        <!-- Visual Asset Breakdown Bar -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-visual-bar-labels">
+                <span class="bar-legend-item">
+                    <span class="legend-color-dot" style="background:#38bdf8;"></span>
+                    Initial Principal: <strong id="ci-legend-principal">$10,000 (17.7%)</strong>
+                </span>
+                <span class="bar-legend-item">
+                    <span class="legend-color-dot" style="background:#4ade80;"></span>
+                    Total Additions: <strong id="ci-legend-deposits">$24,000 (42.4%)</strong>
+                </span>
+                <span class="bar-legend-item">
+                    <span class="legend-color-dot" style="background:#f59e0b;"></span>
+                    Compound Interest: <strong id="ci-legend-interest">$22,589 (39.9%)</strong>
+                </span>
+            </div>
+            <div class="loan-ratio-bar" style="height: 18px; border-radius: 9px; overflow: hidden; display: flex;">
+                <div id="ci-bar-principal" style="width: 17.7%; background: #38bdf8; transition: width 0.4s ease;" title="Initial Principal"></div>
+                <div id="ci-bar-deposits" style="width: 42.4%; background: #4ade80; transition: width 0.4s ease;" title="Total Deposits"></div>
+                <div id="ci-bar-interest" style="width: 39.9%; background: #f59e0b; transition: width 0.4s ease;" title="Total Interest"></div>
+            </div>
+        </div>
+
+        <!-- Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Principal Invested</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="ci-total-invested">$34,000.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Compound Interest</div>
+                <div class="breakdown-val text-amber" id="ci-total-interest">$22,589.47</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Effective Annual Rate (APY)</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="ci-apy-val">7.76%</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Growth Multiplier</div>
+                <div class="breakdown-val" id="ci-multiplier-val">1.66x</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Rule of 72 Doubling Time</div>
+                <div class="breakdown-val" id="ci-doubling-time">9.6 Years</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Interest-to-Deposit Ratio</div>
+                <div class="breakdown-val" id="ci-ratio-val">66.4%</div>
+            </div>
+        </div>
+
+        <!-- Annual Growth Schedule Table Preview -->
+        <div class="growth-table-section">
+            <div class="growth-table-header">
+                <h3>Annual Portfolio Growth Schedule</h3>
+                <span class="field-hint">Year-by-year accumulation breakdown</span>
+            </div>
+            <div class="table-responsive">
+                <table class="article-table growth-data-table" id="ci-schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Starting Balance</th>
+                            <th>Annual Deposits</th>
+                            <th>Interest Earned</th>
+                            <th>Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ci-schedule-tbody">
+                        <!-- Populated via Vanilla JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/compound_interest.js' %}"></script>
+{% endblock %}

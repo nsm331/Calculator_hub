@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Calorie Calculator - Daily Caloric Needs & Weight Loss Targets | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate your daily calorie needs and TDEE based on the Mifflin-St Jeor BMR equation." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness & Health</a> &rsaquo; 
+        <span>Calorie Needs Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Calorie Needs Calculator" }}</h1>
+    <p class="page-lead">
+        Estimate your Total Daily Energy Expenditure (TDEE) and Basal Metabolic Rate (BMR) using the gold-standard Mifflin-St Jeor equation.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <div class="calc-unit-tabs" role="tablist">
+            <button type="button" class="tab-btn active" id="tab-cal-us" data-unit="us" role="tab" aria-selected="true">
+                US Units (ft, in, lbs)
+            </button>
+            <button type="button" class="tab-btn" id="tab-cal-metric" data-unit="metric" role="tab" aria-selected="false">
+                Metric Units (cm, kg)
+            </button>
+        </div>
+    </div>
+
+    <form id="calorie-form" class="calculator-form" novalidate>
+        <div class="form-row form-row-demographics">
+            <div class="form-group">
+                <label for="cal-age">Age</label>
+                <div class="input-with-addon">
+                    <input type="number" id="cal-age" class="form-control" value="30" min="15" max="100" required>
+                    <span class="input-addon">years</span>
+                </div>
+                <span class="field-hint">Ages 15 – 100</span>
+            </div>
+
+            <div class="form-group">
+                <label>Biological Sex</label>
+                <div class="radio-pill-group">
+                    <label class="radio-pill">
+                        <input type="radio" name="cal-gender" value="male" checked>
+                        <span>Male</span>
+                    </label>
+                    <label class="radio-pill">
+                        <input type="radio" name="cal-gender" value="female">
+                        <span>Female</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- US Inputs Section -->
+        <div id="cal-us-container" class="unit-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cal-height-ft">Height</label>
+                    <div class="height-dual-inputs">
+                        <div class="input-with-addon">
+                            <input type="number" id="cal-height-ft" class="form-control" value="5" min="1" max="8" placeholder="5">
+                            <span class="input-addon">ft</span>
+                        </div>
+                        <div class="input-with-addon">
+                            <input type="number" id="cal-height-in" class="form-control" value="11" min="0" max="11" placeholder="11">
+                            <span class="input-addon">in</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cal-weight-lbs">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="cal-weight-lbs" class="form-control" value="176" min="40" max="800" step="0.5" placeholder="176">
+                        <span class="input-addon">lbs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Inputs Section -->
+        <div id="cal-metric-container" class="unit-section" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cal-height-cm">Height</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="cal-height-cm" class="form-control" value="180" min="60" max="250" step="0.5" placeholder="180">
+                        <span class="input-addon">cm</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cal-weight-kg">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="cal-weight-kg" class="form-control" value="80" min="20" max="400" step="0.5" placeholder="80">
+                        <span class="input-addon">kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="cal-activity">Daily Physical Activity Level</label>
+                <select id="cal-activity" class="form-control">
+                    <option value="1.2">Sedentary: little or no exercise (desk job)</option>
+                    <option value="1.375">Light: exercise 1-3 times/week</option>
+                    <option value="1.55" selected>Moderate: exercise 4-5 times/week</option>
+                    <option value="1.725">Active: daily exercise or intense sports 3-4 times/week</option>
+                    <option value="1.9">Very Active: intense exercise 6-7 times/week or physical job</option>
+                </select>
+                <span class="field-hint">Used to scale BMR to Total Daily Energy Expenditure (TDEE)</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-cal">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Daily Calories
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-cal">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Instant Dynamic Results Display -->
+    <div id="calorie-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Daily Energy Targets</span>
+            <span class="result-status-badge badge-normal" id="cal-bmr-badge">BMR: 1,780 kcal/day</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-value-big" id="cal-tdee-display">2,759</span>
+            <span class="result-unit-label">Calories / day (Maintenance)</span>
+        </div>
+
+        <!-- Weight Management Target Cards Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Maintain Current Weight</div>
+                <div class="breakdown-val" id="cal-maintain">2,759 kcal/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Mild Weight Loss (-0.5 lb / week)</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="cal-loss-mild">2,509 kcal/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Weight Loss (-1.0 lb / week)</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="cal-loss-std">2,259 kcal/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Extreme Weight Loss (-2.0 lb / week)</div>
+                <div class="breakdown-val text-amber" id="cal-loss-fast">1,759 kcal/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Mild Weight Gain (+0.5 lb / week)</div>
+                <div class="breakdown-val" id="cal-gain-mild">3,009 kcal/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Weight Gain (+1.0 lb / week)</div>
+                <div class="breakdown-val" id="cal-gain-std">3,259 kcal/day</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load calorie.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/calorie.js' %}"></script>
+{% endblock %}

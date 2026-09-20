@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Mortgage Calculator - Estimate P&I, Property Tax, Insurance & HOA | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Mortgage Calculator. Calculate monthly PITI payments, total interest, down payment impact, and full amortization schedule." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Mortgage Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Mortgage Calculator" }}</h1>
+    <p class="page-lead">
+        Estimate your complete monthly housing payment including Principal &amp; Interest, Property Taxes, Homeowners Insurance, and HOA fees.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Fixed-Rate Residential Mortgage Calculator (PITI + HOA)</span>
+    </div>
+
+    <form id="mortgage-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mortgage-home-price">Home Purchase Price</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="mortgage-home-price" class="form-control" value="400000" min="10000" max="50000000" step="5000" required>
+                </div>
+                <span class="field-hint">e.g., $400,000 purchase price</span>
+            </div>
+
+            <div class="form-group">
+                <label for="mortgage-down-payment">Down Payment</label>
+                <div class="height-dual-inputs">
+                    <div class="input-with-addon">
+                        <span class="input-addon-prefix">$</span>
+                        <input type="number" id="mortgage-down-payment" class="form-control" value="80000" min="0" step="1000">
+                    </div>
+                    <div class="input-with-addon">
+                        <input type="number" id="mortgage-down-percent" class="form-control" value="20" min="0" max="100" step="0.5">
+                        <span class="input-addon">%</span>
+                    </div>
+                </div>
+                <span class="field-hint">20% down avoids Private Mortgage Insurance (PMI)</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mortgage-term">Loan Term</label>
+                <select id="mortgage-term" class="form-control">
+                    <option value="30" selected>30 Years Fixed Rate</option>
+                    <option value="20">20 Years Fixed Rate</option>
+                    <option value="15">15 Years Fixed Rate</option>
+                    <option value="10">10 Years Fixed Rate</option>
+                </select>
+                <span class="field-hint">30-year is standard in the US</span>
+            </div>
+
+            <div class="form-group">
+                <label for="mortgage-rate">Interest Rate (APR)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="mortgage-rate" class="form-control" value="6.5" min="0.1" max="30" step="0.05" required>
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">e.g., 6.50% annual percentage rate</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mortgage-tax">Property Tax (Annual)</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="mortgage-tax" class="form-control" value="4800" min="0" step="100">
+                    <span class="input-addon">/ yr</span>
+                </div>
+                <span class="field-hint">National average ~1.2% ($4,800/yr)</span>
+            </div>
+
+            <div class="form-group">
+                <label for="mortgage-insurance">Homeowners Insurance (Annual)</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="mortgage-insurance" class="form-control" value="1200" min="0" step="50">
+                    <span class="input-addon">/ yr</span>
+                </div>
+                <span class="field-hint">Hazard &amp; fire insurance policy</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mortgage-hoa">Monthly HOA Dues</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="mortgage-hoa" class="form-control" value="0" min="0" step="10">
+                    <span class="input-addon">/ mo</span>
+                </div>
+                <span class="field-hint">Condo or community association fee</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-mortgage">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Monthly Payment
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-mortgage">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Instant Dynamic Results Display -->
+    <div id="mortgage-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Total Monthly Payment</span>
+            <span class="result-status-badge badge-finance-status" id="mortgage-status-badge">PITI + HOA Included</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-currency-sign">$</span>
+            <span class="result-value-big" id="mortgage-total-monthly">2,522.62</span>
+            <span class="result-unit-label">/ month</span>
+        </div>
+
+        <!-- Monthly Payment Composition Ratio Bar -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-bar-labels">
+                <span>P&amp;I: <strong id="bar-pi-label">$2,022.62</strong></span>
+                <span>Taxes: <strong id="bar-tax-label">$400.00</strong></span>
+                <span>Insurance: <strong id="bar-ins-label">$100.00</strong></span>
+            </div>
+            <div class="loan-ratio-bar">
+                <div id="bar-pi" style="width: 80.2%; background-color: #2563eb;" title="Principal &amp; Interest"></div>
+                <div id="bar-tax" style="width: 15.8%; background-color: #38bdf8;" title="Property Taxes"></div>
+                <div id="bar-ins" style="width: 4.0%; background-color: #f59e0b;" title="Homeowners Insurance"></div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Principal &amp; Interest (P&amp;I)</div>
+                <div class="breakdown-val" id="mortgage-pi-val">$2,022.62</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Monthly Property Tax</div>
+                <div class="breakdown-val" id="mortgage-tax-val">$400.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Monthly Home Insurance</div>
+                <div class="breakdown-val" id="mortgage-ins-val">$100.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Loan Amount Borrowed</div>
+                <div class="breakdown-val" id="mortgage-loan-amount">$320,000.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Interest (30 Years)</div>
+                <div class="breakdown-val text-amber" id="mortgage-total-interest">$408,143.20</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Loan Cost (P&amp;I Total)</div>
+                <div class="breakdown-val" id="mortgage-total-cost">$728,143.20</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load mortgage.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/mortgage.js' %}"></script>
+{% endblock %}

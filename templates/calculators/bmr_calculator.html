@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"BMR Calculator - Basal Metabolic Rate & Daily Energy Expenditure | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate your Basal Metabolic Rate using Mifflin-St Jeor, Harris-Benedict, and Katch-McArdle equations. Includes TDEE activity multipliers." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness & Health</a> &rsaquo; 
+        <span>Basal Metabolic Rate (BMR) Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Basal Metabolic Rate (BMR) Calculator" }}</h1>
+    <p class="page-lead">
+        Determine the baseline caloric energy required to sustain your body's vital physiological organs at rest using the scientifically validated Mifflin-St Jeor, Harris-Benedict, and Katch-McArdle formulas.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Metabolic Baselines &amp; Caloric Energy Expenditure</span>
+    </div>
+
+    <!-- Unit System Switcher Pills -->
+    <div class="unit-toggle-container">
+        <div class="unit-toggle-group">
+            <button type="button" class="unit-toggle-pill active" id="bmr-unit-us">US Units (lbs, ft, in)</button>
+            <button type="button" class="unit-toggle-pill" id="bmr-unit-metric">Metric Units (kg, cm)</button>
+        </div>
+    </div>
+
+    <form id="bmr-form" class="calculator-form" novalidate>
+        <!-- Gender Radio Selection -->
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Biological Sex</label>
+                <div class="gender-radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="bmr_gender" value="male" id="bmr-gender-male" checked>
+                        <span class="radio-label">&#9794; Male</span>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="bmr_gender" value="female" id="bmr-gender-female">
+                        <span class="radio-label">&#9792; Female</span>
+                    </label>
+                </div>
+                <span class="field-hint">Accounts for endocrine and baseline lean tissue differences</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bmr-age">Age</label>
+                <div class="input-with-addon">
+                    <input type="number" id="bmr-age" class="form-control" value="28" min="15" max="110" step="1" required>
+                    <span class="input-addon">Years</span>
+                </div>
+                <span class="field-hint">Ages 15 to 100</span>
+            </div>
+
+            <div class="form-group">
+                <label for="bmr-bodyfat">Body Fat Percentage (Optional)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="bmr-bodyfat" class="form-control" placeholder="e.g. 18" min="3" max="65" step="0.5">
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">Enables Katch-McArdle LBM precision</span>
+            </div>
+        </div>
+
+        <!-- US Units Height & Weight -->
+        <div id="bmr-fields-us">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Height (Feet &amp; Inches)</label>
+                    <div class="dual-input-row">
+                        <div class="input-with-addon">
+                            <input type="number" id="bmr-height-ft" class="form-control" value="5" min="3" max="8" step="1">
+                            <span class="input-addon">ft</span>
+                        </div>
+                        <div class="input-with-addon">
+                            <input type="number" id="bmr-height-in" class="form-control" value="10" min="0" max="11" step="0.5">
+                            <span class="input-addon">in</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bmr-weight-lbs">Body Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmr-weight-lbs" class="form-control" value="175" min="50" max="800" step="1">
+                        <span class="input-addon">lbs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Units Height & Weight -->
+        <div id="bmr-fields-metric" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bmr-height-cm">Height</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmr-height-cm" class="form-control" value="178" min="90" max="250" step="0.5">
+                        <span class="input-addon">cm</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bmr-weight-kg">Body Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bmr-weight-kg" class="form-control" value="79.5" min="20" max="350" step="0.5">
+                        <span class="input-addon">kg</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="bmr-activity">Daily Physical Activity Level</label>
+                <select id="bmr-activity" class="form-control">
+                    <option value="1.2">Sedentary: little or no deliberate exercise (desk work)</option>
+                    <option value="1.375">Lightly Active: light exercise/sports 1-3 days/week</option>
+                    <option value="1.55" selected>Moderately Active: moderate exercise/sports 3-5 days/week</option>
+                    <option value="1.725">Very Active: hard exercise/sports 6-7 days a week</option>
+                    <option value="1.9">Extremely Active: intense physical job or twice-daily athletic training</option>
+                </select>
+                <span class="field-hint">Multiplied by BMR to compute Total Daily Energy Expenditure (TDEE)</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="bmr-calc-btn" class="btn btn-primary">Calculate BMR &amp; TDEE</button>
+            <button type="button" id="bmr-reset-btn" class="btn btn-secondary">Reset Defaults</button>
+        </div>
+    </form>
+
+    <!-- Results Display Panel -->
+    <div class="calculator-result-panel" id="bmr-result-panel">
+        <div class="result-hero-box">
+            <div class="result-hero-label">Basal Metabolic Rate (Mifflin-St Jeor)</div>
+            <div class="result-hero-value" id="bmr-hero-val">1,788 Calories/day</div>
+            <div class="result-hero-sub" id="bmr-hero-tdee">Maintenance TDEE: 2,771 Calories/day (Moderately Active)</div>
+        </div>
+
+        <!-- Formula Comparison Matrix Cards -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Mifflin-St Jeor (Primary)</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="bmr-mifflin-val">1,788 kcal</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Harris-Benedict (Revised)</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="bmr-harris-val">1,849 kcal</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Katch-McArdle (LBM)</div>
+                <div class="breakdown-val text-amber" id="bmr-katch-val">1,778 kcal</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Resting Energy per Hour</div>
+                <div class="breakdown-val" id="bmr-hourly-val">74.5 kcal/hr</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Energy Output in Joules</div>
+                <div class="breakdown-val" id="bmr-joules-val">7,481 kJ/day</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Body Mass Index (BMI)</div>
+                <div class="breakdown-val" id="bmr-bmi-val">25.1 kg/m²</div>
+            </div>
+        </div>
+
+        <!-- Daily Caloric Targets for Weight Goals -->
+        <div class="growth-table-section">
+            <div class="growth-table-header">
+                <h3>Daily Calorie Targets Based on Physical Goals</h3>
+                <span class="field-hint">Derived from your TDEE of <strong id="bmr-tdee-summary">2,771 kcal</strong></span>
+            </div>
+            <div class="table-responsive">
+                <table class="article-table">
+                    <thead>
+                        <tr>
+                            <th>Physical Goal</th>
+                            <th>Daily Calorie Intake</th>
+                            <th>Caloric Deficit / Surplus</th>
+                            <th>Expected Weight Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Maintain Current Weight</strong></td>
+                            <td><strong style="color: #4ade80;" id="bmr-goal-maintain">2,771 kcal/day</strong></td>
+                            <td>0 kcal/day</td>
+                            <td>0.0 kg/week (Stable)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mild Weight Loss</strong></td>
+                            <td><strong style="color: #38bdf8;" id="bmr-goal-mild-loss">2,521 kcal/day</strong></td>
+                            <td class="text-amber">-250 kcal/day</td>
+                            <td>-0.25 kg (-0.55 lbs) / week</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Standard Weight Loss</strong></td>
+                            <td><strong style="color: #38bdf8;" id="bmr-goal-standard-loss">2,271 kcal/day</strong></td>
+                            <td class="text-amber">-500 kcal/day</td>
+                            <td>-0.50 kg (-1.10 lbs) / week</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fast Weight Loss</strong></td>
+                            <td><strong style="color: #f87171;" id="bmr-goal-fast-loss">1,771 kcal/day</strong></td>
+                            <td style="color: #f87171;">-1,000 kcal/day</td>
+                            <td>-1.00 kg (-2.20 lbs) / week</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mild Muscle Building</strong></td>
+                            <td><strong style="color: #a78bfa;" id="bmr-goal-mild-gain">3,021 kcal/day</strong></td>
+                            <td style="color: #a78bfa;">+250 kcal/day</td>
+                            <td>+0.25 kg (+0.55 lbs) / week</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rapid Mass Gain</strong></td>
+                            <td><strong style="color: #a78bfa;" id="bmr-goal-fast-gain">3,271 kcal/day</strong></td>
+                            <td style="color: #a78bfa;">+500 kcal/day</td>
+                            <td>+0.50 kg (+1.10 lbs) / week</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/bmr.js' %}"></script>
+{% endblock %}

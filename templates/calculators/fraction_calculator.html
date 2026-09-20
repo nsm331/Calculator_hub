@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Fraction Calculator - Add, Subtract, Multiply & Divide Fractions | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Fraction Calculator with step-by-step simplification, mixed numbers, common denominators, and decimal conversion." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Fraction Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Fraction Calculator" }}</h1>
+    <p class="page-lead">
+        Add, subtract, multiply, and divide fractions and mixed numbers with step-by-step LCD reductions, lowest terms simplification, and decimal equivalents.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Fraction &amp; Mixed Number Arithmetic Engine</span>
+    </div>
+
+    <form id="fraction-form" class="calculator-form" novalidate>
+        <!-- Fraction Input Row -->
+        <div class="fraction-operands-container">
+            <!-- Operand 1 -->
+            <div class="fraction-block">
+                <span class="fraction-block-title">First Fraction</span>
+                <div class="fraction-inputs-group">
+                    <div class="frac-whole-wrap">
+                        <label for="frac1-whole" class="sr-only">Whole Number 1</label>
+                        <input type="number" id="frac1-whole" class="form-control frac-input-whole" placeholder="Whole" step="1">
+                        <span class="frac-sublabel">Whole (opt)</span>
+                    </div>
+                    <div class="frac-fraction-wrap">
+                        <label for="frac1-num" class="sr-only">Numerator 1</label>
+                        <input type="number" id="frac1-num" class="form-control frac-input-num" value="2" required placeholder="Num">
+                        <div class="frac-bar-divider"></div>
+                        <label for="frac1-den" class="sr-only">Denominator 1</label>
+                        <input type="number" id="frac1-den" class="form-control frac-input-den" value="3" required placeholder="Den" min="1">
+                        <span class="frac-sublabel">Fraction</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operator Selector -->
+            <div class="fraction-operator-block">
+                <label for="frac-op" class="sr-only">Operator</label>
+                <div class="fraction-op-pills" role="radiogroup">
+                    <label class="op-pill">
+                        <input type="radio" name="frac-op" value="+" checked>
+                        <span>+</span>
+                    </label>
+                    <label class="op-pill">
+                        <input type="radio" name="frac-op" value="-">
+                        <span>−</span>
+                    </label>
+                    <label class="op-pill">
+                        <input type="radio" name="frac-op" value="*">
+                        <span>×</span>
+                    </label>
+                    <label class="op-pill">
+                        <input type="radio" name="frac-op" value="/">
+                        <span>÷</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Operand 2 -->
+            <div class="fraction-block">
+                <span class="fraction-block-title">Second Fraction</span>
+                <div class="fraction-inputs-group">
+                    <div class="frac-whole-wrap">
+                        <label for="frac2-whole" class="sr-only">Whole Number 2</label>
+                        <input type="number" id="frac2-whole" class="form-control frac-input-whole" placeholder="Whole" step="1">
+                        <span class="frac-sublabel">Whole (opt)</span>
+                    </div>
+                    <div class="frac-fraction-wrap">
+                        <label for="frac2-num" class="sr-only">Numerator 2</label>
+                        <input type="number" id="frac2-num" class="form-control frac-input-num" value="3" required placeholder="Num">
+                        <div class="frac-bar-divider"></div>
+                        <label for="frac2-den" class="sr-only">Denominator 2</label>
+                        <input type="number" id="frac2-den" class="form-control frac-input-den" value="4" required placeholder="Den" min="1">
+                        <span class="frac-sublabel">Fraction</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 24px;">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-fraction">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Fraction
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-fraction">Clear</button>
+        </div>
+    </form>
+
+    <!-- Instant Results Display -->
+    <div id="fraction-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Exact Result</span>
+            <span class="result-status-badge badge-normal" id="frac-status-badge">Simplified Fraction</span>
+        </div>
+
+        <!-- Big Primary Fraction Display -->
+        <div class="fraction-primary-display">
+            <div class="frac-result-big" id="frac-res-mixed-container">
+                <span class="frac-big-whole" id="frac-big-whole">1</span>
+                <div class="frac-big-fraction">
+                    <span class="frac-big-num" id="frac-big-num">5</span>
+                    <div class="frac-big-line"></div>
+                    <span class="frac-big-den" id="frac-big-den">12</span>
+                </div>
+            </div>
+            <div class="frac-decimal-tag">
+                = <strong id="frac-res-decimal">1.416667</strong> (Decimal)
+            </div>
+        </div>
+
+        <!-- Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Improper Fraction</div>
+                <div class="breakdown-val" id="frac-improper-val">17 / 12</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Mixed Number</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="frac-mixed-val">1 5/12</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Decimal Form</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="frac-decimal-val">1.416667</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Percentage Equivalent</div>
+                <div class="breakdown-val text-amber" id="frac-percent-val">141.67%</div>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Proof Box -->
+        <div class="frac-steps-container">
+            <div class="frac-steps-header">Step-by-Step Mathematical Derivation:</div>
+            <ol class="example-steps" id="frac-steps-list">
+                <!-- Injected via Vanilla JS -->
+            </ol>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/fraction.js' %}"></script>
+{% endblock %}

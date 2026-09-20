@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Privacy Policy - CalculatorHub{% endblock %}
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a> &rsaquo; <span>Privacy Policy</span></div>
+    <h1 class="page-title">Privacy Policy</h1>
+    <p class="page-lead">We respect your absolute privacy. Learn how data is handled on CalculatorHub.</p>
+</div>
+<div class="article-content-wrapper seo-article">
+    <h2>Client-Side Local Computation</h2>
+    <p>Calculator inputs (such as income, debt balances, height, or weight) are processed directly in your browser using client-side JavaScript. We do not transmit or store your calculation inputs on our servers.</p>
+    <h2>Google AdSense & Cookies</h2>
+    <p>We use Google AdSense and third-party advertising cookies to display contextual advertisements. Google uses cookies to serve ads based on a user's prior visits to this or other websites. Users may opt out of personalized advertising by visiting Google Ads Settings.</p>
+    <h2>Server Logs</h2>
+    <p>Standard web server logs collect non-identifiable diagnostic metrics (e.g. IP address, browser user-agent, requested URL) solely to maintain security and server performance.</p>
+</div>
+{% endblock %}

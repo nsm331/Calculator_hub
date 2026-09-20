@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Percentage Calculator - Quick Percent Math & Change | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate percentages, percentage change, and discounts effortlessly with our free online percentage calculator." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Percentage Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Percentage Calculator" }}</h1>
+    <p class="page-lead">
+        Compute percentages, proportions, discounts, and percentage increases or decreases with instant step-by-step mathematical reasoning.
+    </p>
+</div>
+
+<!-- Three Scenario Percentage Calculators -->
+<div class="percentage-calculators-stack">
+    <!-- Tool 1: What is X% of Y? -->
+    <div class="calculator-card percentage-card">
+        <div class="percentage-card-header">
+            <span class="tool-number">Tool 1</span>
+            <h2 class="tool-title">What is X% of Y?</h2>
+        </div>
+        <form id="percent-tool-1" class="percent-form-inline" novalidate>
+            <div class="inline-math-group">
+                <span class="math-phrase">What is</span>
+                <div class="inline-input-wrap">
+                    <input type="number" id="p1-percent" class="form-control inline-control" value="20" step="any" required>
+                </div>
+                <span class="math-unit-badge">%</span>
+                <span class="math-phrase">of</span>
+                <div class="inline-input-wrap">
+                    <input type="number" id="p1-value" class="form-control inline-control" value="85" step="any" required>
+                </div>
+                <span class="math-phrase">?</span>
+            </div>
+
+            <div class="form-actions-inline">
+                <button type="submit" class="btn btn-primary btn-sm">Calculate</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-p1">Clear</button>
+            </div>
+        </form>
+
+        <div id="p1-result" class="percent-result-box" style="display: none;">
+            <div class="percent-answer">
+                <span>Result:</span>
+                <strong class="answer-num" id="p1-answer">17</strong>
+            </div>
+            <div class="percent-steps" id="p1-steps">
+                Calculation: (20 &divide; 100) &times; 85 = 0.20 &times; 85 = <strong>17</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool 2: X is what % of Y? -->
+    <div class="calculator-card percentage-card">
+        <div class="percentage-card-header">
+            <span class="tool-number">Tool 2</span>
+            <h2 class="tool-title">X is What Percentage of Y?</h2>
+        </div>
+        <form id="percent-tool-2" class="percent-form-inline" novalidate>
+            <div class="inline-math-group">
+                <div class="inline-input-wrap">
+                    <input type="number" id="p2-value-x" class="form-control inline-control" value="42" step="any" required>
+                </div>
+                <span class="math-phrase">is what % of</span>
+                <div class="inline-input-wrap">
+                    <input type="number" id="p2-value-y" class="form-control inline-control" value="50" step="any" required>
+                </div>
+                <span class="math-phrase">?</span>
+            </div>
+
+            <div class="form-actions-inline">
+                <button type="submit" class="btn btn-primary btn-sm">Calculate</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-p2">Clear</button>
+            </div>
+        </form>
+
+        <div id="p2-result" class="percent-result-box" style="display: none;">
+            <div class="percent-answer">
+                <span>Result:</span>
+                <strong class="answer-num" id="p2-answer">84%</strong>
+            </div>
+            <div class="percent-steps" id="p2-steps">
+                Calculation: (42 &divide; 50) &times; 100% = 0.84 &times; 100% = <strong>84%</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tool 3: Percentage Increase or Decrease from X to Y -->
+    <div class="calculator-card percentage-card">
+        <div class="percentage-card-header">
+            <span class="tool-number">Tool 3</span>
+            <h2 class="tool-title">Percentage Increase / Decrease (Change)</h2>
+        </div>
+        <form id="percent-tool-3" class="percent-form-inline" novalidate>
+            <div class="inline-math-group">
+                <span class="math-phrase">From</span>
+                <div class="inline-input-wrap">
+                    <input type="number" id="p3-from" class="form-control inline-control" value="50" step="any" required>
+                </div>
+                <span class="math-phrase">to</span>
+                <div class="inline-input-wrap">
+                    <input type="number" id="p3-to" class="form-control inline-control" value="65" step="any" required>
+                </div>
+            </div>
+
+            <div class="form-actions-inline">
+                <button type="submit" class="btn btn-primary btn-sm">Calculate</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-p3">Clear</button>
+            </div>
+        </form>
+
+        <div id="p3-result" class="percent-result-box" style="display: none;">
+            <div class="percent-answer">
+                <span>Result:</span>
+                <strong class="answer-num" id="p3-answer">+30%</strong>
+                <span class="change-tag change-increase" id="p3-change-type">Increase</span>
+            </div>
+            <div class="percent-steps" id="p3-steps">
+                Calculation: ((65 - 50) &divide; |50|) &times; 100% = (15 &divide; 50) &times; 100% = <strong>+30%</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load percentage.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/percentage.js' %}"></script>
+{% endblock %}

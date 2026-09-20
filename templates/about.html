@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}About Us - Institutional Standards | CalculatorHub{% endblock %}
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a> &rsaquo; <span>About Us</span></div>
+    <h1 class="page-title">About CalculatorHub</h1>
+    <p class="page-lead">Building the most accurate, lightning-fast, zero-friction calculation platform on the web.</p>
+</div>
+<div class="article-content-wrapper seo-article">
+    <h2>Our Core Philosophy</h2>
+    <p>
+        CalculatorHub is built around a single core tenet: mathematical clarity and financial planning tools should be instantaneous, transparent, and completely free. Unlike conventional web applications that make round-trips to remote servers for basic calculations, our platform processes computations directly within your client browser using vanilla JavaScript.
+    </p>
+    <h2>Zero Data Collection & Latency</h2>
+    <p>
+        Your privacy is inviolable. Calculations performed on our platform do not transmit sensitive numbers—such as salary details, mortgage amounts, or personal biological parameters—over the internet. Every calculation executes in local browser memory.
+    </p>
+    <h2>Academic & Scientific Integrity</h2>
+    <p>
+        All formulas implemented across our financial, medical, and scientific tools are derived from authoritative international bodies, including the World Health Organization (WHO), the US Federal Reserve, and standard IEEE arithmetic conventions.
+    </p>
+</div>
+{% endblock %}

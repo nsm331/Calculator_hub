@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Age Calculator - Exact Chronological Age in Years, Months, Days | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate your exact age in years, months, weeks, days, hours, and minutes. Includes next birthday countdown and astrological information." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Age Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Age Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate your exact chronological age in completed years, months, days, hours, and minutes, along with a countdown to your next birthday.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Precise Gregorian Calendar Age Calculation</span>
+    </div>
+
+    <form id="age-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="birth-date">Date of Birth</label>
+                <input type="date" id="birth-date" class="form-control" value="1995-03-15" required>
+                <span class="field-hint">Select year, month, and day of birth</span>
+            </div>
+
+            <div class="form-group">
+                <label for="target-date">Age as of Date</label>
+                <input type="date" id="target-date" class="form-control" required>
+                <span class="field-hint">Defaults to today's date</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-age">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Age
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-age">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Instant Dynamic Results Display -->
+    <div id="age-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Exact Chronological Age</span>
+            <span class="result-status-badge badge-normal" id="age-zodiac-badge">Pisces ♓</span>
+        </div>
+
+        <!-- Primary Stat: Years, Months, Days -->
+        <div class="result-primary-stat" style="flex-direction: column; align-items: flex-start; gap: 4px;">
+            <div class="age-main-display" id="age-primary-display">
+                <span class="age-num" id="age-years">31</span> years 
+                <span class="age-num" id="age-months">6</span> months 
+                <span class="age-num" id="age-days">5</span> days
+            </div>
+            <span class="result-unit-label" id="age-birth-dayname">Born on a Wednesday</span>
+        </div>
+
+        <!-- Next Birthday Banner -->
+        <div class="next-bday-card" id="next-bday-card">
+            <div class="next-bday-icon">🎂</div>
+            <div class="next-bday-info">
+                <div class="next-bday-title">Next Birthday Countdown</div>
+                <div class="next-bday-val" id="next-bday-countdown">5 months and 23 days remaining</div>
+            </div>
+        </div>
+
+        <!-- Detailed Multi-Unit Time Breakdown Grid -->
+        <div class="result-breakdown-grid" style="margin-top: 16px;">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Months</div>
+                <div class="breakdown-val" id="age-total-months">378 months and 5 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Weeks</div>
+                <div class="breakdown-val" id="age-total-weeks">1,644 weeks and 4 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Days</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="age-total-days">11,512 days</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Hours</div>
+                <div class="breakdown-val" id="age-total-hours">276,288 hours</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total in Minutes</div>
+                <div class="breakdown-val" id="age-total-minutes">16,577,280 minutes</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Western Astrological Sign</div>
+                <div class="breakdown-val text-amber" id="age-zodiac-sign">Pisces (Water)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load age.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/age.js' %}"></script>
+{% endblock %}

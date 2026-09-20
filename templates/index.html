@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Free Online Calculators - Math, Fitness, Finance & Science | CalculatorHub{% endblock %}
+{% block meta_description %}Discover fast, free, and accurate online calculators for financial planning, loan amortization, health assessment, BMI, and percentage mathematics on CalculatorHub.{% endblock %}
+
+{% block content %}
+<div class="home-hero">
+    <div class="hero-badge-tag">Fast • Client-Side • Zero Latency</div>
+    <h1 class="hero-title">Free Online Calculators</h1>
+    <p class="hero-subtitle">
+        High-precision mathematical, financial, and health calculation utilities engineered for instantaneous results with complete transparency.
+    </p>
+
+    <!-- Generic Search Bar Placeholder with Live JavaScript Filter -->
+    <div class="search-section">
+        <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input 
+                type="text" 
+                id="calculator-search" 
+                class="search-input" 
+                placeholder="Search over 80+ calculators (e.g., Loan, BMI, Percentage, Mortgage)..." 
+                autocomplete="off"
+                aria-label="Search calculators"
+            >
+            <button type="button" id="search-clear-btn" class="search-clear-btn" aria-label="Clear search" style="display: none;">&times;</button>
+        </div>
+        <div id="search-results-dropdown" class="search-results-dropdown" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Primary MVP Calculators Showcase -->
+<section class="section-block">
+    <div class="section-header">
+        <h2 class="section-title">Featured Calculators</h2>
+        <span class="section-tag">Instant Client-Side Logic</span>
+    </div>
+
+    <div class="featured-grid">
+        <!-- Loan Calculator Card -->
+        <div class="feature-card card-finance">
+            <div class="feature-card-header">
+                <span class="card-icon-badge badge-finance">$</span>
+                <span class="category-pill">Financial</span>
+            </div>
+            <h3 class="card-title">Loan Calculator</h3>
+            <p class="card-description">
+                Calculate precise monthly installments, total interest burden, and payoff timelines for fixed-rate mortgages, auto loans, or personal debt.
+            </p>
+            <div class="card-footer">
+                <a href="{% url 'loan_calculator' %}" class="btn-card-action">Launch Calculator &rarr;</a>
+            </div>
+        </div>
+
+        <!-- BMI Calculator Card -->
+        <div class="feature-card card-fitness">
+            <div class="feature-card-header">
+                <span class="card-icon-badge badge-fitness">&hearts;</span>
+                <span class="category-pill">Fitness & Health</span>
+            </div>
+            <h3 class="card-title">BMI Calculator</h3>
+            <p class="card-description">
+                Evaluate Body Mass Index across Metric and US Imperial standards with official WHO clinical weight status classifications.
+            </p>
+            <div class="card-footer">
+                <a href="{% url 'bmi_calculator' %}" class="btn-card-action">Launch Calculator &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Percentage Calculator Card -->
+        <div class="feature-card card-math">
+            <div class="feature-card-header">
+                <span class="card-icon-badge badge-math">%</span>
+                <span class="category-pill">Math</span>
+            </div>
+            <h3 class="card-title">Percentage Calculator</h3>
+            <p class="card-description">
+                Compute percentage proportions, discounts, tip amounts, and relative percentage increases or decreases with step-by-step proofs.
+            </p>
+            <div class="card-footer">
+                <a href="{% url 'percentage_calculator' %}" class="btn-card-action">Launch Calculator &rarr;</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Calculator Categories Directory Overview -->
+<section class="section-block">
+    <div class="section-header">
+        <h2 class="section-title">Explore Categories</h2>
+        <a href="{% url 'html_sitemap' %}" class="section-link">View All 82+ Calculators in Sitemap &rarr;</a>
+    </div>
+
+    <div class="category-overview-grid">
+        <div class="category-box">
+            <div class="category-header">
+                <div class="cat-icon-wrap cat-fin-icon">&#128181;</div>
+                <div>
+                    <h3 class="cat-name">Financial Calculators</h3>
+                    <span class="cat-count">22 Calculators</span>
+                </div>
+            </div>
+            <ul class="cat-links-list">
+                <li><a href="{% url 'loan_calculator' %}"><strong>Loan Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'mortgage_calculator' %}"><strong>Mortgage Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'auto_loan_calculator' %}"><strong>Auto Loan Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'compound_interest_calculator' %}"><strong>Compound Interest Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'html_sitemap' %}#financial">Amortization Calculator</a></li>
+            </ul>
+            <a href="{% url 'html_sitemap' %}#financial" class="cat-more-link">See all 22 financial tools &rarr;</a>
+        </div>
+
+        <div class="category-box">
+            <div class="category-header">
+                <div class="cat-icon-wrap cat-fit-icon">&#127939;</div>
+                <div>
+                    <h3 class="cat-name">Fitness & Health</h3>
+                    <span class="cat-count">20 Calculators</span>
+                </div>
+            </div>
+            <ul class="cat-links-list">
+                <li><a href="{% url 'bmi_calculator' %}"><strong>BMI Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'calorie_calculator' %}"><strong>Calorie Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'body_fat_calculator' %}"><strong>Body Fat Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'bmr_calculator' %}"><strong>BMR Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'html_sitemap' %}#fitness">Ideal Weight Calculator</a></li>
+            </ul>
+            <a href="{% url 'html_sitemap' %}#fitness" class="cat-more-link">See all 20 health tools &rarr;</a>
+        </div>
+
+        <div class="category-box">
+            <div class="category-header">
+                <div class="cat-icon-wrap cat-math-icon">&#128290;</div>
+                <div>
+                    <h3 class="cat-name">Math Calculators</h3>
+                    <span class="cat-count">20 Calculators</span>
+                </div>
+            </div>
+            <ul class="cat-links-list">
+                <li><a href="{% url 'percentage_calculator' %}"><strong>Percentage Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'scientific_calculator' %}"><strong>Scientific Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'fraction_calculator' %}"><strong>Fraction Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'binary_hex_converter' %}"><strong>Binary &amp; Hex Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'html_sitemap' %}#math">Random Number Generator</a></li>
+            </ul>
+            <a href="{% url 'html_sitemap' %}#math" class="cat-more-link">See all 20 math tools &rarr;</a>
+        </div>
+
+        <div class="category-box">
+            <div class="category-header">
+                <div class="cat-icon-wrap cat-oth-icon">&#9881;</div>
+                <div>
+                    <h3 class="cat-name">Other Calculators</h3>
+                    <span class="cat-count">20 Calculators</span>
+                </div>
+            </div>
+            <ul class="cat-links-list">
+                <li><a href="{% url 'age_calculator' %}"><strong>Age Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'date_difference_calculator' %}"><strong>Date Difference Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'time_duration_calculator' %}"><strong>Time &amp; Duration Calculator</strong> <span class="live-pill">Live</span></a></li>
+                <li><a href="{% url 'html_sitemap' %}#other">GPA Calculator</a></li>
+                <li><a href="{% url 'html_sitemap' %}#other">Subnet Calculator</a></li>
+            </ul>
+            <a href="{% url 'html_sitemap' %}#other" class="cat-more-link">See all 20 utilities &rarr;</a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Trust Section -->
+<section class="trust-banner">
+    <div class="trust-item">
+        <div class="trust-icon">&#9889;</div>
+        <div class="trust-info">
+            <div class="trust-title">Client-Side Calculation</div>
+            <div class="trust-desc">Zero latency. Calculations execute locally in your browser without slow server trips.</div>
+        </div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-icon">&#128274;</div>
+        <div class="trust-info">
+            <div class="trust-title">Private & Anonymous</div>
+            <div class="trust-desc">Your financial and health numbers are never logged or transmitted over networks.</div>
+        </div>
+    </div>
+    <div class="trust-item">
+        <div class="trust-icon">&#128218;</div>
+        <div class="trust-info">
+            <div class="trust-title">Mathematical Rigor</div>
+            <div class="trust-desc">Every calculator is paired with formula derivations and step-by-step proofs.</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Binary to Hexadecimal & Decimal Converter - Multi-Base Calculator | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Instant multi-base converter for Binary, Hexadecimal, Decimal, and Octal numbers with interactive bit array and two's complement." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Binary &amp; Hexadecimal Converter</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Binary &amp; Hexadecimal Converter" }}</h1>
+    <p class="page-lead">
+        Instantly convert between Binary, Hexadecimal, Decimal, and Octal radix systems with live two-way synchronization, interactive bit-matrix toggle, and two's complement representation.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Multi-Radix Converter &amp; Interactive Bit Matrix</span>
+    </div>
+
+    <!-- Bit Depth Selector Pills -->
+    <div class="unit-toggle-container">
+        <div class="unit-toggle-group">
+            <button type="button" class="unit-toggle-pill" data-bits="8">8-Bit (Byte)</button>
+            <button type="button" class="unit-toggle-pill active" data-bits="16">16-Bit (Word)</button>
+            <button type="button" class="unit-toggle-pill" data-bits="32">32-Bit (Dword)</button>
+            <button type="button" class="unit-toggle-pill" data-bits="64">64-Bit (Qword)</button>
+        </div>
+    </div>
+
+    <!-- Multi-Base Synchronized Input Panel -->
+    <div class="converter-inputs-container">
+        <!-- Decimal Input -->
+        <div class="form-group converter-field-group">
+            <div class="converter-field-header">
+                <label for="num-decimal"><strong>Decimal (Base 10)</strong></label>
+                <span class="field-badge">Digits: 0–9</span>
+            </div>
+            <div class="input-with-addon">
+                <input type="text" id="num-decimal" class="form-control mono-font" value="437" placeholder="Enter decimal integer...">
+                <button type="button" class="input-addon-btn copy-btn" data-target="num-decimal" title="Copy to clipboard">&#128203;</button>
+            </div>
+        </div>
+
+        <!-- Binary Input -->
+        <div class="form-group converter-field-group">
+            <div class="converter-field-header">
+                <label for="num-binary"><strong>Binary (Base 2)</strong></label>
+                <span class="field-badge">Bits: 0, 1</span>
+            </div>
+            <div class="input-with-addon">
+                <input type="text" id="num-binary" class="form-control mono-font" value="0000 0001 1011 0101" placeholder="Enter binary digits...">
+                <button type="button" class="input-addon-btn copy-btn" data-target="num-binary" title="Copy to clipboard">&#128203;</button>
+            </div>
+        </div>
+
+        <!-- Hexadecimal Input -->
+        <div class="form-group converter-field-group">
+            <div class="converter-field-header">
+                <label for="num-hex"><strong>Hexadecimal (Base 16)</strong></label>
+                <span class="field-badge">0–9, A–F</span>
+            </div>
+            <div class="input-with-addon">
+                <span class="input-addon-prefix">0x</span>
+                <input type="text" id="num-hex" class="form-control mono-font" value="01B5" placeholder="Enter hexadecimal...">
+                <button type="button" class="input-addon-btn copy-btn" data-target="num-hex" title="Copy to clipboard">&#128203;</button>
+            </div>
+        </div>
+
+        <!-- Octal Input -->
+        <div class="form-group converter-field-group">
+            <div class="converter-field-header">
+                <label for="num-octal"><strong>Octal (Base 8)</strong></label>
+                <span class="field-badge">Digits: 0–7</span>
+            </div>
+            <div class="input-with-addon">
+                <span class="input-addon-prefix">0o</span>
+                <input type="text" id="num-octal" class="form-control mono-font" value="665" placeholder="Enter octal...">
+                <button type="button" class="input-addon-btn copy-btn" data-target="num-octal" title="Copy to clipboard">&#128203;</button>
+            </div>
+        </div>
+
+        <!-- ASCII / Text Preview -->
+        <div class="form-group converter-field-group">
+            <div class="converter-field-header">
+                <label for="num-ascii"><strong>ASCII / UTF-8 Character</strong></label>
+                <span class="field-badge">Text Representation</span>
+            </div>
+            <div class="input-with-addon">
+                <input type="text" id="num-ascii" class="form-control mono-font" value="&#181;" readonly>
+                <button type="button" class="input-addon-btn copy-btn" data-target="num-ascii" title="Copy to clipboard">&#128203;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Tactile Bit Matrix -->
+    <div class="bit-matrix-section">
+        <div class="bit-matrix-header">
+            <h3>Interactive Bit Matrix (Click any bit to toggle)</h3>
+            <div class="bit-matrix-controls">
+                <button type="button" class="btn btn-sm btn-secondary" id="bit-clear-btn">Clear (All 0s)</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="bit-invert-btn">Invert (NOT)</button>
+                <button type="button" class="btn btn-sm btn-secondary" id="bit-fill-btn">Set All (1s)</button>
+            </div>
+        </div>
+        <div class="bit-matrix-grid" id="bit-matrix-container">
+            <!-- Dynamically generated bit buttons via Vanilla JS -->
+        </div>
+    </div>
+
+    <!-- Results Breakdown Panel -->
+    <div class="calculator-result-panel" style="margin-top: 1.5rem;">
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Signed Value (Two's Complement)</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="bit-signed-val">+437</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Unsigned Value</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="bit-unsigned-val">437</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Hamming Weight (Set Bits)</div>
+                <div class="breakdown-val text-amber" id="bit-hamming-val">6 bits set (37.5%)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Bitwise NOT (~X)</div>
+                <div class="breakdown-val" id="bit-not-val">0xFE4A (-438)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Leading Zeros</div>
+                <div class="breakdown-val" id="bit-leading-zeros">7 zeros</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Byte Alignment</div>
+                <div class="breakdown-val" id="bit-byte-count">2 Bytes (16 bits)</div>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Derivation Proof Box -->
+        <div class="frac-steps-container">
+            <div class="frac-steps-header">Step-by-Step Conversion Derivation:</div>
+            <ol class="example-steps" id="base-steps-list">
+                <!-- Dynamically generated derivation steps -->
+            </ol>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/binary_hex.js' %}"></script>
+{% endblock %}

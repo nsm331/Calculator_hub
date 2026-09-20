@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Loan Calculator - Monthly Payments, Interest & Amortization" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate monthly loan payments, total interest paid, and full payoff schedules for mortgages, auto loans, or personal financing." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Loan Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Loan Calculator" }}</h1>
+    <p class="page-lead">
+        Determine your exact fixed monthly loan payment, cumulative interest charges, and total loan cost with full amortization analysis.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Amortized Fixed-Rate Loan Calculator</span>
+    </div>
+
+    <form id="loan-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="loan-amount">Loan Amount (Principal)</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="loan-amount" class="form-control" value="20000" min="100" max="10000000" step="100" required>
+                </div>
+                <span class="field-hint">e.g., $20,000 auto loan or $350,000 mortgage</span>
+            </div>
+
+            <div class="form-group">
+                <label for="loan-rate">Annual Interest Rate (APR)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="loan-rate" class="form-control" value="6.0" min="0.01" max="100" step="0.05" required>
+                    <span class="input-addon">%</span>
+                </div>
+                <span class="field-hint">e.g., 6.0% or 7.25%</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Loan Term</label>
+                <div class="term-dual-inputs">
+                    <div class="input-with-addon">
+                        <input type="number" id="loan-term-years" class="form-control" value="5" min="0" max="50" step="1">
+                        <span class="input-addon">years</span>
+                    </div>
+                    <div class="input-with-addon">
+                        <input type="number" id="loan-term-months" class="form-control" value="0" min="0" max="11" step="1">
+                        <span class="input-addon">months</span>
+                    </div>
+                </div>
+                <span class="field-hint">e.g., 5 years 0 months = 60 payments</span>
+            </div>
+
+            <div class="form-group">
+                <label for="loan-frequency">Payment Frequency</label>
+                <select id="loan-frequency" class="form-control">
+                    <option value="12" selected>Monthly (12 payments/year)</option>
+                    <option value="26">Bi-Weekly (26 payments/year)</option>
+                    <option value="52">Weekly (52 payments/year)</option>
+                    <option value="1">Annually (1 payment/year)</option>
+                </select>
+                <span class="field-hint">Compounded monthly by default</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-loan">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Payment
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-loan">
+                Clear
+            </button>
+        </div>
+    </form>
+
+    <!-- Instant Dynamic Results Display -->
+    <div id="loan-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Repayment Summary</span>
+            <span class="result-status-badge badge-finance-status" id="loan-payoff-date">60 Payments Scheduled</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-currency-sign">$</span>
+            <span class="result-value-big" id="loan-monthly-payment">386.66</span>
+            <span class="result-unit-label">/ month</span>
+        </div>
+
+        <!-- Loan Cost Breakdown Meter -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-bar-labels">
+                <span>Principal: <strong id="loan-label-principal">$20,000.00</strong></span>
+                <span>Interest: <strong id="loan-label-interest">$3,199.60</strong></span>
+            </div>
+            <div class="loan-ratio-bar">
+                <div class="loan-ratio-principal" id="loan-bar-principal" style="width: 86.2%;" title="Principal Portion"></div>
+                <div class="loan-ratio-interest" id="loan-bar-interest" style="width: 13.8%;" title="Interest Portion"></div>
+            </div>
+        </div>
+
+        <!-- Financial Metrics Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Principal Borrowed</div>
+                <div class="breakdown-val" id="loan-total-principal">$20,000.00</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Interest Paid</div>
+                <div class="breakdown-val text-amber" id="loan-total-interest">$3,199.60</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total of All Payments</div>
+                <div class="breakdown-val" id="loan-total-payments">$23,199.60</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Interest-to-Principal Ratio</div>
+                <div class="breakdown-val" id="loan-ratio-val">16.0%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Below Interface & Above Bottom Ad) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+<!-- Modular Asset Loading: Load loan.js exclusively for this template -->
+{% block scripts %}
+<script src="{% static 'js/loan.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Body Fat Calculator - U.S. Navy Method & Body Composition | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate body fat percentage using the scientific U.S. Navy tape measure method. Evaluates lean body mass, fat mass, and ACE categories." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness & Health</a> &rsaquo; 
+        <span>Body Fat Percentage Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Body Fat Percentage Calculator" }}</h1>
+    <p class="page-lead">
+        Determine your exact body fat percentage, lean body mass, and fat mass using the validated U.S. Navy tape-measurement circumference method.
+    </p>
+</div>
+
+<!-- Interactive Calculator Interface Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <div class="calc-unit-tabs" role="tablist">
+            <button type="button" class="tab-btn active" id="tab-bf-us" data-unit="us" role="tab" aria-selected="true">
+                US Units (in, lbs)
+            </button>
+            <button type="button" class="tab-btn" id="tab-bf-metric" data-unit="metric" role="tab" aria-selected="false">
+                Metric Units (cm, kg)
+            </button>
+        </div>
+    </div>
+
+    <form id="body-fat-form" class="calculator-form" novalidate>
+        <div class="form-row form-row-demographics">
+            <div class="form-group">
+                <label for="bf-age">Age</label>
+                <div class="input-with-addon">
+                    <input type="number" id="bf-age" class="form-control" value="30" min="15" max="100" required>
+                    <span class="input-addon">years</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Biological Sex</label>
+                <div class="radio-pill-group">
+                    <label class="radio-pill">
+                        <input type="radio" name="bf-gender" value="male" checked>
+                        <span>Male</span>
+                    </label>
+                    <label class="radio-pill">
+                        <input type="radio" name="bf-gender" value="female">
+                        <span>Female</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- US Inputs Section -->
+        <div id="bf-us-container" class="unit-section">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bf-weight-lbs">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-weight-lbs" class="form-control" value="180" min="40" max="800" step="0.5">
+                        <span class="input-addon">lbs</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bf-height-ft">Height</label>
+                    <div class="height-dual-inputs">
+                        <div class="input-with-addon">
+                            <input type="number" id="bf-height-ft" class="form-control" value="5" min="1" max="8">
+                            <span class="input-addon">ft</span>
+                        </div>
+                        <div class="input-with-addon">
+                            <input type="number" id="bf-height-in" class="form-control" value="11" min="0" max="11">
+                            <span class="input-addon">in</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bf-neck-in">Neck Circumference</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-neck-in" class="form-control" value="15" min="8" max="30" step="0.25">
+                        <span class="input-addon">in</span>
+                    </div>
+                    <span class="field-hint">Measure at the narrowest point below Adam's apple</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="bf-waist-in" id="label-waist-us">Waist Circumference</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-waist-in" class="form-control" value="34" min="15" max="80" step="0.25">
+                        <span class="input-addon">in</span>
+                    </div>
+                    <span class="field-hint" id="hint-waist-us">Measure at the navel line horizontally</span>
+                </div>
+            </div>
+
+            <div class="form-row" id="row-hip-us" style="display: none;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="bf-hip-in">Hip Circumference (Women Only)</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-hip-in" class="form-control" value="38" min="20" max="90" step="0.25">
+                        <span class="input-addon">in</span>
+                    </div>
+                    <span class="field-hint">Measure horizontally at the widest protrusion of the buttocks</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Inputs Section -->
+        <div id="bf-metric-container" class="unit-section" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bf-weight-kg">Weight</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-weight-kg" class="form-control" value="82" min="20" max="400" step="0.5">
+                        <span class="input-addon">kg</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="bf-height-cm">Height</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-height-cm" class="form-control" value="180" min="60" max="250" step="0.5">
+                        <span class="input-addon">cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bf-neck-cm">Neck Circumference</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-neck-cm" class="form-control" value="38" min="20" max="80" step="0.5">
+                        <span class="input-addon">cm</span>
+                    </div>
+                    <span class="field-hint">Narrowest point of the neck</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="bf-waist-cm" id="label-waist-metric">Waist Circumference</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-waist-cm" class="form-control" value="86" min="40" max="200" step="0.5">
+                        <span class="input-addon">cm</span>
+                    </div>
+                    <span class="field-hint" id="hint-waist-metric">Horizontal circumference at navel level</span>
+                </div>
+            </div>
+
+            <div class="form-row" id="row-hip-metric" style="display: none;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="bf-hip-cm">Hip Circumference (Women Only)</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="bf-hip-cm" class="form-control" value="97" min="50" max="220" step="0.5">
+                        <span class="input-addon">cm</span>
+                    </div>
+                    <span class="field-hint">Widest circumference around hips and buttocks</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-bf">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                Calculate Body Fat %
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-bf">Clear</button>
+        </div>
+    </form>
+
+    <!-- Instant Results Display -->
+    <div id="body-fat-result-panel" class="result-panel" style="display: none;">
+        <div class="result-header">
+            <span class="result-title-tag">Estimated Body Fat Percentage</span>
+            <span class="result-status-badge badge-normal" id="bf-category-badge">Average / Acceptable</span>
+        </div>
+
+        <div class="result-primary-stat">
+            <span class="result-value-big" id="bf-percentage-display">23.4</span>
+            <span class="result-unit-label">% Body Fat (U.S. Navy Method)</span>
+        </div>
+
+        <!-- Composition Ratio Visual Bar -->
+        <div class="loan-visual-bar-wrap">
+            <div class="loan-bar-labels">
+                <span>Lean Mass: <strong id="bar-lean-label">62.8 kg (76.6%)</strong></span>
+                <span>Fat Mass: <strong id="bar-fat-label">19.2 kg (23.4%)</strong></span>
+            </div>
+            <div class="loan-ratio-bar">
+                <div id="bar-bf-lean" style="width: 76.6%; background-color: #2563eb;" title="Lean Body Mass"></div>
+                <div id="bar-bf-fat" style="width: 23.4%; background-color: #f59e0b;" title="Fat Mass"></div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Breakdown Grid -->
+        <div class="result-breakdown-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Fat Mass</div>
+                <div class="breakdown-val text-amber" id="bf-fat-mass">19.2 kg (42.3 lbs)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Lean Body Mass (LBM)</div>
+                <div class="breakdown-val" style="color: #4ade80;" id="bf-lean-mass">62.8 kg (138.5 lbs)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">ACE Fitness Category</div>
+                <div class="breakdown-val" id="bf-category-name">Average</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Fitness Target Goal</div>
+                <div class="breakdown-val" id="bf-ideal-target">14 – 17% (Men's Fitness)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Fat to Lose for Goal (15%)</div>
+                <div class="breakdown-val" style="color: #38bdf8;" id="bf-fat-to-lose">8.1 kg (17.9 lbs)</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">BMI Equivalent</div>
+                <div class="breakdown-val" id="bf-bmi-equiv">25.3 kg/m²</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Below UI and Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/body_fat.js' %}"></script>
+{% endblock %}
