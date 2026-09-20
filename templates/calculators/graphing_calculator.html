@@ -25,10 +25,10 @@
 
     <!-- Quick Function Presets -->
     <div style="margin-bottom: 20px;">
-        <label style="font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 10px;">
             Function Presets
         </label>
-        <div class="term-presets">
+        <div class="term-presets" style="display: flex; flex-wrap: wrap; gap: 8px;">
             <button type="button" class="preset-pill-btn active" data-preset="cubic">Cubic: x³ - 3x</button>
             <button type="button" class="preset-pill-btn" data-preset="sine">Sine Wave: sin(x)</button>
             <button type="button" class="preset-pill-btn" data-preset="rational">Hyperbola: 1/x</button>
@@ -40,106 +40,132 @@
 
     <!-- Equation Inputs -->
     <form id="graph-controls-form" class="calculator-form" novalidate onsubmit="return false;">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
-            <!-- Function 1 -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 16px;">
+            
+            <!-- Function 1 (Primary) -->
             <div class="form-group" style="margin-bottom: 0;">
-                <label for="func-expr-1" style="display: flex; align-items: center; gap: 8px;">
-                    <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);"></span>
+                <label for="func-expr-1" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);"></span>
                     <span>Primary Function <strong>f₁(x)</strong></span>
                 </label>
-                <div class="input-with-addon">
-                    <span class="input-addon-prefix" style="font-family: monospace; font-weight: 600;">f₁(x) =</span>
-                    <input type="text" id="func-expr-1" class="form-control" value="x^3 - 3*x" placeholder="e.g. sin(x) + 0.5*x" style="font-family: monospace; font-size: 1rem;" required>
+                <div class="math-input-group math-input-primary">
+                    <span class="math-input-label">f₁(x) =</span>
+                    <input type="text" id="func-expr-1" class="math-input-control" value="x^3 - 3*x" placeholder="e.g. sin(x) + 0.5*x" autocomplete="off" spellcheck="false" required>
+                    <button type="button" class="math-input-clear-btn" id="btn-clear-f1" title="Clear expression">&times;</button>
                 </div>
             </div>
 
-            <!-- Function 2 (Optional) -->
+            <!-- Function 2 (Secondary / Optional) -->
             <div class="form-group" style="margin-bottom: 0;">
-                <label for="func-expr-2" style="display: flex; align-items: center; justify-content: space-between;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                        <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.6);"></span>
-                        <span>Secondary Function <strong>f₂(x)</strong> (Optional)</span>
-                    </span>
-                    <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; text-transform: none; margin: 0;">
-                        <input type="checkbox" id="toggle-func-2" style="cursor: pointer;">
-                        <span>Enable</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <label for="func-expr-2" style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.6);"></span>
+                        <span>Secondary Function <strong>f₂(x)</strong></span>
                     </label>
-                </label>
-                <div class="input-with-addon">
-                    <span class="input-addon-prefix" style="font-family: monospace; font-weight: 600;">f₂(x) =</span>
-                    <input type="text" id="func-expr-2" class="form-control" value="2*x" placeholder="e.g. 2*x - 1" style="font-family: monospace; font-size: 1rem;" disabled>
+                    <label class="toggle-switch-badge">
+                        <input type="checkbox" id="toggle-func-2">
+                        <span class="toggle-switch-track"></span>
+                        <span id="label-toggle-f2" style="font-size: 0.8rem; color: var(--color-text-muted);">Enable</span>
+                    </label>
+                </div>
+                <div class="math-input-group math-input-secondary">
+                    <span class="math-input-label">f₂(x) =</span>
+                    <input type="text" id="func-expr-2" class="math-input-control" value="2*x" placeholder="e.g. 2*x - 1" autocomplete="off" spellcheck="false" disabled>
+                    <button type="button" class="math-input-clear-btn" id="btn-clear-f2" title="Clear expression">&times;</button>
                 </div>
             </div>
         </div>
 
-        <!-- Syntax Helper Pill Tags -->
-        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-            <span style="font-weight: 600;">Supported:</span>
-            <code style="padding: 2px 6px; border-radius: 4px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color);">+ - * / ^</code>
-            <code style="padding: 2px 6px; border-radius: 4px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color);">sin(x) cos(x) tan(x)</code>
-            <code style="padding: 2px 6px; border-radius: 4px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color);">sqrt(x) abs(x)</code>
-            <code style="padding: 2px 6px; border-radius: 4px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color);">ln(x) log(x) exp(x)</code>
-            <code style="padding: 2px 6px; border-radius: 4px; background: var(--bg-surface-secondary); border: 1px solid var(--border-color);">pi, e</code>
+        <!-- Clickable Syntax Helper Chips -->
+        <div class="syntax-chips-container">
+            <span style="font-weight: 700; color: var(--color-text-muted); margin-right: 4px;">Click to Insert:</span>
+            <button type="button" class="syntax-chip" data-insert="+">+</button>
+            <button type="button" class="syntax-chip" data-insert="-">-</button>
+            <button type="button" class="syntax-chip" data-insert="*">&times;</button>
+            <button type="button" class="syntax-chip" data-insert="/">&divide;</button>
+            <button type="button" class="syntax-chip" data-insert="^2">x²</button>
+            <button type="button" class="syntax-chip" data-insert="sin(x)">sin(x)</button>
+            <button type="button" class="syntax-chip" data-insert="cos(x)">cos(x)</button>
+            <button type="button" class="syntax-chip" data-insert="tan(x)">tan(x)</button>
+            <button type="button" class="syntax-chip" data-insert="sqrt(x)">&radic;x</button>
+            <button type="button" class="syntax-chip" data-insert="abs(x)">|x|</button>
+            <button type="button" class="syntax-chip" data-insert="ln(x)">ln(x)</button>
+            <button type="button" class="syntax-chip" data-insert="exp(x)">eˣ</button>
+            <button type="button" class="syntax-chip" data-insert="pi">&pi;</button>
         </div>
 
-        <!-- Interactive Canvas Stage -->
-        <div class="graph-canvas-wrapper" style="position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); background: #0b1120; box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);">
+        <!-- Interactive Canvas Stage with Glassmorphism Toolbar -->
+        <div class="graph-canvas-container">
             
-            <!-- Canvas HUD Coordinates Badge -->
-            <div id="graph-hud" style="position: absolute; top: 12px; left: 14px; z-index: 10; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 14px; font-family: monospace; font-size: 0.85rem; color: #f8fafc; pointer-events: none; transition: opacity 0.2s;">
-                <span id="hud-coords">Cursor: x = 0.00, y = 0.00</span>
-                <span id="hud-slope" style="margin-left: 12px; color: #38bdf8;">| f₁'(x) = 0.00</span>
-            </div>
-
-            <!-- Viewport Controls (Top Right Overlay) -->
-            <div style="position: absolute; top: 12px; right: 14px; z-index: 10; display: flex; gap: 6px;">
-                <button type="button" id="btn-zoom-in" class="btn" title="Zoom In" style="padding: 6px 12px; font-size: 1rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px; cursor: pointer;">+</button>
-                <button type="button" id="btn-zoom-out" class="btn" title="Zoom Out" style="padding: 6px 12px; font-size: 1rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px; cursor: pointer;">&minus;</button>
-                <button type="button" id="btn-reset-viewport" class="btn" title="Reset View" style="padding: 6px 12px; font-size: 0.85rem; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 6px; cursor: pointer;">↺ Reset</button>
+            <!-- Dynamic Floating HUD & Viewport Controls -->
+            <div class="graph-hud-toolbar">
+                <div class="graph-hud-badge" id="graph-hud">
+                    <span id="hud-coords">Cursor: x = 0.00, y = 0.00</span>
+                    <span id="hud-slope" style="margin-left: 10px; color: #38bdf8; font-weight: 600;">| f₁'(x) = 0.00</span>
+                </div>
+                <div class="graph-viewport-actions">
+                    <button type="button" id="btn-zoom-in" class="graph-viewport-btn" title="Zoom In (+25%)">+</button>
+                    <button type="button" id="btn-zoom-out" class="graph-viewport-btn" title="Zoom Out (-25%)">&minus;</button>
+                    <button type="button" id="btn-center-zero" class="graph-viewport-btn" title="Center at Origin (0,0)">⌖ Center</button>
+                    <button type="button" id="btn-reset-viewport" class="graph-viewport-btn" title="Reset Viewport">↺ Reset</button>
+                </div>
             </div>
 
             <!-- The HTML5 Canvas -->
-            <canvas id="function-canvas" width="800" height="480" style="display: block; width: 100%; height: 480px; cursor: crosshair;"></canvas>
+            <canvas id="function-canvas" width="800" height="500" style="display: block; width: 100%; height: 500px; cursor: crosshair;"></canvas>
         </div>
 
-        <!-- Viewport Domain & Range Controls -->
+        <!-- Viewport Domain & Codomain Settings Box -->
         <div class="advanced-section-box" style="margin-top: 20px; margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-                <h3 style="font-size: 1rem; margin: 0; color: var(--color-text-main);">
-                    📐 Domain &amp; Codomain Window Settings
+                <h3 style="font-size: 1rem; margin: 0; color: var(--color-text-main); display: flex; align-items: center; gap: 6px;">
+                    <span>📐</span>
+                    <span>Domain &amp; Codomain Window Settings</span>
                 </h3>
-                <span style="font-size: 0.8rem; color: var(--color-text-muted);">Click &amp; drag on canvas to pan</span>
+                
+                <!-- Quick Window Presets -->
+                <div class="term-presets" style="margin: 0; gap: 6px;">
+                    <button type="button" class="preset-pill-btn active" id="win-preset-default" style="padding: 3px 10px; font-size: 0.78rem;">[-5, 5]</button>
+                    <button type="button" class="preset-pill-btn" id="win-preset-wide" style="padding: 3px 10px; font-size: 0.78rem;">[-10, 10]</button>
+                    <button type="button" class="preset-pill-btn" id="win-preset-trig" style="padding: 3px 10px; font-size: 0.78rem;">[-2&pi;, 2&pi;]</button>
+                    <button type="button" class="preset-pill-btn" id="win-preset-pos" style="padding: 3px 10px; font-size: 0.78rem;">[0, 10]</button>
+                </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;">
                 <div class="form-group" style="margin: 0;">
-                    <label for="view-xmin" style="font-size: 0.8rem;">X Min</label>
+                    <label for="view-xmin" style="font-size: 0.8rem; font-weight: 600;">X Min (Domain Start)</label>
                     <input type="number" id="view-xmin" class="form-control" value="-5" step="0.5">
                 </div>
                 <div class="form-group" style="margin: 0;">
-                    <label for="view-xmax" style="font-size: 0.8rem;">X Max</label>
+                    <label for="view-xmax" style="font-size: 0.8rem; font-weight: 600;">X Max (Domain End)</label>
                     <input type="number" id="view-xmax" class="form-control" value="5" step="0.5">
                 </div>
                 <div class="form-group" style="margin: 0;">
-                    <label for="view-ymin" style="font-size: 0.8rem;">Y Min</label>
+                    <label for="view-ymin" style="font-size: 0.8rem; font-weight: 600;">Y Min (Range Floor)</label>
                     <input type="number" id="view-ymin" class="form-control" value="-5" step="0.5">
                 </div>
                 <div class="form-group" style="margin: 0;">
-                    <label for="view-ymax" style="font-size: 0.8rem;">Y Max</label>
+                    <label for="view-ymax" style="font-size: 0.8rem; font-weight: 600;">Y Max (Range Ceiling)</label>
                     <input type="number" id="view-ymax" class="form-control" value="5" step="0.5">
                 </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.8rem; color: var(--color-text-subtle);">
+                💡 Tip: Click and drag directly on the canvas to pan. Use mouse wheel or pinch gesture to zoom.
             </div>
         </div>
 
         <!-- Point Evaluation & Derivative Analysis Box -->
         <div class="breakdown-grid" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
             <div class="breakdown-card" style="display: flex; flex-direction: column; justify-content: center;">
-                <label for="eval-x-val" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 6px;">
+                <label for="eval-x-val" style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); margin-bottom: 8px;">
                     Inspect Point (x = c)
                 </label>
-                <div class="input-with-addon">
-                    <span class="input-addon-prefix">x =</span>
-                    <input type="number" id="eval-x-val" class="form-control" value="1.0" step="0.1">
+                <div class="math-input-group math-input-accent">
+                    <span class="math-input-label">x =</span>
+                    <input type="number" id="eval-x-val" class="math-input-control" value="1.0" step="0.1">
+                    <button type="button" class="math-input-clear-btn" id="btn-step-x-minus" title="Step -0.5" style="font-size: 1rem;">&minus;</button>
+                    <button type="button" class="math-input-clear-btn" id="btn-step-x-plus" title="Step +0.5" style="font-size: 1rem;">+</button>
                 </div>
             </div>
             <div class="breakdown-card">
@@ -148,14 +174,14 @@
                 <span class="breakdown-card-sub" id="eval-f1-status">Point: (1.00, -2.00)</span>
             </div>
             <div class="breakdown-card">
-                <span class="breakdown-card-title">Derivative f₁'(c)</span>
+                <span class="breakdown-card-title">Derivative f₁'(c) &amp; Tangent</span>
                 <span class="breakdown-card-value" id="eval-f1-deriv" style="color: #a855f7;">0.0000</span>
-                <span class="breakdown-card-sub" id="eval-f1-tangent">Local Extrema / Stationary</span>
+                <span class="breakdown-card-sub" id="eval-f1-tangent">Stationary Point (f' ≈ 0)</span>
             </div>
             <div class="breakdown-card" id="eval-f2-card" style="display: none;">
                 <span class="breakdown-card-title">Value f₂(c)</span>
                 <span class="breakdown-card-value" id="eval-f2-val" style="color: #fb923c;">2.0000</span>
-                <span class="breakdown-card-sub" id="eval-f2-diff">Difference: +4.0000</span>
+                <span class="breakdown-card-sub" id="eval-f2-diff">Difference (f₂ - f₁): +4.0000</span>
             </div>
         </div>
     </form>

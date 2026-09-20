@@ -3336,3 +3336,254 @@ textarea:focus,
     margin-bottom: 1.5rem;
 }
 
+/* ==========================================================================
+   2D Function Graphing Tool Specialized UI Components
+   ========================================================================== */
+
+.math-input-group {
+    display: flex;
+    align-items: stretch;
+    background: var(--bg-surface-secondary);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-md, 8px);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.math-input-group:focus-within {
+    border-color: var(--color-accent-blue, #38bdf8);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+}
+
+.math-input-label {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.math-input-primary .math-input-label {
+    background: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border-right: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.math-input-secondary .math-input-label {
+    background: rgba(251, 146, 60, 0.12);
+    color: #fb923c;
+    border-right: 1px solid rgba(251, 146, 60, 0.25);
+}
+
+.math-input-accent .math-input-label {
+    background: rgba(168, 85, 247, 0.12);
+    color: #a855f7;
+    border-right: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.math-input-control {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.math-input-control:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.math-input-clear-btn {
+    background: transparent;
+    border: none;
+    padding: 0 12px;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease;
+}
+
+.math-input-clear-btn:hover {
+    color: #ef4444;
+}
+
+/* Toggle Switch Badge */
+.toggle-switch-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+.toggle-switch-badge input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-switch-track {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    background-color: var(--border-color);
+    border-radius: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.toggle-switch-track::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.toggle-switch-badge input:checked + .toggle-switch-track {
+    background-color: #fb923c;
+}
+
+.toggle-switch-badge input:checked + .toggle-switch-track::after {
+    transform: translateX(16px);
+}
+
+/* Syntax Chips */
+.syntax-chips-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    font-size: 0.82rem;
+}
+
+.syntax-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-surface-secondary);
+    border: 1px solid var(--border-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.syntax-chip:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: var(--color-accent-blue);
+    color: var(--color-accent-blue);
+    transform: translateY(-1px);
+}
+
+/* Graph Canvas & HUD */
+.graph-canvas-container {
+    position: relative;
+    border-radius: var(--radius-lg, 12px);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: #0b1120;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] .graph-canvas-container {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.graph-hud-toolbar {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.graph-hud-badge {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: #f8fafc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    pointer-events: auto;
+}
+
+[data-theme="light"] .graph-hud-badge {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #0f172a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.graph-viewport-actions {
+    display: flex;
+    gap: 6px;
+    pointer-events: auto;
+}
+
+.graph-viewport-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8fafc;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+}
+
+[data-theme="light"] .graph-viewport-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #0f172a;
+}
+
+.graph-viewport-btn:hover {
+    background: var(--color-accent-blue);
+    color: #ffffff;
+    border-color: var(--color-accent-blue);
+    transform: translateY(-1px);
+}
+
+

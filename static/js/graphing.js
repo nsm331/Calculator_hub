@@ -12,7 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // DOM Controls
     const exprInput1 = document.getElementById('func-expr-1');
     const exprInput2 = document.getElementById('func-expr-2');
+    const btnClearF1 = document.getElementById('btn-clear-f1');
+    const btnClearF2 = document.getElementById('btn-clear-f2');
+
     const toggleFunc2 = document.getElementById('toggle-func-2');
+    const labelToggleF2 = document.getElementById('label-toggle-f2');
 
     const xminInput = document.getElementById('view-xmin');
     const xmaxInput = document.getElementById('view-xmax');
@@ -22,11 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnZoomIn = document.getElementById('btn-zoom-in');
     const btnZoomOut = document.getElementById('btn-zoom-out');
     const btnReset = document.getElementById('btn-reset-viewport');
+    const btnCenterZero = document.getElementById('btn-center-zero');
 
     const hudCoords = document.getElementById('hud-coords');
     const hudSlope = document.getElementById('hud-slope');
 
     const evalXInput = document.getElementById('eval-x-val');
+    const btnStepXMinus = document.getElementById('btn-step-x-minus');
+    const btnStepXPlus = document.getElementById('btn-step-x-plus');
     const evalF1Val = document.getElementById('eval-f1-val');
     const evalF1Deriv = document.getElementById('eval-f1-deriv');
     const evalF1Status = document.getElementById('eval-f1-status');
@@ -35,7 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const evalF2Val = document.getElementById('eval-f2-val');
     const evalF2Diff = document.getElementById('eval-f2-diff');
 
-    const presetPills = document.querySelectorAll('.preset-pill-btn');
+    const presetPills = document.querySelectorAll('.preset-pill-btn[data-preset]');
+    const syntaxChips = document.querySelectorAll('.syntax-chip');
+
+    // Window Presets
+    const winPresetDefault = document.getElementById('win-preset-default');
+    const winPresetWide = document.getElementById('win-preset-wide');
+    const winPresetTrig = document.getElementById('win-preset-trig');
+    const winPresetPos = document.getElementById('win-preset-pos');
+
+    // Active Input Tracking (for syntax insertion)
+    let activeInput = exprInput1;
+    [exprInput1, exprInput2].forEach(input => {
+        if (input) {
+            input.addEventListener('focus', () => {
+                if (!input.disabled) activeInput = input;
+            });
+        }
+    });
 
     // Viewport State (Mathematical World Coordinates)
     let view = {
@@ -50,6 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragStart = { x: 0, y: 0 };
     let dragStartView = { ...view };
     let mousePos = null; // Canvas pixel position {x, y}
+
+    // Theme Detection
+    function isDarkTheme() {
+        return document.documentElement.getAttribute('data-theme') !== 'light';
+    }
 
     // Function Presets Definitions
     const PRESETS = {
@@ -75,17 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Implicit multiplication conversions
-        // 2x -> 2*x
         sanitized = sanitized.replace(/(\d)\s*x/g, '$1*x');
-        // x( -> x*(
         sanitized = sanitized.replace(/x\s*\(/g, 'x*(');
-        // )x -> )*x
         sanitized = sanitized.replace(/\)\s*x/g, ')*x');
-        // )( -> )*(
         sanitized = sanitized.replace(/\)\s*\(/g, ')*(');
-        // digit( -> digit*(
         sanitized = sanitized.replace(/(\d)\s*\(/g, '$1*(');
-        // )digit -> )*digit
         sanitized = sanitized.replace(/\)\s*(\d)/g, ')*$1');
 
         // Powers: replace ^ with **
@@ -112,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sanitized = sanitized.replace(/\blog\b/g, 'Math.log10');
 
         // Security check: only allowed characters
-        // Letters allowed: 'x', 'Math', and math function names
         const validCharsRegex = /^[0-9xX\.\+\-\*\/\%\(\)\,\s\=\>\<\!\:\?MathPIEsinhcotasqrtabexplongdcfr]+$/;
         if (!validCharsRegex.test(sanitized)) {
             return null;
@@ -141,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = canvas.getBoundingClientRect();
 
         const displayWidth = Math.round(rect.width);
-        const displayHeight = 480;
+        const displayHeight = 500;
 
         if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
             canvas.width = displayWidth * dpr;
@@ -189,47 +211,52 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeCanvas();
         const rect = canvas.getBoundingClientRect();
         const width = rect.width;
-        const height = 480;
+        const height = 500;
+        const dark = isDarkTheme();
 
-        // Clear Canvas Background (Sleek deep navy dark theme)
-        ctx.fillStyle = '#0b1120';
+        // Canvas Background
+        ctx.fillStyle = dark ? '#0b1120' : '#f8fafc';
         ctx.fillRect(0, 0, width, height);
 
         // Draw Coordinate Grid & Axes
-        drawGrid(width, height);
+        drawGrid(width, height, dark);
+
+        // Colors for functions
+        const colorF1 = dark ? '#38bdf8' : '#0284c7';
+        const colorF2 = dark ? '#fb923c' : '#ea580c';
 
         // Compile & Plot Functions
         const f1 = compileExpression(exprInput1.value);
         if (f1) {
-            plotCurve(f1, '#38bdf8', width, height);
+            plotCurve(f1, colorF1, width, height);
         }
 
         if (toggleFunc2.checked) {
             const f2 = compileExpression(exprInput2.value);
             if (f2) {
-                plotCurve(f2, '#fb923c', width, height);
+                plotCurve(f2, colorF2, width, height);
             }
         }
 
         // Draw Evaluated Point / Tangent Line
-        drawEvaluatedPoint(f1, width, height);
+        drawEvaluatedPoint(f1, width, height, dark);
 
         // Draw Interactive Crosshair & Cursor HUD
         if (mousePos && f1) {
-            drawCursorTracer(f1, width, height);
+            drawCursorTracer(f1, width, height, dark);
         }
     }
 
     // Draw Grid & Axes
-    function drawGrid(width, height) {
+    function drawGrid(width, height, dark) {
         const xStep = calculateGridStep(view.xmax - view.xmin);
         const yStep = calculateGridStep(view.ymax - view.ymin);
 
-        // Grid Lines
+        // Grid Line Style
         ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+        ctx.strokeStyle = dark ? 'rgba(255, 255, 255, 0.07)' : 'rgba(0, 0, 0, 0.07)';
         ctx.font = '10px Inter, -apple-system, sans-serif';
-        ctx.fillStyle = '#64748b';
+        ctx.fillStyle = dark ? '#94a3b8' : '#64748b';
 
         // Vertical grid lines (X)
         const firstX = Math.floor(view.xmin / xStep) * xStep;
@@ -260,14 +287,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Label
             if (Math.abs(y) > 1e-6) {
                 const label = parseFloat(y.toFixed(4)).toString();
-                const xAxisPos = Math.min(Math.max(toScreenX(0, width) + 4, 4), width - 36);
+                const xAxisPos = Math.min(Math.max(toScreenX(0, width) + 6, 6), width - 36);
                 ctx.fillText(label, xAxisPos, yp + 4);
             }
         }
 
         // Primary Coordinate Axes (X = 0, Y = 0)
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.strokeStyle = dark ? 'rgba(255, 255, 255, 0.38)' : 'rgba(0, 0, 0, 0.38)';
 
         // X-Axis (y = 0)
         if (view.ymin <= 0 && view.ymax >= 0) {
@@ -301,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let prevYp = 0;
         let prevYw = 0;
 
-        // Sample across screen pixels
         for (let xp = 0; xp <= width; xp++) {
             const xw = toWorldX(xp, width);
             const yw = fn(xw);
@@ -318,7 +344,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const yp = toScreenY(yw, height);
 
             // Asymptote / Discontinuity Detection
-            // If delta Y is gigantic and function sign flipped across a pole, break path
             if (inPath) {
                 const deltaYp = Math.abs(yp - prevYp);
                 const signFlipped = (prevYw * yw < 0);
@@ -359,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Draw Evaluated Point and Tangent Line
-    function drawEvaluatedPoint(f1, width, height) {
+    function drawEvaluatedPoint(f1, width, height, dark) {
         const c = parseFloat(evalXInput.value);
         if (isNaN(c) || !f1) return;
 
@@ -373,13 +398,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const slope = numericalDerivative(f1, c);
         if (!isNaN(slope) && isFinite(slope)) {
             ctx.save();
-            ctx.strokeStyle = 'rgba(168, 85, 247, 0.4)';
+            ctx.strokeStyle = dark ? 'rgba(168, 85, 247, 0.45)' : 'rgba(147, 51, 234, 0.45)';
             ctx.lineWidth = 1.5;
             ctx.setLineDash([4, 4]);
 
-            // Tangent equation: y - fc = slope * (x - c) => y = fc + slope * (x - c)
-            const x1 = c - (view.xmax - view.xmin) * 0.2;
-            const x2 = c + (view.xmax - view.xmin) * 0.2;
+            // Tangent equation: y = fc + slope * (x - c)
+            const x1 = c - (view.xmax - view.xmin) * 0.25;
+            const x2 = c + (view.xmax - view.xmin) * 0.25;
             const y1 = fc + slope * (x1 - c);
             const y2 = fc + slope * (x2 - c);
 
@@ -392,21 +417,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Draw Glowing Point at (c, f(c))
         ctx.save();
-        ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 12;
+        const ptColor = dark ? '#38bdf8' : '#0284c7';
+        ctx.fillStyle = ptColor;
+        ctx.shadowColor = ptColor;
+        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(cp, fcp, 6, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = dark ? '#ffffff' : '#0f172a';
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
     }
 
     // Draw Cursor Crosshair Tracer
-    function drawCursorTracer(f1, width, height) {
+    function drawCursorTracer(f1, width, height, dark) {
         const xw = toWorldX(mousePos.x, width);
         const yw = toWorldY(mousePos.y, height);
         const f1w = f1(xw);
@@ -422,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Draw tracer circle on curve
             const f1yp = toScreenY(f1w, height);
             ctx.save();
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = dark ? '#ffffff' : '#0f172a';
             ctx.beginPath();
             ctx.arc(mousePos.x, f1yp, 4, 0, Math.PI * 2);
             ctx.fill();
@@ -433,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Crosshairs
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+        ctx.strokeStyle = dark ? 'rgba(255, 255, 255, 0.16)' : 'rgba(0, 0, 0, 0.16)';
         ctx.lineWidth = 1;
         ctx.setLineDash([2, 4]);
 
@@ -482,11 +508,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isNaN(fc) || !isFinite(fc)) {
             evalF1Val.textContent = 'Undefined';
             evalF1Deriv.textContent = 'Undefined';
-            evalF1Status.textContent = 'Vertical asymptote or pole';
+            evalF1Status.textContent = 'Vertical asymptote / pole';
             evalF1Tangent.textContent = 'No tangent exists';
         } else {
             evalF1Val.textContent = fc.toFixed(4);
-            evalF1Status.textContent = `Point: (${c.toFixed(2)}, ${fc.toFixed(4)})`;
+            evalF1Status.textContent = `Point: (${c.toFixed(2)}, ${fc.toFixed(2)})`;
 
             const slope = numericalDerivative(f1, c);
             if (isNaN(slope) || !isFinite(slope)) {
@@ -494,12 +520,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 evalF1Tangent.textContent = 'Non-differentiable';
             } else {
                 evalF1Deriv.textContent = slope.toFixed(4);
+                // Tangent equation: y - fc = slope*(x - c) => y = slope*x + (fc - slope*c)
+                const intercept = fc - (slope * c);
+                const signStr = intercept >= 0 ? '+' : '-';
+                const eqStr = `Tangent: y = ${slope.toFixed(2)}x ${signStr} ${Math.abs(intercept).toFixed(2)}`;
+
                 if (Math.abs(slope) < 0.001) {
-                    evalF1Tangent.textContent = 'Critical Point / Stationary (f\' ≈ 0)';
+                    evalF1Tangent.textContent = `Stationary (f' ≈ 0) • ${eqStr}`;
                 } else if (slope > 0) {
-                    evalF1Tangent.textContent = `Increasing (Angle: ${(Math.atan(slope) * 180 / Math.PI).toFixed(1)}°)`;
+                    evalF1Tangent.textContent = `Increasing (↗) • ${eqStr}`;
                 } else {
-                    evalF1Tangent.textContent = `Decreasing (Angle: ${(Math.atan(slope) * 180 / Math.PI).toFixed(1)}°)`;
+                    evalF1Tangent.textContent = `Decreasing (↘) • ${eqStr}`;
                 }
             }
         }
@@ -514,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     evalF2Val.textContent = f2c.toFixed(4);
                     if (!isNaN(fc) && isFinite(fc)) {
                         const diff = f2c - fc;
-                        evalF2Diff.textContent = `Difference (f₂ - f₁): ${(diff >= 0 ? '+' : '')}${diff.toFixed(4)}`;
+                        evalF2Diff.textContent = `Diff (f₂ - f₁): ${(diff >= 0 ? '+' : '')}${diff.toFixed(4)}`;
                     }
                 } else {
                     evalF2Val.textContent = 'Undefined';
@@ -525,6 +556,98 @@ document.addEventListener('DOMContentLoaded', () => {
             evalF2Card.style.display = 'none';
         }
     }
+
+    // Clear buttons
+    btnClearF1.addEventListener('click', () => {
+        exprInput1.value = '';
+        exprInput1.focus();
+        render();
+        updatePointEvaluation();
+    });
+
+    btnClearF2.addEventListener('click', () => {
+        exprInput2.value = '';
+        exprInput2.focus();
+        render();
+        updatePointEvaluation();
+    });
+
+    // Step buttons for x = c
+    btnStepXMinus.addEventListener('click', () => {
+        const val = parseFloat(evalXInput.value) || 0;
+        evalXInput.value = (val - 0.5).toFixed(1);
+        render();
+        updatePointEvaluation();
+    });
+
+    btnStepXPlus.addEventListener('click', () => {
+        const val = parseFloat(evalXInput.value) || 0;
+        evalXInput.value = (val + 0.5).toFixed(1);
+        render();
+        updatePointEvaluation();
+    });
+
+    // Clickable Syntax Chips
+    syntaxChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const insertText = chip.getAttribute('data-insert');
+            const target = activeInput && !activeInput.disabled ? activeInput : exprInput1;
+
+            const start = target.selectionStart || target.value.length;
+            const end = target.selectionEnd || target.value.length;
+            const val = target.value;
+
+            target.value = val.substring(0, start) + insertText + val.substring(end);
+            target.focus();
+            const newCursor = start + insertText.length;
+            target.setSelectionRange(newCursor, newCursor);
+
+            render();
+            updatePointEvaluation();
+        });
+    });
+
+    // Window Presets
+    if (winPresetDefault) {
+        winPresetDefault.addEventListener('click', () => {
+            view = { xmin: -5, xmax: 5, ymin: -5, ymax: 5 };
+            updateViewInputs();
+            render();
+        });
+    }
+    if (winPresetWide) {
+        winPresetWide.addEventListener('click', () => {
+            view = { xmin: -10, xmax: 10, ymin: -10, ymax: 10 };
+            updateViewInputs();
+            render();
+        });
+    }
+    if (winPresetTrig) {
+        winPresetTrig.addEventListener('click', () => {
+            view = { xmin: -2 * Math.PI, xmax: 2 * Math.PI, ymin: -2, ymax: 2 };
+            updateViewInputs();
+            render();
+        });
+    }
+    if (winPresetPos) {
+        winPresetPos.addEventListener('click', () => {
+            view = { xmin: 0, xmax: 10, ymin: 0, ymax: 10 };
+            updateViewInputs();
+            render();
+        });
+    }
+
+    // Center at Origin (0,0)
+    btnCenterZero.addEventListener('click', () => {
+        const xSpan = (view.xmax - view.xmin) / 2;
+        const ySpan = (view.ymax - view.ymin) / 2;
+        view.xmin = -xSpan;
+        view.xmax = xSpan;
+        view.ymin = -ySpan;
+        view.ymax = ySpan;
+        updateViewInputs();
+        render();
+    });
 
     // Event Handlers for Inputs
     exprInput1.addEventListener('input', () => {
@@ -539,6 +662,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     toggleFunc2.addEventListener('change', () => {
         exprInput2.disabled = !toggleFunc2.checked;
+        if (toggleFunc2.checked) {
+            labelToggleF2.textContent = 'Active';
+            labelToggleF2.style.color = '#fb923c';
+        } else {
+            labelToggleF2.textContent = 'Enable';
+            labelToggleF2.style.color = 'var(--color-text-muted)';
+        }
         render();
         updatePointEvaluation();
     });
@@ -618,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const ySpan = dragStartView.ymax - dragStartView.ymin;
 
             const worldDx = (dx / rect.width) * xSpan;
-            const worldDy = (dy / 480) * ySpan;
+            const worldDy = (dy / 500) * ySpan;
 
             view.xmin = dragStartView.xmin - worldDx;
             view.xmax = dragStartView.xmax - worldDx;
@@ -657,7 +787,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const mouseY = e.clientY - rect.top;
 
         const worldX = toWorldX(mouseX, rect.width);
-        const worldY = toWorldY(mouseY, 480);
+        const worldY = toWorldY(mouseY, 500);
 
         const zoomFactor = e.deltaY > 0 ? 1.15 : 0.85;
 
@@ -669,6 +799,15 @@ document.addEventListener('DOMContentLoaded', () => {
         updateViewInputs();
         render();
     }, { passive: false });
+
+    // Listen for Theme Changes dynamically
+    const themeObserver = new MutationObserver(() => {
+        render();
+    });
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+    });
 
     // Window Resize Handler
     window.addEventListener('resize', render);
