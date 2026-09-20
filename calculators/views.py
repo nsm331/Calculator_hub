@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.urls import reverse
 from .models import Calculator
@@ -790,4 +790,10 @@ def ads_txt(request):
         "# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0",
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain; charset=utf-8")
+
+
+def favicon(request):
+    """Serve or redirect to brand favicon."""
+    return redirect('/static/images/favicon.svg', permanent=True)
+
 

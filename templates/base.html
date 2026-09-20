@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ calculator.meta_title|default:meta_title|default:"Free Online Calculators - CalculatorHub" }}{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}{{ calculator.meta_description|default:meta_description|default:"CalculatorHub provides free online calculators for finance, fitness, health, math, and more. Fast, accurate, and easy to use." }}{% endblock %}">
+    <title>{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Free Online Calculators - CalculatorHub{% endif %}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}CalculatorHub provides free online calculators for finance, fitness, health, math, and more. Fast, accurate, and easy to use.{% endif %}{% endblock %}">
     
     <!-- Instant Theme Detection (Eliminates Theme Flicker) -->
     <script>
@@ -39,8 +39,31 @@
         });">
     </script>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="alternate icon" href="{% static 'images/favicon.svg' %}">
+
+    <!-- Canonical URL & Open Graph Meta for SEO -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="CalculatorHub">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Free Online Calculators - CalculatorHub{% endif %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}CalculatorHub provides free online calculators for finance, fitness, health, math, and more. Fast, accurate, and easy to use.{% endif %}{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "CalculatorHub",
+      "url": "https://nsm331.site/",
+      "description": "Comprehensive, lightning-fast, client-side online calculators engineered for financial clarity, clinical assessment, and mathematical precision."
+    }
+    </script>
+
     <!-- Vanilla CSS Stylesheet with Cache Busting -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.1">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.2">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -123,15 +146,15 @@
         <div class="ad-container">
             <div id="ad-top-banner" class="ad-placeholder ad-top-banner">
                 <div class="ad-header-row">
-                    <span class="ad-badge">Google AdSense</span>
-                    <span class="ad-dimension">Leaderboard • 728 × 90 (Responsive)</span>
+                    <span class="ad-badge">Advertisement</span>
+                    <span class="ad-dimension">Leaderboard • 728 × 90</span>
                 </div>
                 <div class="ad-body">
                     <div class="ad-content-simulated">
                         <div class="ad-icon-circle">AD</div>
                         <div class="ad-text-lines">
-                            <div class="line-title">High Yield Savings & Auto Refinance Rates</div>
-                            <div class="line-desc">Compare top institutional loan offers with zero fees. Sponsored Listing.</div>
+                            <div class="line-title">Reserved Advertising Space</div>
+                            <div class="line-desc">Responsive display ad slot reserved for Google AdSense partner network.</div>
                         </div>
                     </div>
                 </div>
@@ -150,15 +173,15 @@
             <div class="ad-wrapper-bottom">
                 <div id="ad-bottom-content" class="ad-placeholder ad-bottom-content">
                     <div class="ad-header-row">
-                        <span class="ad-badge">Google AdSense</span>
-                        <span class="ad-dimension">Bottom Banner • 728 × 90 / Responsive Matched</span>
+                        <span class="ad-badge">Advertisement</span>
+                        <span class="ad-dimension">Bottom Banner • 728 × 90</span>
                     </div>
                     <div class="ad-body">
                         <div class="ad-content-simulated">
                             <div class="ad-icon-circle">AD</div>
                             <div class="ad-text-lines">
-                                <div class="line-title">Institutional Wealth & Health Analytics Platform</div>
-                                <div class="line-desc">Empower your decision making with professional tools. Visit Official Partner.</div>
+                                <div class="line-title">Reserved Advertising Space</div>
+                                <div class="line-desc">Responsive display ad slot reserved for Google AdSense partner network.</div>
                             </div>
                         </div>
                     </div>
@@ -173,15 +196,14 @@
             <div class="sidebar-widget widget-ad">
                 <div id="ad-sidebar" class="ad-placeholder ad-sidebar">
                     <div class="ad-header-row">
-                        <span class="ad-badge">Google AdSense</span>
+                        <span class="ad-badge">Advertisement</span>
                         <span class="ad-dimension">Medium Rectangle • 300 × 250</span>
                     </div>
                     <div class="ad-body ad-body-sidebar">
                         <div class="ad-icon-circle">AD</div>
                         <div class="ad-sidebar-text">
-                            <strong>Market Leading Fixed Rates</strong>
-                            <p>Lock in 30-year fixed rate loans today. Check pre-qualified rates in 2 minutes.</p>
-                            <span class="ad-button-mock">Compare Now &rarr;</span>
+                            <strong>Reserved Advertising Space</strong>
+                            <p>Contextual display ad slot reserved for Google AdSense.</p>
                         </div>
                     </div>
                 </div>

@@ -19,5 +19,6 @@ urlpatterns = [
     ),
     path('robots.txt', calc_views.robots_txt, name='robots_txt'),
     path('ads.txt', calc_views.ads_txt, name='ads_txt'),
+    path('favicon.ico', calc_views.favicon, name='favicon'),
     path('', include('calculators.urls')),
 ]
