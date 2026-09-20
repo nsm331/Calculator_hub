@@ -39,6 +39,12 @@ from .default_articles_batch7 import (
     MATRIX_ARTICLE,
     FINAL_GRADE_ARTICLE,
 )
+from .default_articles_batch8 import (
+    INVESTMENT_ARTICLE,
+    PREGNANCY_ARTICLE,
+    RANDOM_NUMBER_ARTICLE,
+    SUBNET_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -482,6 +488,58 @@ def final_grade_calculator(request):
     }
     calculator = _get_or_seed_calculator('final-grade-calculator', default_data)
     return render(request, 'calculators/final_grade_calculator.html', {'calculator': calculator})
+
+
+def investment_calculator(request):
+    """Dynamic view for Investment Calculator."""
+    default_data = {
+        'title': 'Investment Calculator',
+        'category': 'financial',
+        'meta_title': 'Investment Calculator - Compound Growth, Contributions & Returns | CalculatorHub',
+        'meta_description': 'Free online Investment Calculator. Calculate future portfolio value, compound returns with periodic contributions, inflation adjustments, and annual growth schedules.',
+        'article_content': INVESTMENT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('investment-calculator', default_data)
+    return render(request, 'calculators/investment_calculator.html', {'calculator': calculator})
+
+
+def pregnancy_calculator(request):
+    """Dynamic view for Pregnancy Due Date Calculator."""
+    default_data = {
+        'title': 'Pregnancy Due Date Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Pregnancy Due Date Calculator - EDD, Trimester & Conception | CalculatorHub',
+        'meta_description': 'Estimate your baby\'s due date, gestational age, and pregnancy trimesters using LMP (Naegele\'s rule), conception date, IVF embryo transfer, or ultrasound scan.',
+        'article_content': PREGNANCY_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('pregnancy-calculator', default_data)
+    return render(request, 'calculators/pregnancy_calculator.html', {'calculator': calculator})
+
+
+def random_number_generator(request):
+    """Dynamic view for Random Number Generator."""
+    default_data = {
+        'title': 'Random Number Generator',
+        'category': 'math',
+        'meta_title': 'Random Number Generator - True Random, Decimals & Gaussian | CalculatorHub',
+        'meta_description': 'Generate true random integers, floating point decimals, Gaussian normal distributions, dice rolls, and lottery picks with CSPRNG cryptographic security.',
+        'article_content': RANDOM_NUMBER_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('random-number-generator', default_data)
+    return render(request, 'calculators/random_number_generator.html', {'calculator': calculator})
+
+
+def subnet_calculator(request):
+    """Dynamic view for IPv4 Subnet Mask Calculator."""
+    default_data = {
+        'title': 'IPv4 Subnet Mask Calculator',
+        'category': 'other',
+        'meta_title': 'IPv4 Subnet Mask Calculator - CIDR, Network, Broadcast & Usable Hosts | CalculatorHub',
+        'meta_description': 'Calculate IPv4 network address, broadcast address, usable host IP range, CIDR prefix masks, wildcard mask, and 32-bit binary octet breakdowns.',
+        'article_content': SUBNET_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('subnet-calculator', default_data)
+    return render(request, 'calculators/subnet_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

@@ -329,6 +329,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Academic Grading Analytics", calc.article_content)
 
+    def test_investment_calculator_view(self):
+        response = self.client.get(reverse('investment_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Investment Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/investment.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='investment-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Compound Capital Accumulation Models", calc.article_content)
+
+    def test_pregnancy_calculator_view(self):
+        response = self.client.get(reverse('pregnancy_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Pregnancy Due Date Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/pregnancy.js")
+        self.assertNotContains(response, "js/calorie.js")
+        calc = Calculator.objects.filter(slug='pregnancy-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Gestational Biometrics", calc.article_content)
+
+    def test_random_number_generator_view(self):
+        response = self.client.get(reverse('random_number_generator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Random Number Generator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/random_number.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='random-number-generator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Linear Congruential Recurrence", calc.article_content)
+
+    def test_subnet_calculator_view(self):
+        response = self.client.get(reverse('subnet_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "IPv4 Subnet Mask Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/subnet.js")
+        self.assertNotContains(response, "js/time_duration.js")
+        calc = Calculator.objects.filter(slug='subnet-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Boolean Algebraic Network", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -360,6 +404,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "target-heart-rate-calculator")
         self.assertContains(response, "matrix-calculator")
         self.assertContains(response, "final-grade-calculator")
+        self.assertContains(response, "investment-calculator")
+        self.assertContains(response, "pregnancy-calculator")
+        self.assertContains(response, "random-number-generator")
+        self.assertContains(response, "subnet-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -390,6 +438,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('target_heart_rate_calculator'))
         self.client.get(reverse('matrix_calculator'))
         self.client.get(reverse('final_grade_calculator'))
+        self.client.get(reverse('investment_calculator'))
+        self.client.get(reverse('pregnancy_calculator'))
+        self.client.get(reverse('random_number_generator'))
+        self.client.get(reverse('subnet_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -421,6 +473,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "target-heart-rate-calculator")
         self.assertContains(response, "matrix-calculator")
         self.assertContains(response, "final-grade-calculator")
+        self.assertContains(response, "investment-calculator")
+        self.assertContains(response, "pregnancy-calculator")
+        self.assertContains(response, "random-number-generator")
+        self.assertContains(response, "subnet-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

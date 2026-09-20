@@ -153,6 +153,28 @@ urlpatterns = [
         name='final_grade_calculator'
     ),
 
+    # Batch 8 Calculators (User Batch #7)
+    path(
+        'financial-calculators/investment-calculator/',
+        views.investment_calculator,
+        name='investment_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/pregnancy-calculator/',
+        views.pregnancy_calculator,
+        name='pregnancy_calculator'
+    ),
+    path(
+        'math-calculators/random-number-generator/',
+        views.random_number_generator,
+        name='random_number_generator'
+    ),
+    path(
+        'other-calculators/subnet-calculator/',
+        views.subnet_calculator,
+        name='subnet_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

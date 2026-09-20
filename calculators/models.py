@@ -59,6 +59,10 @@ class Calculator(models.Model):
             'target-heart-rate-calculator': 'target_heart_rate_calculator',
             'matrix-calculator': 'matrix_calculator',
             'final-grade-calculator': 'final_grade_calculator',
+            'investment-calculator': 'investment_calculator',
+            'pregnancy-calculator': 'pregnancy_calculator',
+            'random-number-generator': 'random_number_generator',
+            'subnet-calculator': 'subnet_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

@@ -37,6 +37,12 @@ from calculators.default_articles_batch7 import (
     MATRIX_ARTICLE,
     FINAL_GRADE_ARTICLE,
 )
+from calculators.default_articles_batch8 import (
+    INVESTMENT_ARTICLE,
+    PREGNANCY_ARTICLE,
+    RANDOM_NUMBER_ARTICLE,
+    SUBNET_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -262,6 +268,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Final Grade Needed Calculator - Target Exam Score Solver | CalculatorHub',
         'meta_description': 'Calculate the exact score needed on your final exam to secure your desired course grade. Supports weighted grading categories and feasibility analysis.',
         'article_content': FINAL_GRADE_ARTICLE,
+    },
+    # Batch 8 Calculators (User Batch #7)
+    {
+        'slug': 'investment-calculator',
+        'title': 'Investment Calculator',
+        'category': 'financial',
+        'meta_title': 'Investment Calculator - Compound Growth, Contributions & Returns | CalculatorHub',
+        'meta_description': 'Free online Investment Calculator. Calculate future portfolio value, compound returns with periodic contributions, inflation adjustments, and annual growth schedules.',
+        'article_content': INVESTMENT_ARTICLE,
+    },
+    {
+        'slug': 'pregnancy-calculator',
+        'title': 'Pregnancy Due Date Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Pregnancy Due Date Calculator - EDD, Trimester & Conception | CalculatorHub',
+        'meta_description': 'Estimate your baby\'s due date, gestational age, and pregnancy trimesters using LMP (Naegele\'s rule), conception date, IVF embryo transfer, or ultrasound scan.',
+        'article_content': PREGNANCY_ARTICLE,
+    },
+    {
+        'slug': 'random-number-generator',
+        'title': 'Random Number Generator',
+        'category': 'math',
+        'meta_title': 'Random Number Generator - True Random, Decimals & Gaussian | CalculatorHub',
+        'meta_description': 'Generate true random integers, floating point decimals, Gaussian normal distributions, dice rolls, and lottery picks with CSPRNG cryptographic security.',
+        'article_content': RANDOM_NUMBER_ARTICLE,
+    },
+    {
+        'slug': 'subnet-calculator',
+        'title': 'IPv4 Subnet Mask Calculator',
+        'category': 'other',
+        'meta_title': 'IPv4 Subnet Mask Calculator - CIDR, Network, Broadcast & Usable Hosts | CalculatorHub',
+        'meta_description': 'Calculate IPv4 network address, broadcast address, usable host IP range, CIDR prefix masks, wildcard mask, and 32-bit binary octet breakdowns.',
+        'article_content': SUBNET_ARTICLE,
     },
 ]
 

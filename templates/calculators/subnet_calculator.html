@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"IPv4 Subnet Mask Calculator - CIDR, Network, Broadcast & Usable Hosts | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate IPv4 network address, broadcast address, usable host IP range, CIDR prefix masks, wildcard mask, and 32-bit binary octet breakdowns." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>IPv4 Subnet Mask Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"IPv4 Subnet Mask Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate IPv4 network boundaries, broadcast addresses, usable host IP ranges, CIDR prefix lengths, wildcard masks, and 32-bit binary boolean bit allocations.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Network Architecture &amp; Binary Boolean Masking Engine</span>
+    </div>
+
+    <!-- Quick Subnet Class Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Common Subnet Presets
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline subnet-preset-btn active" data-ip="192.168.1.1" data-cidr="24">
+                Class C Home/Office (/24)
+            </button>
+            <button type="button" class="btn btn-outline subnet-preset-btn" data-ip="172.16.0.1" data-cidr="16">
+                Class B Enterprise (/16)
+            </button>
+            <button type="button" class="btn btn-outline subnet-preset-btn" data-ip="10.0.0.1" data-cidr="8">
+                Class A Datacenter (/8)
+            </button>
+            <button type="button" class="btn btn-outline subnet-preset-btn" data-ip="192.168.10.1" data-cidr="28">
+                Small Subnet 14 Hosts (/28)
+            </button>
+            <button type="button" class="btn btn-outline subnet-preset-btn" data-ip="10.10.10.1" data-cidr="30">
+                Point-to-Point Link (/30)
+            </button>
+        </div>
+    </div>
+
+    <form id="subnet-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-2" style="gap: 20px; margin-bottom: 24px;">
+            <!-- IPv4 Address Input -->
+            <div class="form-group">
+                <label for="subnet-ip" class="form-label">IPv4 Host Address</label>
+                <div class="input-wrapper">
+                    <input type="text" id="subnet-ip" class="form-control" value="192.168.1.1" placeholder="e.g. 192.168.1.1" required style="font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.05rem;">
+                </div>
+                <span id="ip-validation-msg" class="form-hint" style="color: var(--color-text-muted);">Standard dotted decimal (4 octets: 0&ndash;255)</span>
+            </div>
+
+            <!-- CIDR Prefix / Subnet Mask Dropdown -->
+            <div class="form-group">
+                <label for="subnet-cidr" class="form-label">Subnet Mask / CIDR Prefix</label>
+                <select id="subnet-cidr" class="form-control" style="font-family: 'JetBrains Mono', 'Courier New', monospace;">
+                    <!-- Populated dynamically via JS from /1 to /32 -->
+                </select>
+                <span class="form-hint">Bit length of the network routing prefix</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="subnet-calc-btn" class="btn btn-primary" style="min-width: 160px;">
+                Calculate Subnet
+            </button>
+            <button type="button" id="subnet-reset-btn" class="btn btn-outline">
+                Reset Default
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Display Section -->
+    <div id="subnet-results" style="margin-top: 32px; border-top: 1px solid var(--color-border); padding-top: 28px;">
+        <!-- Hero Network Summary Banner -->
+        <div class="result-hero" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(29, 78, 216, 0.05)); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #60a5fa; display: block; margin-bottom: 6px;">
+                Identified Subnet Network
+            </span>
+            <div id="res-network-cidr" style="font-size: 2.8rem; font-weight: 800; color: #60a5fa; line-height: 1.1; margin-bottom: 8px; font-family: 'JetBrains Mono', 'Courier New', monospace;">
+                192.168.1.0 /24
+            </div>
+            <div id="res-host-range" style="font-size: 1.05rem; color: var(--color-text-main); font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 600;">
+                Usable Hosts: 192.168.1.1 &mdash; 192.168.1.254
+            </div>
+        </div>
+
+        <!-- Network Metrics 6-Grid -->
+        <div class="grid grid-3" style="gap: 16px; margin-bottom: 28px;">
+            <div class="metric-card">
+                <span class="metric-label">Subnet Mask</span>
+                <span id="res-mask" class="metric-value" style="color: var(--color-text-main); font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;">255.255.255.0</span>
+                <span class="metric-sub">Dotted decimal format</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Wildcard Inverse Mask</span>
+                <span id="res-wildcard" class="metric-value" style="color: #a855f7; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;">0.0.0.255</span>
+                <span class="metric-sub">ACL &amp; OSPF routing mask</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Directed Broadcast Address</span>
+                <span id="res-broadcast" class="metric-value" style="color: #f59e0b; font-family: 'JetBrains Mono', monospace; font-size: 1.25rem;">192.168.1.255</span>
+                <span class="metric-sub">All host bits set to 1</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Usable Host Capacity</span>
+                <span id="res-usable-hosts" class="metric-value" style="color: #10b981; font-size: 1.35rem;">254 Hosts</span>
+                <span id="res-total-addresses" class="metric-sub">256 total IP addresses</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Address Class</span>
+                <span id="res-ip-class" class="metric-value" style="color: #3b82f6; font-size: 1.35rem;">Class C</span>
+                <span id="res-ip-scope" class="metric-sub">Private Non-Routable (RFC 1918)</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Binary Prefix Ratio</span>
+                <span id="res-prefix-ratio" class="metric-value" style="color: #ec4899; font-size: 1.35rem;">24 Net / 8 Host</span>
+                <span class="metric-sub">32 bits total length</span>
+            </div>
+        </div>
+
+        <!-- 32-Bit Binary Matrix Breakdown -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 10px; padding: 20px; margin-bottom: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                    32-Bit Binary Boolean Bit Allocation
+                </h3>
+                <div style="display: flex; gap: 12px; font-size: 0.75rem;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: #3b82f6; border-radius: 2px; display: inline-block;"></span>
+                        Network Bits (1s)
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 12px; height: 12px; background: rgba(255,255,255,0.2); border-radius: 2px; display: inline-block;"></span>
+                        Host Bits (0s)
+                    </span>
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.9rem;">
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                            <td style="padding: 8px 12px; color: var(--color-text-muted); width: 140px;">IP Address</td>
+                            <td id="bin-ip" style="padding: 8px 12px; color: var(--color-text-main); letter-spacing: 1px;">
+                                11000000.10101000.00000001.00000001
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                            <td style="padding: 8px 12px; color: var(--color-text-muted);">Subnet Mask</td>
+                            <td id="bin-mask" style="padding: 8px 12px; letter-spacing: 1px;">
+                                <!-- Formatted dynamically -->
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                            <td style="padding: 8px 12px; color: var(--color-text-muted);">Network Address</td>
+                            <td id="bin-net" style="padding: 8px 12px; color: #60a5fa; letter-spacing: 1px;">
+                                11000000.10101000.00000001.00000000
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 12px; color: var(--color-text-muted);">Broadcast Address</td>
+                            <td id="bin-bcast" style="padding: 8px 12px; color: #f59e0b; letter-spacing: 1px;">
+                                11000000.10101000.00000001.11111111
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Subnet Division Reference Table -->
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 14px;">
+            Subnet Sub-Division &amp; VLSM Scaling Table
+        </h3>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border); text-align: left;">
+                        <th style="padding: 10px 12px;">Subnet Prefix</th>
+                        <th style="padding: 10px 12px;">Subnet Mask</th>
+                        <th style="padding: 10px 12px; text-align: right;">Total Subnets</th>
+                        <th style="padding: 10px 12px; text-align: right;">Total IPs / Subnet</th>
+                        <th style="padding: 10px 12px; text-align: right; color: #10b981;">Usable Hosts</th>
+                    </tr>
+                </thead>
+                <tbody id="subdivision-table-body">
+                    <!-- Populated dynamically via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Technical SEO Mathematical Article -->
+<div class="article-content-wrapper" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- AdSense Placeholder -->
+<div id="ad-bottom-content" class="ad-slot ad-bottom-placeholder" style="margin: 40px auto; min-height: 90px; background: var(--color-bg-card); border: 1px dashed var(--color-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); font-size: 0.85rem;">
+    <span>Advertisement</span>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/subnet.js' %}"></script>
+{% endblock %}
