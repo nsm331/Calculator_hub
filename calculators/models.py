@@ -67,6 +67,10 @@ class Calculator(models.Model):
             'ovulation-calculator': 'ovulation_calculator',
             'standard-deviation-calculator': 'standard_deviation_calculator',
             'speed-distance-time-calculator': 'speed_distance_time_calculator',
+            'salary-to-hourly-calculator': 'salary_to_hourly_calculator',
+            'lean-body-mass-calculator': 'lean_body_mass_calculator',
+            'right-triangle-solver': 'right_triangle_solver',
+            'tip-calculator': 'tip_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

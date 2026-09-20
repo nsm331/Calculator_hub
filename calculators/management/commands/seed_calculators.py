@@ -49,6 +49,12 @@ from calculators.default_articles_batch8_new import (
     STANDARD_DEVIATION_ARTICLE,
     SPEED_DISTANCE_TIME_ARTICLE,
 )
+from calculators.default_articles_batch9 import (
+    SALARY_TO_HOURLY_ARTICLE,
+    LEAN_BODY_MASS_ARTICLE,
+    RIGHT_TRIANGLE_ARTICLE,
+    TIP_CALCULATOR_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -340,6 +346,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Speed, Distance & Time Calculator - Kinematic Travel & Pace Solver | CalculatorHub',
         'meta_description': 'Solve for speed (v=d/t), distance (d=vt), or elapsed time (t=d/v) with multi-unit conversions (mph, km/h, m/s, knots), running pace, and multi-leg harmonic average speed.',
         'article_content': SPEED_DISTANCE_TIME_ARTICLE,
+    },
+    # Batch 9 Calculators
+    {
+        'slug': 'salary-to-hourly-calculator',
+        'title': 'Salary to Hourly Calculator',
+        'category': 'financial',
+        'meta_title': 'Salary to Hourly Calculator - Annual, Bi-Weekly, Daily & Overtime | CalculatorHub',
+        'meta_description': 'Convert annual salary to hourly wage and vice versa with paid time off (PTO) adjustments, statutory holidays, overtime multipliers, and pay schedule breakdowns.',
+        'article_content': SALARY_TO_HOURLY_ARTICLE,
+    },
+    {
+        'slug': 'lean-body-mass-calculator',
+        'title': 'Lean Body Mass Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Lean Body Mass Calculator - Boer, James & Hume Clinical Models | CalculatorHub',
+        'meta_description': 'Calculate lean body mass (LBM), fat mass, and body fat percentage using validated Boer, James, and Hume clinical anthropometric formulas in metric or imperial.',
+        'article_content': LEAN_BODY_MASS_ARTICLE,
+    },
+    {
+        'slug': 'right-triangle-solver',
+        'title': 'Right Triangle Solver',
+        'category': 'math',
+        'meta_title': 'Right Triangle Solver - Pythagorean Sides, Angles, Area & Inradius | CalculatorHub',
+        'meta_description': 'Solve any right-angled triangle from any two inputs with Pythagorean theorem, trigonometry (sin, cos, tan), area, perimeter, altitude, inradius, and circumradius.',
+        'article_content': RIGHT_TRIANGLE_ARTICLE,
+    },
+    {
+        'slug': 'tip-calculator',
+        'title': 'Tip & Split Bill Calculator',
+        'category': 'other',
+        'meta_title': 'Tip & Split Bill Calculator - Group Dining, Tax & Tip Per Person | CalculatorHub',
+        'meta_description': 'Calculate restaurant tips, split bills evenly among dining parties, isolate pre-tax food charges, and apply convenient rounding to the nearest dollar.',
+        'article_content': TIP_CALCULATOR_ARTICLE,
     },
 ]
 

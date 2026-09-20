@@ -3626,7 +3626,15 @@ textarea:focus,
 .ovu-cycle-btn,
 .sd-preset-btn,
 .sdt-tab-btn,
-.sdt-preset-btn {
+.sdt-preset-btn,
+.salary-tab-btn,
+.salary-preset-btn,
+.lbm-unit-btn,
+.lbm-preset-btn,
+.tri-mode-btn,
+.tri-preset-btn,
+.tip-scenario-btn,
+.tip-percent-btn {
     background-color: #142337 !important;
     border: 1px solid #2b4971 !important;
     color: #f1f5f9 !important;
@@ -3653,7 +3661,15 @@ textarea:focus,
 .ovu-cycle-btn:hover,
 .sd-preset-btn:hover,
 .sdt-tab-btn:hover,
-.sdt-preset-btn:hover {
+.sdt-preset-btn:hover,
+.salary-tab-btn:hover,
+.salary-preset-btn:hover,
+.lbm-unit-btn:hover,
+.lbm-preset-btn:hover,
+.tri-mode-btn:hover,
+.tri-preset-btn:hover,
+.tip-scenario-btn:hover,
+.tip-percent-btn:hover {
     border-color: #38bdf8 !important;
     color: #38bdf8 !important;
     background-color: rgba(56, 189, 248, 0.15) !important;
@@ -3670,7 +3686,15 @@ textarea:focus,
 .ovu-cycle-btn.active,
 .sd-preset-btn.active,
 .sdt-tab-btn.active,
-.sdt-preset-btn.active {
+.sdt-preset-btn.active,
+.salary-tab-btn.active,
+.salary-preset-btn.active,
+.lbm-unit-btn.active,
+.lbm-preset-btn.active,
+.tri-mode-btn.active,
+.tri-preset-btn.active,
+.tip-scenario-btn.active,
+.tip-percent-btn.active {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-color: #38bdf8 !important;
     color: #ffffff !important;
@@ -3688,7 +3712,15 @@ textarea:focus,
 [data-theme="light"] .ovu-cycle-btn,
 [data-theme="light"] .sd-preset-btn,
 [data-theme="light"] .sdt-tab-btn,
-[data-theme="light"] .sdt-preset-btn {
+[data-theme="light"] .sdt-preset-btn,
+[data-theme="light"] .salary-tab-btn,
+[data-theme="light"] .salary-preset-btn,
+[data-theme="light"] .lbm-unit-btn,
+[data-theme="light"] .lbm-preset-btn,
+[data-theme="light"] .tri-mode-btn,
+[data-theme="light"] .tri-preset-btn,
+[data-theme="light"] .tip-scenario-btn,
+[data-theme="light"] .tip-percent-btn {
     background-color: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
@@ -3704,7 +3736,15 @@ textarea:focus,
 [data-theme="light"] .ovu-cycle-btn:hover,
 [data-theme="light"] .sd-preset-btn:hover,
 [data-theme="light"] .sdt-tab-btn:hover,
-[data-theme="light"] .sdt-preset-btn:hover {
+[data-theme="light"] .sdt-preset-btn:hover,
+[data-theme="light"] .salary-tab-btn:hover,
+[data-theme="light"] .salary-preset-btn:hover,
+[data-theme="light"] .lbm-unit-btn:hover,
+[data-theme="light"] .lbm-preset-btn:hover,
+[data-theme="light"] .tri-mode-btn:hover,
+[data-theme="light"] .tri-preset-btn:hover,
+[data-theme="light"] .tip-scenario-btn:hover,
+[data-theme="light"] .tip-percent-btn:hover {
     border-color: #1e60b5 !important;
     color: #1e60b5 !important;
     background-color: rgba(30, 96, 181, 0.08) !important;
@@ -3720,7 +3760,15 @@ textarea:focus,
 [data-theme="light"] .ovu-cycle-btn.active,
 [data-theme="light"] .sd-preset-btn.active,
 [data-theme="light"] .sdt-tab-btn.active,
-[data-theme="light"] .sdt-preset-btn.active {
+[data-theme="light"] .sdt-preset-btn.active,
+[data-theme="light"] .salary-tab-btn.active,
+[data-theme="light"] .salary-preset-btn.active,
+[data-theme="light"] .lbm-unit-btn.active,
+[data-theme="light"] .lbm-preset-btn.active,
+[data-theme="light"] .tri-mode-btn.active,
+[data-theme="light"] .tri-preset-btn.active,
+[data-theme="light"] .tip-scenario-btn.active,
+[data-theme="light"] .tip-percent-btn.active {
     background: #1e60b5 !important;
     border-color: #164e96 !important;
     color: #ffffff !important;

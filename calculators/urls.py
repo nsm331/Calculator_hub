@@ -197,6 +197,28 @@ urlpatterns = [
         name='speed_distance_time_calculator'
     ),
 
+    # Batch 10 Calculators (User Batch #9)
+    path(
+        'financial-calculators/salary-to-hourly-calculator/',
+        views.salary_to_hourly_calculator,
+        name='salary_to_hourly_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/lean-body-mass-calculator/',
+        views.lean_body_mass_calculator,
+        name='lean_body_mass_calculator'
+    ),
+    path(
+        'math-calculators/right-triangle-solver/',
+        views.right_triangle_solver,
+        name='right_triangle_solver'
+    ),
+    path(
+        'other-calculators/tip-calculator/',
+        views.tip_calculator,
+        name='tip_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Right Triangle Solver - Pythagorean Theorem, Angles & Altitude | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Solve any right-angled triangle given any two sides or angles. Calculates hypotenuse, legs, acute angles, area, perimeter, altitude, inradius, and circumradius." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Right Triangle Solver</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Right Triangle Solver" }}</h1>
+    <p class="page-lead">
+        Solve right-angled triangles instantly using the Pythagorean theorem, trigonometry ($\sin, \cos, \tan$), and Euclidean geometric identities. Complete with interactive SVG geometry diagram.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Euclidean Geometry &amp; Trigonometric Engine</span>
+    </div>
+
+    <!-- Known Variables Selection Mode -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Given Known Values (Input Mode)
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline tri-mode-btn active" data-mode="legs">
+                📐 Two Legs (a, b)
+            </button>
+            <button type="button" class="btn btn-outline tri-mode-btn" data-mode="leg-hyp">
+                📏 Leg &amp; Hypotenuse (a, c)
+            </button>
+            <button type="button" class="btn btn-outline tri-mode-btn" data-mode="leg-angle">
+                📐 Leg &amp; Angle (a, &alpha;)
+            </button>
+            <button type="button" class="btn btn-outline tri-mode-btn" data-mode="hyp-angle">
+                🎯 Hypotenuse &amp; Angle (c, &alpha;)
+            </button>
+            <button type="button" class="btn btn-outline tri-mode-btn" data-mode="area-leg">
+                📊 Area &amp; Leg (Area, a)
+            </button>
+        </div>
+    </div>
+
+    <!-- Geometric Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Standard Pythagorean &amp; Special Triangles
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline tri-preset-btn active" data-mode="legs" data-v1="3" data-v2="4" style="padding: 6px 14px; font-size: 0.85rem;">
+                3-4-5 Triangle
+            </button>
+            <button type="button" class="btn btn-outline tri-preset-btn" data-mode="legs" data-v1="5" data-v2="12" style="padding: 6px 14px; font-size: 0.85rem;">
+                5-12-13 Triangle
+            </button>
+            <button type="button" class="btn btn-outline tri-preset-btn" data-mode="leg-angle" data-v1="1" data-v2="30" style="padding: 6px 14px; font-size: 0.85rem;">
+                30&deg;-60&deg;-90&deg; Special
+            </button>
+            <button type="button" class="btn btn-outline tri-preset-btn" data-mode="legs" data-v1="1" data-v2="1" style="padding: 6px 14px; font-size: 0.85rem;">
+                45&deg;-45&deg;-90&deg; Isosceles
+            </button>
+        </div>
+    </div>
+
+    <form id="tri-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 20px;">
+            <!-- Dynamic Input 1 -->
+            <div class="form-group">
+                <label for="tri-val1" id="tri-label1" class="form-label">Leg a (Opposite to &alpha;)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="tri-val1" class="form-control" value="3" min="0.0001" max="1000000" step="any" required>
+                    <span class="input-suffix" id="tri-unit1">units</span>
+                </div>
+                <span class="form-hint" id="tri-hint1">Length of first leg side</span>
+            </div>
+
+            <!-- Dynamic Input 2 -->
+            <div class="form-group">
+                <label for="tri-val2" id="tri-label2" class="form-label">Leg b (Adjacent to &alpha;)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="tri-val2" class="form-control" value="4" min="0.0001" max="1000000" step="any" required>
+                    <span class="input-suffix" id="tri-unit2">units</span>
+                </div>
+                <span class="form-hint" id="tri-hint2">Length of second leg side</span>
+            </div>
+
+            <!-- Precision / Angle Unit Settings -->
+            <div class="form-group">
+                <label for="tri-precision" class="form-label">Calculation Precision</label>
+                <select id="tri-precision" class="form-control">
+                    <option value="2">2 Decimal Places (Standard)</option>
+                    <option value="4" selected>4 Decimal Places (High Precision)</option>
+                    <option value="6">6 Decimal Places (Engineering)</option>
+                </select>
+                <span class="form-hint">Precision for lengths &amp; trigonometric values</span>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 10px; margin-bottom: 24px;">
+            <button type="button" id="tri-calculate-btn" class="btn btn-primary" style="min-width: 180px;">
+                Solve Right Triangle
+            </button>
+            <button type="button" id="tri-reset-btn" class="btn btn-outline" style="min-width: 120px;">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="tri-results" style="margin-top: 24px; display: block;">
+        <!-- Dynamic Interactive SVG Diagram & Key Sides Grid -->
+        <div class="grid grid-2" style="gap: 20px; align-items: stretch; margin-bottom: 24px;">
+            <!-- Dynamic SVG Triangle Visualizer -->
+            <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px;">
+                <div style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 12px; width: 100%; text-align: left;">
+                    Geometric Proportion Diagram
+                </div>
+                <div style="width: 100%; max-width: 380px; height: 220px; display: flex; align-items: center; justify-content: center;">
+                    <svg id="tri-svg" viewBox="0 0 320 220" style="width: 100%; height: 100%; overflow: visible;">
+                        <!-- Drawn dynamically by right_triangle.js -->
+                    </svg>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 10px;">
+                    Diagram drawn to scale with vertex angles &amp; hypotenuse altitude $h_c$
+                </div>
+            </div>
+
+            <!-- Primary 6-Elements Grid -->
+            <div style="display: flex; flex-direction: column; gap: 12px; justify-content: space-between;">
+                <div class="grid grid-3" style="gap: 12px;">
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Leg a (Vertical)</span>
+                        <div id="res-side-a" style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary); margin-top: 4px;">3.0000</div>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Leg b (Base)</span>
+                        <div id="res-side-b" style="font-size: 1.4rem; font-weight: 800; color: var(--color-primary); margin-top: 4px;">4.0000</div>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px; border-left: 3px solid #10b981;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Hypotenuse c</span>
+                        <div id="res-side-c" style="font-size: 1.4rem; font-weight: 800; color: #10b981; margin-top: 4px;">5.0000</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-3" style="gap: 12px;">
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Angle &alpha; (Opp a)</span>
+                        <div id="res-angle-alpha" style="font-size: 1.25rem; font-weight: 800; color: #3b82f6; margin-top: 4px;">36.8699&deg;</div>
+                        <span id="res-angle-alpha-rad" style="font-size: 0.78rem; color: var(--color-text-muted);">0.6435 rad</span>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Angle &beta; (Opp b)</span>
+                        <div id="res-angle-beta" style="font-size: 1.25rem; font-weight: 800; color: #3b82f6; margin-top: 4px;">53.1301&deg;</div>
+                        <span id="res-angle-beta-rad" style="font-size: 0.78rem; color: var(--color-text-muted);">0.9273 rad</span>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Angle &gamma; (Right)</span>
+                        <div style="font-size: 1.25rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">90.0000&deg;</div>
+                        <span style="font-size: 0.78rem; color: var(--color-text-muted);">&pi; / 2 rad</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-3" style="gap: 12px;">
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Area (K)</span>
+                        <div id="res-area" style="font-size: 1.3rem; font-weight: 800; color: var(--color-text); margin-top: 4px;">6.0000</div>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Perimeter (P)</span>
+                        <div id="res-perimeter" style="font-size: 1.3rem; font-weight: 800; color: var(--color-text); margin-top: 4px;">12.0000</div>
+                    </div>
+                    <div class="result-card" style="padding: 12px 14px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Altitude (h_c)</span>
+                        <div id="res-altitude" style="font-size: 1.3rem; font-weight: 800; color: var(--color-text); margin-top: 4px;">2.4000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geometric Radii & Ratios Card -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <div class="result-card" style="text-align: center;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Inradius (r)</span>
+                <div id="res-inradius" style="font-size: 1.4rem; font-weight: 800; color: #8b5cf6; margin-top: 4px;">1.0000</div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">r = (a + b - c) / 2</span>
+            </div>
+            <div class="result-card" style="text-align: center;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Circumradius (R)</span>
+                <div id="res-circumradius" style="font-size: 1.4rem; font-weight: 800; color: #ec4899; margin-top: 4px;">2.5000</div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">R = c / 2</span>
+            </div>
+            <div class="result-card" style="text-align: center;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Semi-Perimeter (s)</span>
+                <div id="res-semiperimeter" style="font-size: 1.4rem; font-weight: 800; color: #06b6d4; margin-top: 4px;">6.0000</div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">s = (a + b + c) / 2</span>
+            </div>
+            <div class="result-card" style="text-align: center;">
+                <span style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Leg Ratio (a / b)</span>
+                <div id="res-ratio" style="font-size: 1.4rem; font-weight: 800; color: #eab308; margin-top: 4px;">0.7500</div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">tan(&alpha;) aspect</span>
+            </div>
+        </div>
+
+        <!-- Full Trigonometric Functions Reference Table -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="margin-bottom: 14px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 4px 0;">
+                    Trigonometric Ratios for Acute Angles (&alpha; &amp; &beta;)
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0;">
+                    Exact trigonometric definitions derived from side length ratios.
+                </p>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <th style="padding: 10px 12px; text-align: left;">Trig Function</th>
+                            <th class="th-right" style="padding: 10px 12px;">Angle &alpha; Value</th>
+                            <th style="padding: 10px 12px; text-align: left;">Formula (&alpha;)</th>
+                            <th class="th-right" style="padding: 10px 12px;">Angle &beta; Value</th>
+                            <th style="padding: 10px 12px; text-align: left;">Formula (&beta;)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tri-trig-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Engineering Trigonometry &amp; Vector Analysis Software</div>
+                <div class="line-desc">Precision structural CAD geometry calculation tools for professional engineers.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/right_triangle.js' %}"></script>
+{% endblock %}

@@ -417,6 +417,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Harmonic Mean Average Speed", calc.article_content)
 
+    def test_salary_to_hourly_calculator_view(self):
+        response = self.client.get(reverse('salary_to_hourly_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Salary to Hourly Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/salary_to_hourly.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='salary-to-hourly-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Labor Economics", calc.article_content)
+
+    def test_lean_body_mass_calculator_view(self):
+        response = self.client.get(reverse('lean_body_mass_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Lean Body Mass Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/lean_body_mass.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='lean-body-mass-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Boer Formula", calc.article_content)
+
+    def test_right_triangle_solver_view(self):
+        response = self.client.get(reverse('right_triangle_solver'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Right Triangle Solver")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/right_triangle.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='right-triangle-solver').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Pythagorean Theorem", calc.article_content)
+
+    def test_tip_calculator_view(self):
+        response = self.client.get(reverse('tip_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Tip &amp; Split Bill Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/tip.js")
+        self.assertNotContains(response, "js/work_hours.js")
+        calc = Calculator.objects.filter(slug='tip-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Microeconomics of Gratuity", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -456,6 +500,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "ovulation-calculator")
         self.assertContains(response, "standard-deviation-calculator")
         self.assertContains(response, "speed-distance-time-calculator")
+        self.assertContains(response, "salary-to-hourly-calculator")
+        self.assertContains(response, "lean-body-mass-calculator")
+        self.assertContains(response, "right-triangle-solver")
+        self.assertContains(response, "tip-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -494,6 +542,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('ovulation_calculator'))
         self.client.get(reverse('standard_deviation_calculator'))
         self.client.get(reverse('speed_distance_time_calculator'))
+        self.client.get(reverse('salary_to_hourly_calculator'))
+        self.client.get(reverse('lean_body_mass_calculator'))
+        self.client.get(reverse('right_triangle_solver'))
+        self.client.get(reverse('tip_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -533,6 +585,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "ovulation-calculator")
         self.assertContains(response, "standard-deviation-calculator")
         self.assertContains(response, "speed-distance-time-calculator")
+        self.assertContains(response, "salary-to-hourly-calculator")
+        self.assertContains(response, "lean-body-mass-calculator")
+        self.assertContains(response, "right-triangle-solver")
+        self.assertContains(response, "tip-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

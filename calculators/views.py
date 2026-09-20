@@ -51,6 +51,12 @@ from .default_articles_batch8_new import (
     STANDARD_DEVIATION_ARTICLE,
     SPEED_DISTANCE_TIME_ARTICLE,
 )
+from .default_articles_batch9 import (
+    SALARY_TO_HOURLY_ARTICLE,
+    LEAN_BODY_MASS_ARTICLE,
+    RIGHT_TRIANGLE_ARTICLE,
+    TIP_CALCULATOR_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -598,6 +604,58 @@ def speed_distance_time_calculator(request):
     }
     calculator = _get_or_seed_calculator('speed-distance-time-calculator', default_data)
     return render(request, 'calculators/speed_distance_time_calculator.html', {'calculator': calculator})
+
+
+def salary_to_hourly_calculator(request):
+    """Dynamic view for Salary to Hourly Calculator."""
+    default_data = {
+        'title': 'Salary to Hourly Calculator',
+        'category': 'financial',
+        'meta_title': 'Salary to Hourly Calculator - Annual, Bi-Weekly, Daily & Overtime | CalculatorHub',
+        'meta_description': 'Convert annual salary to hourly wage and vice versa with paid time off (PTO) adjustments, statutory holidays, overtime multipliers, and pay schedule breakdowns.',
+        'article_content': SALARY_TO_HOURLY_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('salary-to-hourly-calculator', default_data)
+    return render(request, 'calculators/salary_to_hourly_calculator.html', {'calculator': calculator})
+
+
+def lean_body_mass_calculator(request):
+    """Dynamic view for Lean Body Mass Calculator."""
+    default_data = {
+        'title': 'Lean Body Mass Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Lean Body Mass Calculator - Boer, James & Hume Clinical Models | CalculatorHub',
+        'meta_description': 'Calculate lean body mass (LBM), fat mass, and body fat percentage using validated Boer, James, and Hume clinical anthropometric formulas in metric or imperial.',
+        'article_content': LEAN_BODY_MASS_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('lean-body-mass-calculator', default_data)
+    return render(request, 'calculators/lean_body_mass_calculator.html', {'calculator': calculator})
+
+
+def right_triangle_solver(request):
+    """Dynamic view for Right Triangle Solver."""
+    default_data = {
+        'title': 'Right Triangle Solver',
+        'category': 'math',
+        'meta_title': 'Right Triangle Solver - Pythagorean Sides, Angles, Area & Inradius | CalculatorHub',
+        'meta_description': 'Solve any right-angled triangle from any two inputs with Pythagorean theorem, trigonometry (sin, cos, tan), area, perimeter, altitude, inradius, and circumradius.',
+        'article_content': RIGHT_TRIANGLE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('right-triangle-solver', default_data)
+    return render(request, 'calculators/right_triangle_solver.html', {'calculator': calculator})
+
+
+def tip_calculator(request):
+    """Dynamic view for Tip & Split Bill Calculator."""
+    default_data = {
+        'title': 'Tip & Split Bill Calculator',
+        'category': 'other',
+        'meta_title': 'Tip & Split Bill Calculator - Group Dining, Tax & Tip Per Person | CalculatorHub',
+        'meta_description': 'Calculate restaurant tips, split bills evenly among dining parties, isolate pre-tax food charges, and apply convenient rounding to the nearest dollar.',
+        'article_content': TIP_CALCULATOR_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('tip-calculator', default_data)
+    return render(request, 'calculators/tip_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------
