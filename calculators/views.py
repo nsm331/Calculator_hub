@@ -45,6 +45,12 @@ from .default_articles_batch8 import (
     RANDOM_NUMBER_ARTICLE,
     SUBNET_ARTICLE,
 )
+from .default_articles_batch8_new import (
+    INFLATION_ARTICLE,
+    OVULATION_ARTICLE,
+    STANDARD_DEVIATION_ARTICLE,
+    SPEED_DISTANCE_TIME_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -540,6 +546,58 @@ def subnet_calculator(request):
     }
     calculator = _get_or_seed_calculator('subnet-calculator', default_data)
     return render(request, 'calculators/subnet_calculator.html', {'calculator': calculator})
+
+
+def inflation_calculator(request):
+    """Dynamic view for Inflation Calculator."""
+    default_data = {
+        'title': 'Inflation Calculator',
+        'category': 'financial',
+        'meta_title': 'Inflation Calculator - Cumulative CPI, Future Value & Purchasing Power | CalculatorHub',
+        'meta_description': 'Calculate compound forward inflation, future equivalent costs, purchasing power erosion, and real vs nominal rates with historical CPI trends and Rule of 72.',
+        'article_content': INFLATION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('inflation-calculator', default_data)
+    return render(request, 'calculators/inflation_calculator.html', {'calculator': calculator})
+
+
+def ovulation_calculator(request):
+    """Dynamic view for Ovulation & Fertility Calculator."""
+    default_data = {
+        'title': 'Ovulation & Fertility Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Ovulation & Fertility Calculator - Fertile Window & Conception Days | CalculatorHub',
+        'meta_description': 'Estimate your most fertile days, ovulation date, peak conception probability window, next period, and earliest pregnancy test timing using clinical cycle algorithms.',
+        'article_content': OVULATION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('ovulation-calculator', default_data)
+    return render(request, 'calculators/ovulation_calculator.html', {'calculator': calculator})
+
+
+def standard_deviation_calculator(request):
+    """Dynamic view for Standard Deviation & Variance Calculator."""
+    default_data = {
+        'title': 'Standard Deviation & Variance Calculator',
+        'category': 'math',
+        'meta_title': 'Standard Deviation Calculator - Sample vs Population Variance (n-1) | CalculatorHub',
+        'meta_description': 'Calculate sample and population standard deviation, variance with Bessel\'s correction (n-1), mean, sum of squares, and step-by-step statistical deviation tables.',
+        'article_content': STANDARD_DEVIATION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('standard-deviation-calculator', default_data)
+    return render(request, 'calculators/standard_deviation_calculator.html', {'calculator': calculator})
+
+
+def speed_distance_time_calculator(request):
+    """Dynamic view for Speed, Distance & Time Calculator."""
+    default_data = {
+        'title': 'Speed, Distance & Time Calculator',
+        'category': 'other',
+        'meta_title': 'Speed, Distance & Time Calculator - Kinematic Travel & Pace Solver | CalculatorHub',
+        'meta_description': 'Solve for speed (v=d/t), distance (d=vt), or elapsed time (t=d/v) with multi-unit conversions (mph, km/h, m/s, knots), running pace, and multi-leg harmonic average speed.',
+        'article_content': SPEED_DISTANCE_TIME_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('speed-distance-time-calculator', default_data)
+    return render(request, 'calculators/speed_distance_time_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

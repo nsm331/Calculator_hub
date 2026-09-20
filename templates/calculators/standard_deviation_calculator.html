@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Standard Deviation Calculator - Sample vs Population Variance (n-1) | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate sample and population standard deviation, variance with Bessel's correction (n-1), mean, sum of squares, and step-by-step statistical deviation tables." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Standard Deviation &amp; Variance Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Standard Deviation & Variance Calculator" }}</h1>
+    <p class="page-lead">
+        Compute sample and population standard deviation ($\sigma$ and $s$), variance with Bessel's unbiased degree of freedom ($n - 1$), standard error of the mean, and detailed residual square step-by-step tables.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Parametric Statistical Dispersion &amp; Moment Analysis Engine</span>
+    </div>
+
+    <!-- Quick Dataset Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Dataset Presets (Examples)
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline sd-preset-btn active" data-dataset="82, 88, 90, 78, 92, 85, 79, 94, 88, 86" style="padding: 6px 14px; font-size: 0.85rem;">
+                Exam Scores (N=10)
+            </button>
+            <button type="button" class="btn btn-outline sd-preset-btn" data-dataset="18.2, -4.4, 28.9, 16.3, 26.9, -18.1, 24.2, 10.5, 12.8" style="padding: 6px 14px; font-size: 0.85rem;">
+                S&amp;P 500 Returns (%)
+            </button>
+            <button type="button" class="btn btn-outline sd-preset-btn" data-dataset="12, 18, 22, 15, 9, 27, 31, 14, 20, 16, 25" style="padding: 6px 14px; font-size: 0.85rem;">
+                Customer Wait Times
+            </button>
+            <button type="button" class="btn btn-outline sd-preset-btn" data-dataset="68, 70, 71, 69, 72, 67, 73, 70, 71, 69, 74" style="padding: 6px 14px; font-size: 0.85rem;">
+                Height in Inches
+            </button>
+        </div>
+    </div>
+
+    <form id="sd-form" onsubmit="return false;" novalidate>
+        <!-- Raw Numeric Data Input -->
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label for="sd-data" class="form-label">
+                Enter Data Values (Separated by commas, spaces, or line breaks)
+            </label>
+            <textarea id="sd-data" class="form-control" rows="4" placeholder="e.g. 82, 88, 90, 78, 92, 85, 79, 94, 88, 86" style="font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.05rem; line-height: 1.5;" required>82, 88, 90, 78, 92, 85, 79, 94, 88, 86</textarea>
+            <span class="form-hint">Supports negative numbers, floating-point decimals, and large arrays (up to 5,000 values)</span>
+        </div>
+
+        <!-- Sample vs Population Toggle & Clean Options -->
+        <div style="display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 24px; background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 14px 18px;">
+            <div>
+                <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-main); display: block; margin-bottom: 4px;">
+                    Primary Target Metric
+                </span>
+                <div style="display: flex; gap: 16px;">
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9rem; color: var(--color-text-main); font-weight: 600;">
+                        <input type="radio" name="sd-mode" value="sample" checked style="accent-color: #38bdf8;">
+                        Sample ($s$, Bessel's $n - 1$)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 0.9rem; color: var(--color-text-main); font-weight: 600;">
+                        <input type="radio" name="sd-mode" value="population" style="accent-color: #38bdf8;">
+                        Population ($\sigma$, divisor $N$)
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span id="data-count-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 12px; border-radius: 100px; font-size: 0.85rem; font-weight: 700; font-family: var(--font-mono);">
+                    N = 10 Values Detected
+                </span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="sd-calc-btn" class="btn btn-primary" style="min-width: 170px;">
+                ⚡ Calculate Statistics
+            </button>
+            <button type="button" id="sd-clear-btn" class="btn btn-outline">
+                Clear Data
+            </button>
+            <button type="button" id="sd-reset-btn" class="btn btn-outline">
+                Reset Defaults
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="sd-results" style="margin-top: 32px; border-top: 1px solid var(--color-border); padding-top: 28px;">
+        <!-- Hero Standard Deviation Banner -->
+        <div class="result-hero" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(30, 96, 181, 0.05)); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span id="hero-target-label" style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #38bdf8; display: block; margin-bottom: 6px;">
+                Sample Standard Deviation (s)
+            </span>
+            <div id="res-primary-sd" style="font-size: 3rem; font-weight: 800; color: #38bdf8; line-height: 1.1; margin-bottom: 8px; font-family: var(--font-mono);">
+                5.2334
+            </div>
+            <div id="res-sd-sub" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Sample Variance: s&sup2; = 27.3889 • Degrees of Freedom: n - 1 = 9
+            </div>
+        </div>
+
+        <!-- Comprehensive Metrics Grid -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <!-- Sample SD -->
+            <div class="metric-card">
+                <span class="metric-label">Sample SD (s)</span>
+                <span id="res-sample-sd" class="metric-value" style="color: #38bdf8;">5.2334</span>
+                <span class="metric-sub">Bessel's correction (n - 1)</span>
+            </div>
+
+            <!-- Population SD -->
+            <div class="metric-card">
+                <span class="metric-label">Population SD (&sigma;)</span>
+                <span id="res-pop-sd" class="metric-value" style="color: #818cf8;">4.9649</span>
+                <span class="metric-sub">Exhaustive universe (N)</span>
+            </div>
+
+            <!-- Sample Variance -->
+            <div class="metric-card">
+                <span class="metric-label">Sample Variance (s&sup2;)</span>
+                <span id="res-sample-var" class="metric-value" style="color: #a78bfa;">27.3889</span>
+                <span class="metric-sub">Mean squared deviation</span>
+            </div>
+
+            <!-- Population Variance -->
+            <div class="metric-card">
+                <span class="metric-label">Population Variance (&sigma;&sup2;)</span>
+                <span id="res-pop-var" class="metric-value" style="color: #c084fc;">24.6500</span>
+                <span class="metric-sub">SS divided by N</span>
+            </div>
+
+            <!-- Arithmetic Mean -->
+            <div class="metric-card">
+                <span class="metric-label">Mean (&mu; or x&#772;)</span>
+                <span id="res-mean" class="metric-value" style="color: #10b981;">85.8000</span>
+                <span class="metric-sub">Sum divided by count</span>
+            </div>
+
+            <!-- Sum (Σx) -->
+            <div class="metric-card">
+                <span class="metric-label">Sum (&Sigma;x)</span>
+                <span id="res-sum" class="metric-value" style="color: #34d399;">858.0000</span>
+                <span class="metric-sub">Total of all values</span>
+            </div>
+
+            <!-- Sum of Squared Deviations (SS) -->
+            <div class="metric-card">
+                <span class="metric-label">Sum of Squares (SS)</span>
+                <span id="res-ss" class="metric-value" style="color: #f59e0b;">246.5000</span>
+                <span class="metric-sub">&Sigma;(x - x&#772;)&sup2;</span>
+            </div>
+
+            <!-- Standard Error of Mean -->
+            <div class="metric-card">
+                <span class="metric-label">Standard Error (SEM)</span>
+                <span id="res-sem" class="metric-value" style="color: #ec4899;">1.6549</span>
+                <span class="metric-sub">s / &radic;n</span>
+            </div>
+        </div>
+
+        <!-- Five-Number Summary & Distribution Stats -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px 20px; margin-bottom: 28px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--color-text-muted); display: block; margin-bottom: 12px;">
+                Five-Number Distribution Summary &amp; Outlier Range
+            </span>
+            <div class="grid grid-5" style="gap: 12px; text-align: center;">
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Minimum</span>
+                    <strong id="res-min" style="font-size: 1.25rem; font-family: var(--font-mono); color: var(--color-text-main);">78</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Q1 (25th %)</span>
+                    <strong id="res-q1" style="font-size: 1.25rem; font-family: var(--font-mono); color: var(--color-text-main);">82</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Median (Q2)</span>
+                    <strong id="res-median" style="font-size: 1.25rem; font-family: var(--font-mono); color: #38bdf8;">87</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Q3 (75th %)</span>
+                    <strong id="res-q3" style="font-size: 1.25rem; font-family: var(--font-mono); color: var(--color-text-main);">90</strong>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Maximum</span>
+                    <strong id="res-max" style="font-size: 1.25rem; font-family: var(--font-mono); color: var(--color-text-main);">94</strong>
+                </div>
+            </div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-border-light); display: flex; justify-content: space-between; flex-wrap: wrap; font-size: 0.85rem; color: var(--color-text-muted);">
+                <span>Range: <strong id="res-range" style="color: var(--color-text-main);">16</strong></span>
+                <span>Interquartile Range (IQR): <strong id="res-iqr" style="color: var(--color-text-main);">8</strong></span>
+                <span>Coefficient of Variation (CV): <strong id="res-cv" style="color: var(--color-text-main);">6.10%</strong></span>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Residual Deviation Table -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                Step-by-Step Deviation &amp; Squared Residual Table
+            </h3>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border-light);">
+                        <th style="padding: 10px 12px; text-align: left;">Index (i)</th>
+                        <th class="th-right" style="padding: 10px 12px;">Value (x<sub>i</sub>)</th>
+                        <th class="th-right" style="padding: 10px 12px;">Deviation from Mean (x<sub>i</sub> &minus; x&#772;)</th>
+                        <th class="th-right" style="padding: 10px 12px;">Squared Deviation (x<sub>i</sub> &minus; x&#772;)&sup2;</th>
+                    </tr>
+                </thead>
+                <tbody id="sd-steps-body">
+                    <!-- Populated dynamically via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Institutional Wealth &amp; Health Analytics Platform</div>
+                <div class="line-desc">Empower your decision making with professional tools. Visit Official Partner.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/standard_deviation.js' %}"></script>
+{% endblock %}

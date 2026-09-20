@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Ovulation & Fertility Calculator - Fertile Window & Conception Days | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Estimate your most fertile days, ovulation date, peak conception probability window, next period, and earliest pregnancy test timing using clinical cycle algorithms." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health</a> &rsaquo; 
+        <span>Ovulation &amp; Fertility Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Ovulation & Fertility Calculator" }}</h1>
+    <p class="page-lead">
+        Track your menstrual cycle kinetics, pinpoint your peak fertility window, and calculate statistical conception likelihood based on clinical gynecological endocrinology.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Clinical Reproductive Cycle &amp; Conception Timing Engine</span>
+    </div>
+
+    <!-- Quick Cycle Length Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Common Cycle Lengths
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline ovu-cycle-btn" data-cycle="26" style="padding: 6px 14px; font-size: 0.85rem;">
+                Short (26 Days)
+            </button>
+            <button type="button" class="btn btn-outline ovu-cycle-btn active" data-cycle="28" style="padding: 6px 14px; font-size: 0.85rem;">
+                Standard (28 Days)
+            </button>
+            <button type="button" class="btn btn-outline ovu-cycle-btn" data-cycle="30" style="padding: 6px 14px; font-size: 0.85rem;">
+                Regular (30 Days)
+            </button>
+            <button type="button" class="btn btn-outline ovu-cycle-btn" data-cycle="32" style="padding: 6px 14px; font-size: 0.85rem;">
+                Long (32 Days)
+            </button>
+            <button type="button" class="btn btn-outline ovu-cycle-btn" data-cycle="35" style="padding: 6px 14px; font-size: 0.85rem;">
+                Extended (35 Days)
+            </button>
+        </div>
+    </div>
+
+    <form id="ovulation-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 24px;">
+            <!-- First day of last period -->
+            <div class="form-group">
+                <label for="ovu-lmp" class="form-label">First Day of Last Period (LMP)</label>
+                <input type="date" id="ovu-lmp" class="form-control" required>
+                <span class="form-hint">Calendar date your last period started</span>
+            </div>
+
+            <!-- Average Cycle Length -->
+            <div class="form-group">
+                <label for="ovu-cycle-len" class="form-label">Average Menstrual Cycle Length</label>
+                <div class="input-wrapper">
+                    <input type="number" id="ovu-cycle-len" class="form-control" value="28" min="20" max="45" step="1" required>
+                    <span class="input-suffix">Days</span>
+                </div>
+                <span class="form-hint">Typical days between cycle starts (21–45)</span>
+            </div>
+
+            <!-- Luteal Phase Length -->
+            <div class="form-group">
+                <label for="ovu-luteal-len" class="form-label">Luteal Phase Duration (Optional)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="ovu-luteal-len" class="form-control" value="14" min="10" max="18" step="1">
+                    <span class="input-suffix">Days</span>
+                </div>
+                <span class="form-hint">Default is 14 days (normal range: 12–16)</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="ovu-calc-btn" class="btn btn-primary" style="min-width: 170px;">
+                🌸 Calculate Fertile Window
+            </button>
+            <button type="button" id="ovu-today-btn" class="btn btn-outline">
+                📅 Set LMP to Today
+            </button>
+            <button type="button" id="ovu-reset-btn" class="btn btn-outline">
+                Reset Defaults
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="ovu-results" style="margin-top: 32px; border-top: 1px solid var(--color-border); padding-top: 28px;">
+        <!-- Hero Estimated Ovulation Banner -->
+        <div class="result-hero" style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(168, 85, 247, 0.05)); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #f472b6; display: block; margin-bottom: 6px;">
+                Estimated Ovulation Day (Peak Fertility)
+            </span>
+            <div id="res-ovulation-date" style="font-size: 2.6rem; font-weight: 800; color: #f472b6; line-height: 1.1; margin-bottom: 8px;">
+                October 4, 2026
+            </div>
+            <div id="res-ovulation-sub" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Cycle Day 14 • 33% single-intercourse conception probability
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <!-- 6-Day Fertile Window -->
+            <div class="metric-card">
+                <span class="metric-label">Most Fertile Window</span>
+                <span id="res-fertile-window" class="metric-value" style="color: #38bdf8; font-size: 1.15rem;">Sep 29 – Oct 4</span>
+                <span class="metric-sub">5 days pre-ovulation + ovulation day</span>
+            </div>
+
+            <!-- Peak Conception Days -->
+            <div class="metric-card">
+                <span class="metric-label">Peak Conception Days</span>
+                <span id="res-peak-days" class="metric-value" style="color: #ec4899; font-size: 1.15rem;">Oct 3 &amp; Oct 4</span>
+                <span class="metric-sub">Highest statistical likelihood</span>
+            </div>
+
+            <!-- Next Expected Period -->
+            <div class="metric-card">
+                <span class="metric-label">Next Expected Period</span>
+                <span id="res-next-period" class="metric-value" style="color: #a78bfa; font-size: 1.15rem;">October 18, 2026</span>
+                <span class="metric-sub">Onset of subsequent cycle</span>
+            </div>
+
+            <!-- Earliest Pregnancy Test Date -->
+            <div class="metric-card">
+                <span class="metric-label">Reliable Pregnancy Test</span>
+                <span id="res-test-date" class="metric-value" style="color: #10b981; font-size: 1.15rem;">October 18, 2026</span>
+                <span class="metric-sub">14 days post-ovulation (hCG threshold)</span>
+            </div>
+        </div>
+
+        <!-- Projected EDD Banner if Conception Occurs -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <strong style="color: var(--color-text-main); font-size: 0.95rem;">👶 Projected Due Date (If Conception Occurs):</strong>
+                <span id="res-projected-edd" style="color: #10b981; font-weight: 700; font-size: 1.05rem; margin-left: 8px;">June 27, 2027</span>
+            </div>
+            <span style="font-size: 0.8rem; color: var(--color-text-muted);">266 days from estimated ovulation</span>
+        </div>
+
+        <!-- Visual Cycle Phase Proportion Bar -->
+        <div style="margin-bottom: 28px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <span style="color: #ef4444;">🩸 Menstruation (Days 1–5)</span>
+                <span style="color: #64748b;">🌿 Follicular (Days 6–8)</span>
+                <span style="color: #ec4899;">💖 Fertile Window (Days 9–14)</span>
+                <span style="color: #8b5cf6;">🌙 Luteal Phase (Days 15–28)</span>
+            </div>
+            <div style="height: 16px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; display: flex;">
+                <div id="bar-menses" style="width: 18%; background: #ef4444;" title="Menstruation"></div>
+                <div id="bar-follicular" style="width: 14%; background: #64748b;" title="Follicular Phase"></div>
+                <div id="bar-fertile" style="width: 21%; background: #ec4899;" title="Fertile Window"></div>
+                <div id="bar-luteal" style="width: 47%; background: #8b5cf6;" title="Luteal Phase"></div>
+            </div>
+        </div>
+
+        <!-- Upcoming Cycle Milestones Table -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                Upcoming Reproductive Cycle Milestones (Next 3 Cycles)
+            </h3>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border-light);">
+                        <th style="padding: 10px 12px; text-align: left;">Cycle</th>
+                        <th style="padding: 10px 12px; text-align: left;">Fertile Window</th>
+                        <th style="padding: 10px 12px; text-align: left;">Ovulation Date</th>
+                        <th style="padding: 10px 12px; text-align: left;">Next Period</th>
+                        <th style="padding: 10px 12px; text-align: left;">Projected Due Date</th>
+                    </tr>
+                </thead>
+                <tbody id="ovu-milestones-body">
+                    <!-- Populated dynamically via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Institutional Wealth &amp; Health Analytics Platform</div>
+                <div class="line-desc">Empower your decision making with professional tools. Visit Official Partner.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/ovulation.js' %}"></script>
+{% endblock %}

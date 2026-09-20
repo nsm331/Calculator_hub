@@ -43,6 +43,12 @@ from calculators.default_articles_batch8 import (
     RANDOM_NUMBER_ARTICLE,
     SUBNET_ARTICLE,
 )
+from calculators.default_articles_batch8_new import (
+    INFLATION_ARTICLE,
+    OVULATION_ARTICLE,
+    STANDARD_DEVIATION_ARTICLE,
+    SPEED_DISTANCE_TIME_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -301,6 +307,39 @@ CALCULATORS_DATA = [
         'meta_title': 'IPv4 Subnet Mask Calculator - CIDR, Network, Broadcast & Usable Hosts | CalculatorHub',
         'meta_description': 'Calculate IPv4 network address, broadcast address, usable host IP range, CIDR prefix masks, wildcard mask, and 32-bit binary octet breakdowns.',
         'article_content': SUBNET_ARTICLE,
+    },
+    # Batch 8 Calculators
+    {
+        'slug': 'inflation-calculator',
+        'title': 'Inflation Calculator',
+        'category': 'financial',
+        'meta_title': 'Inflation Calculator - Cumulative CPI, Future Value & Purchasing Power | CalculatorHub',
+        'meta_description': 'Calculate compound forward inflation, future equivalent costs, purchasing power erosion, and real vs nominal rates with historical CPI trends and Rule of 72.',
+        'article_content': INFLATION_ARTICLE,
+    },
+    {
+        'slug': 'ovulation-calculator',
+        'title': 'Ovulation & Fertility Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Ovulation & Fertility Calculator - Fertile Window & Conception Days | CalculatorHub',
+        'meta_description': 'Estimate your most fertile days, ovulation date, peak conception probability window, next period, and earliest pregnancy test timing using clinical cycle algorithms.',
+        'article_content': OVULATION_ARTICLE,
+    },
+    {
+        'slug': 'standard-deviation-calculator',
+        'title': 'Standard Deviation & Variance Calculator',
+        'category': 'math',
+        'meta_title': 'Standard Deviation Calculator - Sample vs Population Variance (n-1) | CalculatorHub',
+        'meta_description': 'Calculate sample and population standard deviation, variance with Bessel\'s correction (n-1), mean, sum of squares, and step-by-step statistical deviation tables.',
+        'article_content': STANDARD_DEVIATION_ARTICLE,
+    },
+    {
+        'slug': 'speed-distance-time-calculator',
+        'title': 'Speed, Distance & Time Calculator',
+        'category': 'other',
+        'meta_title': 'Speed, Distance & Time Calculator - Kinematic Travel & Pace Solver | CalculatorHub',
+        'meta_description': 'Solve for speed (v=d/t), distance (d=vt), or elapsed time (t=d/v) with multi-unit conversions (mph, km/h, m/s, knots), running pace, and multi-leg harmonic average speed.',
+        'article_content': SPEED_DISTANCE_TIME_ARTICLE,
     },
 ]
 

@@ -175,6 +175,28 @@ urlpatterns = [
         name='subnet_calculator'
     ),
 
+    # Batch 9 Calculators (User Batch #8)
+    path(
+        'financial-calculators/inflation-calculator/',
+        views.inflation_calculator,
+        name='inflation_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/ovulation-calculator/',
+        views.ovulation_calculator,
+        name='ovulation_calculator'
+    ),
+    path(
+        'math-calculators/standard-deviation-calculator/',
+        views.standard_deviation_calculator,
+        name='standard_deviation_calculator'
+    ),
+    path(
+        'other-calculators/speed-distance-time-calculator/',
+        views.speed_distance_time_calculator,
+        name='speed_distance_time_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

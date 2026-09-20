@@ -63,6 +63,10 @@ class Calculator(models.Model):
             'pregnancy-calculator': 'pregnancy_calculator',
             'random-number-generator': 'random_number_generator',
             'subnet-calculator': 'subnet_calculator',
+            'inflation-calculator': 'inflation_calculator',
+            'ovulation-calculator': 'ovulation_calculator',
+            'standard-deviation-calculator': 'standard_deviation_calculator',
+            'speed-distance-time-calculator': 'speed_distance_time_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

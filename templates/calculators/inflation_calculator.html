@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Inflation Calculator - Cumulative CPI, Future Value & Purchasing Power | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate compound forward inflation, future equivalent costs, purchasing power erosion, and real vs nominal rates with historical CPI trends and Rule of 72." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Inflation Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Inflation Calculator" }}</h1>
+    <p class="page-lead">
+        Evaluate the erosion of purchasing power, project future equivalent costs, and determine real inflation-adjusted wealth across custom time horizons using compound macroeconomic modeling.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Macroeconomic Purchasing Power &amp; Compounded Price Level Engine</span>
+    </div>
+
+    <!-- Quick Inflation Rate Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Macroeconomic Inflation Benchmarks
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline infl-preset-btn" data-rate="2.0" style="padding: 6px 14px; font-size: 0.85rem;">
+                Fed Target (2.0%)
+            </button>
+            <button type="button" class="btn btn-outline infl-preset-btn active" data-rate="3.2" style="padding: 6px 14px; font-size: 0.85rem;">
+                US Long-Term Avg (3.2%)
+            </button>
+            <button type="button" class="btn btn-outline infl-preset-btn" data-rate="4.5" style="padding: 6px 14px; font-size: 0.85rem;">
+                Moderate Surge (4.5%)
+            </button>
+            <button type="button" class="btn btn-outline infl-preset-btn" data-rate="7.5" style="padding: 6px 14px; font-size: 0.85rem;">
+                1970s Stagflation (7.5%)
+            </button>
+            <button type="button" class="btn btn-outline infl-preset-btn" data-rate="9.1" style="padding: 6px 14px; font-size: 0.85rem;">
+                2022 Peak CPI (9.1%)
+            </button>
+        </div>
+    </div>
+
+    <form id="inflation-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 24px;">
+            <!-- Starting Amount -->
+            <div class="form-group">
+                <label for="infl-amount" class="form-label">Initial Amount ($)</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">$</span>
+                    <input type="number" id="infl-amount" class="form-control" value="10000" min="1" max="1000000000" step="100" required>
+                </div>
+                <span class="form-hint">Baseline nominal capital or basket price</span>
+            </div>
+
+            <!-- Average Annual Inflation Rate -->
+            <div class="form-group">
+                <label for="infl-rate" class="form-label">Annual Inflation Rate (%)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="infl-rate" class="form-control" value="3.2" min="-10" max="100" step="0.1" required>
+                    <span class="input-suffix">%</span>
+                </div>
+                <span class="form-hint">Compound annual percentage price increase</span>
+            </div>
+
+            <!-- Time Horizon (Years) -->
+            <div class="form-group">
+                <label for="infl-years" class="form-label">Time Horizon (Years)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="infl-years" class="form-control" value="15" min="1" max="100" step="1" required>
+                    <span class="input-suffix">Years</span>
+                </div>
+                <span class="form-hint">Number of years into the future</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="infl-calc-btn" class="btn btn-primary" style="min-width: 160px;">
+                Calculate Impact
+            </button>
+            <button type="button" id="infl-reset-btn" class="btn btn-outline">
+                Reset Defaults
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="infl-results" style="margin-top: 32px; border-top: 1px solid var(--color-border); padding-top: 28px;">
+        <!-- Hero Future Equivalent Cost Banner -->
+        <div class="result-hero" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.05)); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #f87171; display: block; margin-bottom: 6px;">
+                Projected Future Equivalent Cost
+            </span>
+            <div id="res-future-cost" style="font-size: 2.8rem; font-weight: 800; color: #f87171; line-height: 1.1; margin-bottom: 8px;">
+                $16,047
+            </div>
+            <div id="res-future-sub" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Required in 15 years to match the purchasing power of $10,000 today
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <!-- Real Purchasing Power -->
+            <div class="metric-card">
+                <span class="metric-label">Future Purchasing Power</span>
+                <span id="res-real-power" class="metric-value" style="color: #38bdf8;">$6,232</span>
+                <span class="metric-sub">Value of current $10,000 in future terms</span>
+            </div>
+
+            <!-- Cumulative Inflation -->
+            <div class="metric-card">
+                <span class="metric-label">Cumulative Inflation</span>
+                <span id="res-cum-inflation" class="metric-value" style="color: #fbbf24;">+60.47%</span>
+                <span class="metric-sub">Total price level expansion</span>
+            </div>
+
+            <!-- Purchasing Power Loss -->
+            <div class="metric-card">
+                <span class="metric-label">Purchasing Power Lost</span>
+                <span id="res-power-lost" class="metric-value" style="color: #f43f5e;">-37.68%</span>
+                <span class="metric-sub">Real capital degradation</span>
+            </div>
+
+            <!-- Rule of 72 Halving Time -->
+            <div class="metric-card">
+                <span class="metric-label">Purchasing Power Halving</span>
+                <span id="res-halving-years" class="metric-value" style="color: #a855f7;">22.5 Years</span>
+                <span class="metric-sub">Time until 50% loss of buying power</span>
+            </div>
+        </div>
+
+        <!-- Visual Purchasing Power Decay Bar -->
+        <div style="margin-bottom: 28px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">
+                <span style="color: #38bdf8;">Retained Purchasing Power: <span id="bar-retained-label" style="font-weight: 700;">62.3%</span></span>
+                <span style="color: #f43f5e;">Eroded by Inflation: <span id="bar-eroded-label" style="font-weight: 700;">37.7%</span></span>
+            </div>
+            <div style="height: 14px; background: rgba(255,255,255,0.06); border-radius: 7px; overflow: hidden; display: flex;">
+                <div id="bar-retained" style="width: 62.3%; background: #38bdf8; transition: width 0.4s ease;"></div>
+                <div id="bar-eroded" style="width: 37.7%; background: #f43f5e; transition: width 0.4s ease;"></div>
+            </div>
+        </div>
+
+        <!-- Annual Value Decay Schedule Table -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                Year-by-Year Inflation &amp; Purchasing Power Schedule
+            </h3>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border-light);">
+                        <th style="padding: 10px 12px; text-align: left;">Year</th>
+                        <th class="th-right" style="padding: 10px 12px;">Future Cost of Goods</th>
+                        <th class="th-right" style="padding: 10px 12px;">Equivalent Buying Power</th>
+                        <th class="th-right" style="padding: 10px 12px;">Cumulative Inflation</th>
+                        <th class="th-right" style="padding: 10px 12px;">Purchasing Power Loss</th>
+                    </tr>
+                </thead>
+                <tbody id="infl-schedule-body">
+                    <!-- Populated dynamically via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Institutional Wealth &amp; Health Analytics Platform</div>
+                <div class="line-desc">Empower your decision making with professional tools. Visit Official Partner.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/inflation.js' %}"></script>
+{% endblock %}
