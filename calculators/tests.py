@@ -667,6 +667,6 @@ class CalculatorNetTests(TestCase):
         response = self.client.get('/ads.txt')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'text/plain; charset=utf-8')
-        self.assertContains(response, "Google AdSense ads.txt")
+        self.assertContains(response, "pub-8130506129253566")
 
 

@@ -785,9 +785,7 @@ def contact(request):
 def ads_txt(request):
     """Technical SEO & AdSense: ads.txt verification route."""
     lines = [
-        "# Google AdSense ads.txt for CalculatorHub",
-        "# Replace with your Publisher ID once approved, e.g.:",
-        "# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0",
+        "google.com, pub-8130506129253566, DIRECT, f08c47fec0942fa0",
     ]
     return HttpResponse("\n".join(lines), content_type="text/plain; charset=utf-8")
 
