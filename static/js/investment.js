@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const scheduleBody = document.getElementById('invest-schedule-body');
     const tabAnnual = document.getElementById('tab-annual');
-    const tab5yr = document.getElementById('tab-5yr');
+    const tab5yr = document.getElementById('tab-5yr') || document.getElementById('tab-milestones');
 
     let scheduleFilter = 'annual'; // 'annual' or '5yr'
     let cachedSchedule = [];
@@ -191,19 +191,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Tab Filters
-    tabAnnual.addEventListener('click', function () {
-        scheduleFilter = 'annual';
-        tabAnnual.classList.add('active');
-        tab5yr.classList.remove('active');
-        renderScheduleTable();
-    });
+    if (tabAnnual && tab5yr) {
+        tabAnnual.addEventListener('click', function () {
+            scheduleFilter = 'annual';
+            tabAnnual.classList.add('active');
+            tab5yr.classList.remove('active');
+            renderScheduleTable();
+        });
 
-    tab5yr.addEventListener('click', function () {
-        scheduleFilter = '5yr';
-        tab5yr.classList.add('active');
-        tabAnnual.classList.remove('active');
-        renderScheduleTable();
-    });
+        tab5yr.addEventListener('click', function () {
+            scheduleFilter = '5yr';
+            tab5yr.classList.add('active');
+            tabAnnual.classList.remove('active');
+            renderScheduleTable();
+        });
+    }
 
     // Preset Return Buttons
     presetBtns.forEach(btn => {

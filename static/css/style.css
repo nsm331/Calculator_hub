@@ -211,7 +211,15 @@ img, svg {
     max-width: 100%;
 }
 
-button, input, select, textarea {
+button {
+    font: inherit;
+    color: inherit;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+input, select, textarea {
     font: inherit;
     color: inherit;
 }
@@ -3607,55 +3615,86 @@ textarea:focus,
     cursor: pointer;
 }
 
-/* Universal Outline Buttons & Active State */
-.btn-outline {
-    background-color: var(--color-input-bg);
-    border: 1px solid var(--color-border-light);
-    color: var(--color-text-main);
+/* Universal Outline & Interactive Tab/Preset Buttons */
+.btn-outline,
+.rng-tab-btn,
+.invest-preset-btn,
+.preg-tab-btn,
+.subnet-preset-btn,
+.rng-quick-btn {
+    background-color: #142337 !important;
+    border: 1px solid #2b4971 !important;
+    color: #f1f5f9 !important;
     font-size: 0.85rem;
     font-weight: 600;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-sm, 6px);
     padding: 8px 14px;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-fast, 0.15s ease);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
+    text-decoration: none;
 }
 
-.btn-outline:hover {
-    border-color: var(--color-accent-blue);
-    color: var(--color-accent-blue);
-    background-color: rgba(30, 96, 181, 0.08);
+.btn-outline:hover,
+.rng-tab-btn:hover,
+.invest-preset-btn:hover,
+.preg-tab-btn:hover,
+.subnet-preset-btn:hover,
+.rng-quick-btn:hover {
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+    background-color: rgba(56, 189, 248, 0.15) !important;
     transform: translateY(-1px);
 }
 
-.btn-outline.active {
-    background-color: var(--color-accent-blue) !important;
-    border-color: var(--color-accent-blue) !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(30, 96, 181, 0.25);
-}
-
-[data-theme="dark"] .btn-outline {
-    background-color: var(--color-bg-card-alt);
-    border-color: var(--color-border-light);
-    color: var(--color-text-main);
-}
-
-[data-theme="dark"] .btn-outline:hover {
-    border-color: #38bdf8;
-    color: #38bdf8;
-    background-color: rgba(56, 189, 248, 0.12);
-    transform: translateY(-1px);
-}
-
-[data-theme="dark"] .btn-outline.active {
+.btn-outline.active,
+.rng-tab-btn.active,
+.invest-preset-btn.active,
+.preg-tab-btn.active,
+.subnet-preset-btn.active,
+.rng-quick-btn.active {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-color: #38bdf8 !important;
     color: #ffffff !important;
-    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.35) !important;
+}
+
+/* Light Mode Overrides for Outline & Interactive Buttons */
+[data-theme="light"] .btn-outline,
+[data-theme="light"] .rng-tab-btn,
+[data-theme="light"] .invest-preset-btn,
+[data-theme="light"] .preg-tab-btn,
+[data-theme="light"] .subnet-preset-btn,
+[data-theme="light"] .rng-quick-btn {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .btn-outline:hover,
+[data-theme="light"] .rng-tab-btn:hover,
+[data-theme="light"] .invest-preset-btn:hover,
+[data-theme="light"] .preg-tab-btn:hover,
+[data-theme="light"] .subnet-preset-btn:hover,
+[data-theme="light"] .rng-quick-btn:hover {
+    border-color: #1e60b5 !important;
+    color: #1e60b5 !important;
+    background-color: rgba(30, 96, 181, 0.08) !important;
+}
+
+[data-theme="light"] .btn-outline.active,
+[data-theme="light"] .rng-tab-btn.active,
+[data-theme="light"] .invest-preset-btn.active,
+[data-theme="light"] .preg-tab-btn.active,
+[data-theme="light"] .subnet-preset-btn.active,
+[data-theme="light"] .rng-quick-btn.active {
+    background: #1e60b5 !important;
+    border-color: #164e96 !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(30, 96, 181, 0.25) !important;
 }
 
 /* Universal Metric Card System */
