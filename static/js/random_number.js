@@ -273,8 +273,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let pillsHtml = '';
             results.forEach((val, idx) => {
                 pillsHtml += `
-                    <div style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: 6px; padding: 8px 14px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.1rem; font-weight: 700; color: #818cf8; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 0.72rem; color: var(--color-text-muted); font-weight: 500;">#${idx + 1}</span>
+                    <div class="rng-number-pill">
+                        <span style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;">#${idx + 1}</span>
                         <span>${val}</span>
                     </div>
                 `;

@@ -164,23 +164,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             rowsHtml += `
-                <tr style="border-bottom: 1px solid var(--color-border); text-align: right;">
+                <tr style="border-bottom: 1px solid var(--color-border-light);">
                     <td style="padding: 9px 12px; text-align: left; font-weight: 600;">
                         Year ${row.year}
                     </td>
-                    <td style="padding: 9px 12px; color: var(--color-text-muted);">
+                    <td class="td-right" style="padding: 9px 12px; color: var(--color-text-muted);">
                         ${formatCurrency(row.startBalance)}
                     </td>
-                    <td style="padding: 9px 12px; color: var(--color-text-main);">
+                    <td class="td-right" style="padding: 9px 12px; color: var(--color-text-main);">
                         ${formatCurrency(row.deposits)}
                     </td>
-                    <td style="padding: 9px 12px; color: #10b981;">
+                    <td class="td-right" style="padding: 9px 12px; color: #10b981;">
                         +${formatCurrency(row.interest)}
                     </td>
-                    <td style="padding: 9px 12px; color: var(--color-text-muted);">
+                    <td class="td-right" style="padding: 9px 12px; color: var(--color-text-muted);">
                         ${formatCurrency(row.totalInterest)}
                     </td>
-                    <td style="padding: 9px 12px; font-weight: 700; color: #10b981;">
+                    <td class="td-right" style="padding: 9px 12px; font-weight: 700; color: #10b981;">
                         ${formatCurrency(row.endBalance)}
                     </td>
                 </tr>

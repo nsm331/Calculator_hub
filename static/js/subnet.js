@@ -200,12 +200,12 @@ document.addEventListener('DOMContentLoaded', function () {
         let maskBits = '';
         for (let i = 1; i <= 32; i++) {
             if (i <= cidr) {
-                maskBits += '<span style="color: #60a5fa; font-weight: 700;">1</span>';
+                maskBits += '<span class="bin-bit-one">1</span>';
             } else {
-                maskBits += '<span style="color: var(--color-text-muted); opacity: 0.5;">0</span>';
+                maskBits += '<span class="bin-bit-zero">0</span>';
             }
             if (i % 8 === 0 && i < 32) {
-                maskBits += '<span style="color: var(--color-border); font-weight: bold;">.</span>';
+                maskBits += '<span style="color: var(--color-border-subtle); font-weight: bold;">.</span>';
             }
         }
         binMask.innerHTML = maskBits;
@@ -230,20 +230,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const isCurrent = p === currentCidr;
 
             html += `
-                <tr style="border-bottom: 1px solid var(--color-border); ${isCurrent ? 'background: rgba(96, 165, 250, 0.08);' : ''}">
-                    <td style="padding: 9px 12px; font-weight: 700; color: ${isCurrent ? '#60a5fa' : 'var(--color-text-main)'};">
-                        /${p} ${isCurrent ? '<span style="font-size: 0.72rem; color: #60a5fa; margin-left: 6px;">(Current)</span>' : ''}
+                <tr style="border-bottom: 1px solid var(--color-border-light); ${isCurrent ? 'background: rgba(56, 189, 248, 0.12);' : ''}">
+                    <td style="padding: 9px 12px; font-weight: 700; color: ${isCurrent ? '#38bdf8' : 'var(--color-text-main)'};">
+                        /${p} ${isCurrent ? '<span style="font-size: 0.72rem; color: #38bdf8; margin-left: 6px; font-weight: 700;">(Current)</span>' : ''}
                     </td>
                     <td style="padding: 9px 12px; font-family: 'JetBrains Mono', monospace; color: var(--color-text-muted);">
                         ${intToIp(maskInt)}
                     </td>
-                    <td style="padding: 9px 12px; text-align: right; font-weight: 600;">
+                    <td class="td-right" style="padding: 9px 12px; font-weight: 600;">
                         ${subnetsCount.toLocaleString('en-US')}
                     </td>
-                    <td style="padding: 9px 12px; text-align: right; color: var(--color-text-muted);">
+                    <td class="td-right" style="padding: 9px 12px; color: var(--color-text-muted);">
                         ${totalIps.toLocaleString('en-US')}
                     </td>
-                    <td style="padding: 9px 12px; text-align: right; font-weight: 700; color: #10b981;">
+                    <td class="td-right" style="padding: 9px 12px; font-weight: 700; color: #10b981;">
                         ${usable.toLocaleString('en-US')}
                     </td>
                 </tr>
