@@ -656,7 +656,17 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "sitemap.xml")
 
     def test_info_pages(self):
-        for name in ['about', 'terms', 'privacy']:
+        for name in ['about', 'terms', 'privacy', 'contact']:
             resp = self.client.get(reverse(name))
             self.assertEqual(resp.status_code, 200)
+        # Verify contact email in contact page
+        contact_resp = self.client.get(reverse('contact'))
+        self.assertContains(contact_resp, "ssk.nsm313@gmail.com")
+
+    def test_ads_txt_view(self):
+        response = self.client.get('/ads.txt')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'text/plain; charset=utf-8')
+        self.assertContains(response, "Google AdSense ads.txt")
+
 

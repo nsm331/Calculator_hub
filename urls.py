@@ -18,5 +18,6 @@ urlpatterns = [
         name='django.contrib.sitemaps.views.sitemap'
     ),
     path('robots.txt', calc_views.robots_txt, name='robots_txt'),
+    path('ads.txt', calc_views.ads_txt, name='ads_txt'),
     path('', include('calculators.urls')),
 ]

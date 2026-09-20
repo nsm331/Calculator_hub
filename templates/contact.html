@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us - Support & Inquiries | CalculatorHub{% endblock %}
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a> &rsaquo; <span>Contact Us</span></div>
+    <h1 class="page-title">Contact CalculatorHub</h1>
+    <p class="page-lead">Have questions, suggestions, or feedback? We are here to help you get the most out of our calculation tools.</p>
+</div>
+
+<div class="article-content-wrapper seo-article" style="margin-bottom: 2rem;">
+    <h2>Get in Touch Directly</h2>
+    <p>
+        Whether you noticed a calculation discrepancy, want to request a new calculator, or have business and advertising inquiries, our dedicated editorial and technical team is ready to assist.
+    </p>
+
+    <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-lg); padding: 1.5rem; margin: 1.5rem 0;">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="background: rgba(30, 96, 181, 0.12); width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-accent-blue); flex-shrink: 0;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+            </div>
+            <div>
+                <span style="display: block; font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500;">Official Support & Editorial Email</span>
+                <a href="mailto:ssk.nsm313@gmail.com" style="font-size: 1.25rem; font-weight: 700; color: var(--color-accent-blue); text-decoration: none; word-break: break-all;">
+                    ssk.nsm313@gmail.com
+                </a>
+            </div>
+        </div>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-light); display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.88rem; color: var(--color-text-muted);">
+            <div><strong>Response Time:</strong> Typically within 24&ndash;48 business hours</div>
+            <div><strong>Location:</strong> Online Global Service</div>
+        </div>
+    </div>
+
+    <h2>Inquiry Categories</h2>
+    <ul>
+        <li><strong>Formula Verification & Bug Reports:</strong> If you identify an issue with any algorithm, formula, or KaTeX step, please provide the calculator URL, inputs used, and expected values.</li>
+        <li><strong>Feature & Tool Requests:</strong> We continuously expand our calculator catalog. Feel free to suggest missing formulas in Finance, Health, Math, or Engineering.</li>
+        <li><strong>Advertising & Partnerships:</strong> For inquiries regarding Google AdSense integration, custom sponsorships, or institutional data partnerships.</li>
+        <li><strong>Privacy & Data Inquiries:</strong> Questions regarding our zero-collection client-side computation architecture or cookie policies.</li>
+    </ul>
+
+    <h2>Quick Message Form</h2>
+    <form action="mailto:ssk.nsm313@gmail.com" method="get" enctype="text/plain" style="margin-top: 1.25rem;">
+        <div style="margin-bottom: 1rem;">
+            <label for="contact-subject" style="display: block; font-weight: 600; margin-bottom: 0.35rem; color: var(--color-text-main);">Subject</label>
+            <input type="text" id="contact-subject" name="subject" placeholder="Inquiry regarding CalculatorHub..." style="width: 100%; padding: 0.75rem; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text);" required>
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+            <label for="contact-body" style="display: block; font-weight: 600; margin-bottom: 0.35rem; color: var(--color-text-main);">Message</label>
+            <textarea id="contact-body" name="body" rows="5" placeholder="Write your feedback, question, or inquiry here..." style="width: 100%; padding: 0.75rem; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); resize: vertical;" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.75rem; font-size: 1rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer; font-weight: 600;">
+            Send Message via Email &rarr;
+        </button>
+    </form>
+</div>
+{% endblock %}

@@ -771,3 +771,23 @@ def privacy(request):
         'meta_description': 'Privacy policy outlining data handling, cookie usage, and user protection standards at CalculatorHub.',
     }
     return render(request, 'privacy.html', context)
+
+
+def contact(request):
+    """Contact Us page."""
+    context = {
+        'meta_title': 'Contact Us - Support & Inquiries | CalculatorHub',
+        'meta_description': 'Contact the CalculatorHub team for support, feature suggestions, formula verification, and advertising inquiries.',
+    }
+    return render(request, 'contact.html', context)
+
+
+def ads_txt(request):
+    """Technical SEO & AdSense: ads.txt verification route."""
+    lines = [
+        "# Google AdSense ads.txt for CalculatorHub",
+        "# Replace with your Publisher ID once approved, e.g.:",
+        "# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain; charset=utf-8")
+

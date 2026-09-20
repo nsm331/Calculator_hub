@@ -246,4 +246,5 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('terms-of-use/', views.terms, name='terms'),
     path('privacy-policy/', views.privacy, name='privacy'),
+    path('contact/', views.contact, name='contact'),
 ]
