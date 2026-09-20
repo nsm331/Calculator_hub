@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Fuel Cost & Mileage Trip Planner - Gas Mileage, Tolls & Carpool Split | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate road trip fuel costs, gas consumption, toll charges, and passenger carpool splits using MPG or L/100km fuel economy metrics." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Fuel Cost &amp; Mileage Trip Planner</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Fuel Cost &amp; Mileage Trip Planner" }}</h1>
+    <p class="page-lead">
+        Calculate precise road trip fuel expenses, gas volume required, highway tolls, and fair passenger carpool splits across US Customary (MPG) and Metric (L/100km) standards.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Vehicular Energy Consumption &amp; Road Trip Budgeting Engine</span>
+    </div>
+
+    <!-- Unit System Toggle -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Measurement Units
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline fuel-unit-btn active" data-unit="us">
+                🇺🇸 US Customary (Miles, MPG, $/gal)
+            </button>
+            <button type="button" class="btn btn-outline fuel-unit-btn" data-unit="metric">
+                🌍 Metric (Kilometers, L/100km, $/liter)
+            </button>
+        </div>
+    </div>
+
+    <!-- Road Trip Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Quick Travel Scenarios
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline fuel-preset-btn active" data-dist="25" data-mpg="30" data-price="3.45" data-round="true" data-riders="1" data-tolls="0" data-parking="0" style="padding: 6px 14px; font-size: 0.85rem;">
+                🚗 Daily Commute (25 mi round)
+            </button>
+            <button type="button" class="btn btn-outline fuel-preset-btn" data-dist="250" data-mpg="28" data-price="3.65" data-round="true" data-riders="2" data-tolls="15" data-parking="20" style="padding: 6px 14px; font-size: 0.85rem;">
+                🏖️ Weekend Getaway (250 mi • 2 pax)
+            </button>
+            <button type="button" class="btn btn-outline fuel-preset-btn" data-dist="650" data-mpg="26" data-price="3.50" data-round="true" data-riders="4" data-tolls="35" data-parking="45" style="padding: 6px 14px; font-size: 0.85rem;">
+                ⛰️ Family Vacation (650 mi • 4 pax)
+            </button>
+            <button type="button" class="btn btn-outline fuel-preset-btn" data-dist="1800" data-mpg="32" data-price="3.55" data-round="false" data-riders="3" data-tolls="45" data-parking="25" style="padding: 6px 14px; font-size: 0.85rem;">
+                🗺️ Cross-Country (1,800 mi • 1-way)
+            </button>
+        </div>
+    </div>
+
+    <form id="fuel-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 20px;">
+            <!-- Trip Distance -->
+            <div class="form-group">
+                <label for="fuel-distance" class="form-label" id="fuel-dist-label">Trip Distance (One-Way)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="fuel-distance" class="form-control" value="25" min="0.1" max="100000" step="1" required>
+                    <span class="input-suffix" id="fuel-dist-suffix">Miles</span>
+                </div>
+                <span class="form-hint">Odometer or GPS route distance</span>
+            </div>
+
+            <!-- Fuel Economy -->
+            <div class="form-group">
+                <label for="fuel-economy" class="form-label" id="fuel-econ-label">Fuel Efficiency (MPG)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="fuel-economy" class="form-control" value="30" min="1" max="250" step="0.5" required>
+                    <span class="input-suffix" id="fuel-econ-suffix">MPG</span>
+                </div>
+                <span class="form-hint" id="fuel-econ-hint">Vehicle average fuel economy</span>
+            </div>
+
+            <!-- Fuel Price -->
+            <div class="form-group">
+                <label for="fuel-price" class="form-label" id="fuel-price-label">Fuel Price ($ / Gallon)</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix" id="fuel-price-prefix">$</span>
+                    <input type="number" id="fuel-price" class="form-control" value="3.45" min="0.01" max="100" step="0.01" required>
+                    <span class="input-suffix" id="fuel-price-suffix">/ gal</span>
+                </div>
+                <span class="form-hint">Average local retail gas price</span>
+            </div>
+        </div>
+
+        <!-- Journey Options & Trip Incidentals Accordion -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px 18px; margin-bottom: 24px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--color-text-muted); display: block; margin-bottom: 12px;">
+                Trip Configuration, Tolls &amp; Carpool Splitting
+            </span>
+            <div class="grid grid-4" style="gap: 16px;">
+                <!-- Round Trip Toggle -->
+                <div class="form-group">
+                    <label class="form-label">Trip Direction</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                            <input type="radio" name="fuel_trip_type" value="round" checked style="accent-color: var(--color-primary);">
+                            <span>Round Trip (2× Distance)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                            <input type="radio" name="fuel_trip_type" value="oneway" style="accent-color: var(--color-primary);">
+                            <span>One-Way Trip</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Carpool Passengers -->
+                <div class="form-group">
+                    <label for="fuel-riders" class="form-label">Carpool Riders (Split)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="fuel-riders" class="form-control" value="1" min="1" max="50" step="1">
+                        <span class="input-suffix">people</span>
+                    </div>
+                    <span class="form-hint">Equal cost-sharing passengers</span>
+                </div>
+
+                <!-- Tolls -->
+                <div class="form-group">
+                    <label for="fuel-tolls" class="form-label">Highway Tolls ($)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="fuel-tolls" class="form-control" value="0" min="0" max="10000" step="1">
+                    </div>
+                    <span class="form-hint">Turnpike / bridge toll fees</span>
+                </div>
+
+                <!-- Parking & Other -->
+                <div class="form-group">
+                    <label for="fuel-parking" class="form-label">Parking &amp; Fees ($)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="fuel-parking" class="form-control" value="0" min="0" max="10000" step="1">
+                    </div>
+                    <span class="form-hint">Destination parking charges</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 10px; margin-bottom: 24px;">
+            <button type="button" id="fuel-calculate-btn" class="btn btn-primary" style="min-width: 180px;">
+                Calculate Trip Cost
+            </button>
+            <button type="button" id="fuel-reset-btn" class="btn btn-outline" style="min-width: 120px;">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="fuel-results" style="margin-top: 24px; display: block;">
+        <!-- Primary 4 KPI Cards -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <div class="result-card" style="text-align: center; border-left: 4px solid var(--color-primary);">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Total Trip Cost
+                </div>
+                <div id="res-fuel-total-cost" style="font-size: 2.2rem; font-weight: 800; color: var(--color-primary); line-height: 1.1;">
+                    $5.75
+                </div>
+                <div id="res-fuel-total-sub" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Gas: $5.75 • Tolls/Fees: $0.00
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #10b981;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Cost Per Passenger
+                </div>
+                <div id="res-fuel-per-rider" style="font-size: 2.2rem; font-weight: 800; color: #10b981; line-height: 1.1;">
+                    $5.75
+                </div>
+                <div id="res-fuel-rider-label" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Solo driver (1 person)
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #3b82f6;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Fuel Volume Required
+                </div>
+                <div id="res-fuel-volume" style="font-size: 2.2rem; font-weight: 800; color: #3b82f6; line-height: 1.1;">
+                    1.67 Gallons
+                </div>
+                <div id="res-fuel-dist-total" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Total Travel: 50.0 Miles
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #8b5cf6;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Cost Per Mile / Km
+                </div>
+                <div id="res-fuel-cost-permile" style="font-size: 2.2rem; font-weight: 800; color: #8b5cf6; line-height: 1.1;">
+                    $0.115 / mi
+                </div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Operational fuel rate
+                </div>
+            </div>
+        </div>
+
+        <!-- Trip Expense Distribution Bar -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text);">
+                    Trip Expenditure Allocation
+                </span>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);" id="res-fuel-bar-summary">
+                    Total Travel Budget: $5.75
+                </span>
+            </div>
+
+            <!-- Segmented stacked bar -->
+            <div style="height: 28px; border-radius: 6px; overflow: hidden; display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);">
+                <div id="bar-fuel-segment" style="width: 100%; background: linear-gradient(90deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.8rem; font-weight: 700; transition: width 0.4s ease;">
+                    Fuel (100%)
+                </div>
+                <div id="bar-tolls-segment" style="width: 0%; background: linear-gradient(90deg, #f59e0b, #d97706); display: none; align-items: center; justify-content: center; color: #ffffff; font-size: 0.8rem; font-weight: 700; transition: width 0.4s ease;">
+                    Tolls
+                </div>
+                <div id="bar-parking-segment" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #7c3aed); display: none; align-items: center; justify-content: center; color: #ffffff; font-size: 0.8rem; font-weight: 700; transition: width 0.4s ease;">
+                    Parking
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8rem; color: var(--color-text-muted);">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3b82f6;"></span>
+                    <span>Fuel Gasoline / Diesel Charges</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #f59e0b;"></span>
+                    <span>Highway Turnpike Tolls</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #8b5cf6;"></span>
+                    <span>Parking &amp; Destination Fees</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cruising Speed & Aerodynamic Efficiency Sensitivity Table -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 6px 0;">
+                    Cruising Velocity &amp; Aerodynamic Drag Sensitivity Table
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0;">
+                    Aerodynamic drag scales quadratically ($v^2$), altering realized fuel economy and trip cost at higher highway cruising speeds.
+                </p>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <th style="padding: 10px 12px; text-align: left;">Cruising Speed</th>
+                            <th class="th-right" style="padding: 10px 12px;" id="th-sens-econ">Realized Economy (MPG)</th>
+                            <th class="th-right" style="padding: 10px 12px;">Fuel Consumed</th>
+                            <th class="th-right" style="padding: 10px 12px;">Trip Fuel Cost</th>
+                            <th class="th-right" style="padding: 10px 12px;">Cost Variance vs Baseline</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fuel-speed-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Fleet Logistics &amp; Intelligent Fuel Management</div>
+                <div class="line-desc">Enterprise GPS route optimization and commercial fleet fuel expense auditing.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/fuel_cost.js' %}"></script>
+{% endblock %}

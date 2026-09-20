@@ -3634,7 +3634,15 @@ textarea:focus,
 .tri-mode-btn,
 .tri-preset-btn,
 .tip-scenario-btn,
-.tip-percent-btn {
+.tip-percent-btn,
+.tax-status-btn,
+.tax-preset-btn,
+.water-unit-btn,
+.water-preset-btn,
+.exp-mode-btn,
+.exp-preset-btn,
+.fuel-unit-btn,
+.fuel-preset-btn {
     background-color: #142337 !important;
     border: 1px solid #2b4971 !important;
     color: #f1f5f9 !important;
@@ -3669,7 +3677,15 @@ textarea:focus,
 .tri-mode-btn:hover,
 .tri-preset-btn:hover,
 .tip-scenario-btn:hover,
-.tip-percent-btn:hover {
+.tip-percent-btn:hover,
+.tax-status-btn:hover,
+.tax-preset-btn:hover,
+.water-unit-btn:hover,
+.water-preset-btn:hover,
+.exp-mode-btn:hover,
+.exp-preset-btn:hover,
+.fuel-unit-btn:hover,
+.fuel-preset-btn:hover {
     border-color: #38bdf8 !important;
     color: #38bdf8 !important;
     background-color: rgba(56, 189, 248, 0.15) !important;
@@ -3694,7 +3710,15 @@ textarea:focus,
 .tri-mode-btn.active,
 .tri-preset-btn.active,
 .tip-scenario-btn.active,
-.tip-percent-btn.active {
+.tip-percent-btn.active,
+.tax-status-btn.active,
+.tax-preset-btn.active,
+.water-unit-btn.active,
+.water-preset-btn.active,
+.exp-mode-btn.active,
+.exp-preset-btn.active,
+.fuel-unit-btn.active,
+.fuel-preset-btn.active {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-color: #38bdf8 !important;
     color: #ffffff !important;
@@ -3720,7 +3744,15 @@ textarea:focus,
 [data-theme="light"] .tri-mode-btn,
 [data-theme="light"] .tri-preset-btn,
 [data-theme="light"] .tip-scenario-btn,
-[data-theme="light"] .tip-percent-btn {
+[data-theme="light"] .tip-percent-btn,
+[data-theme="light"] .tax-status-btn,
+[data-theme="light"] .tax-preset-btn,
+[data-theme="light"] .water-unit-btn,
+[data-theme="light"] .water-preset-btn,
+[data-theme="light"] .exp-mode-btn,
+[data-theme="light"] .exp-preset-btn,
+[data-theme="light"] .fuel-unit-btn,
+[data-theme="light"] .fuel-preset-btn {
     background-color: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
@@ -3744,7 +3776,15 @@ textarea:focus,
 [data-theme="light"] .tri-mode-btn:hover,
 [data-theme="light"] .tri-preset-btn:hover,
 [data-theme="light"] .tip-scenario-btn:hover,
-[data-theme="light"] .tip-percent-btn:hover {
+[data-theme="light"] .tip-percent-btn:hover,
+[data-theme="light"] .tax-status-btn:hover,
+[data-theme="light"] .tax-preset-btn:hover,
+[data-theme="light"] .water-unit-btn:hover,
+[data-theme="light"] .water-preset-btn:hover,
+[data-theme="light"] .exp-mode-btn:hover,
+[data-theme="light"] .exp-preset-btn:hover,
+[data-theme="light"] .fuel-unit-btn:hover,
+[data-theme="light"] .fuel-preset-btn:hover {
     border-color: #1e60b5 !important;
     color: #1e60b5 !important;
     background-color: rgba(30, 96, 181, 0.08) !important;
@@ -3768,7 +3808,15 @@ textarea:focus,
 [data-theme="light"] .tri-mode-btn.active,
 [data-theme="light"] .tri-preset-btn.active,
 [data-theme="light"] .tip-scenario-btn.active,
-[data-theme="light"] .tip-percent-btn.active {
+[data-theme="light"] .tip-percent-btn.active,
+[data-theme="light"] .tax-status-btn.active,
+[data-theme="light"] .tax-preset-btn.active,
+[data-theme="light"] .water-unit-btn.active,
+[data-theme="light"] .water-preset-btn.active,
+[data-theme="light"] .exp-mode-btn.active,
+[data-theme="light"] .exp-preset-btn.active,
+[data-theme="light"] .fuel-unit-btn.active,
+[data-theme="light"] .fuel-preset-btn.active {
     background: #1e60b5 !important;
     border-color: #164e96 !important;
     color: #ffffff !important;

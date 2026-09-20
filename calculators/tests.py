@@ -461,6 +461,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Microeconomics of Gratuity", calc.article_content)
 
+    def test_income_tax_calculator_view(self):
+        response = self.client.get(reverse('income_tax_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Income Tax Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/income_tax.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='income-tax-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Progressive Income Taxation", calc.article_content)
+
+    def test_water_intake_calculator_view(self):
+        response = self.client.get(reverse('water_intake_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Daily Water Intake Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/water_intake.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='water-intake-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Human Hydration Physiology", calc.article_content)
+
+    def test_exponent_calculator_view(self):
+        response = self.client.get(reverse('exponent_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Exponent &amp; Power Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/exponent.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='exponent-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Laws of Exponentiation", calc.article_content)
+
+    def test_fuel_cost_calculator_view(self):
+        response = self.client.get(reverse('fuel_cost_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Fuel Cost &amp; Mileage Trip Planner")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/fuel_cost.js")
+        self.assertNotContains(response, "js/speed_distance_time.js")
+        calc = Calculator.objects.filter(slug='fuel-cost-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Vehicular Energy Consumption", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -504,6 +548,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "lean-body-mass-calculator")
         self.assertContains(response, "right-triangle-solver")
         self.assertContains(response, "tip-calculator")
+        self.assertContains(response, "income-tax-calculator")
+        self.assertContains(response, "daily-water-intake-calculator")
+        self.assertContains(response, "exponent-power-calculator")
+        self.assertContains(response, "fuel-cost-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -546,6 +594,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('lean_body_mass_calculator'))
         self.client.get(reverse('right_triangle_solver'))
         self.client.get(reverse('tip_calculator'))
+        self.client.get(reverse('income_tax_calculator'))
+        self.client.get(reverse('water_intake_calculator'))
+        self.client.get(reverse('exponent_calculator'))
+        self.client.get(reverse('fuel_cost_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -589,6 +641,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "lean-body-mass-calculator")
         self.assertContains(response, "right-triangle-solver")
         self.assertContains(response, "tip-calculator")
+        self.assertContains(response, "income-tax-calculator")
+        self.assertContains(response, "daily-water-intake-calculator")
+        self.assertContains(response, "exponent-power-calculator")
+        self.assertContains(response, "fuel-cost-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

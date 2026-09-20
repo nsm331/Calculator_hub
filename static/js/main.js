@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Investment Calculator', category: 'Financial', url: '/financial-calculators/investment-calculator/' },
             { title: 'Inflation Calculator', category: 'Financial', url: '/financial-calculators/inflation-calculator/' },
             { title: 'Salary to Hourly Calculator', category: 'Financial', url: '/financial-calculators/salary-to-hourly-calculator/' },
+            { title: 'Income Tax Calculator', category: 'Financial', url: '/financial-calculators/income-tax-calculator/' },
             { title: 'Calorie Needs Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/calorie-calculator/' },
             { title: 'Body Fat Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/body-fat-calculator/' },
             { title: 'BMR Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/bmr-calculator/' },
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Pregnancy Due Date Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/pregnancy-calculator/' },
             { title: 'Ovulation & Fertility Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/ovulation-calculator/' },
             { title: 'Lean Body Mass Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/lean-body-mass-calculator/' },
+            { title: 'Daily Water Intake Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/daily-water-intake-calculator/' },
             { title: 'Scientific Calculator', category: 'Math', url: '/math-calculators/scientific-calculator/' },
             { title: 'Fraction Calculator', category: 'Math', url: '/math-calculators/fraction-calculator/' },
             { title: 'Binary & Hex Converter', category: 'Math', url: '/math-calculators/binary-hex-converter/' },
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Random Number Generator', category: 'Math', url: '/math-calculators/random-number-generator/' },
             { title: 'Standard Deviation & Variance Calculator', category: 'Math', url: '/math-calculators/standard-deviation-calculator/' },
             { title: 'Right Triangle Solver', category: 'Math', url: '/math-calculators/right-triangle-solver/' },
+            { title: 'Exponent & Power Calculator', category: 'Math', url: '/math-calculators/exponent-power-calculator/' },
             { title: 'Age Calculator', category: 'Other', url: '/other-calculators/age-calculator/' },
             { title: 'Date Difference Calculator', category: 'Other', url: '/other-calculators/date-difference-calculator/' },
             { title: 'Time & Duration Calculator', category: 'Other', url: '/other-calculators/time-duration-calculator/' },
@@ -82,6 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'IPv4 Subnet Mask Calculator', category: 'Other', url: '/other-calculators/subnet-calculator/' },
             { title: 'Speed, Distance & Time Calculator', category: 'Other', url: '/other-calculators/speed-distance-time-calculator/' },
             { title: 'Tip & Split Bill Calculator', category: 'Other', url: '/other-calculators/tip-calculator/' },
+            { title: 'Fuel Cost & Mileage Trip Planner', category: 'Other', url: '/other-calculators/fuel-cost-calculator/' },
         ];
 
         searchInput.addEventListener('input', () => {

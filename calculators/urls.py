@@ -219,6 +219,28 @@ urlpatterns = [
         name='tip_calculator'
     ),
 
+    # Batch 11 Calculators (User Batch #10)
+    path(
+        'financial-calculators/income-tax-calculator/',
+        views.income_tax_calculator,
+        name='income_tax_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/daily-water-intake-calculator/',
+        views.water_intake_calculator,
+        name='water_intake_calculator'
+    ),
+    path(
+        'math-calculators/exponent-power-calculator/',
+        views.exponent_calculator,
+        name='exponent_calculator'
+    ),
+    path(
+        'other-calculators/fuel-cost-calculator/',
+        views.fuel_cost_calculator,
+        name='fuel_cost_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

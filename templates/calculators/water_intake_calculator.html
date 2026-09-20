@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Daily Water Intake Calculator - Hydration Goals, Sweat Loss & Pacing | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate your optimal daily water intake based on body weight, exercise duration, ambient climate, and physiological state with customized hydration pacing." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health Calculators</a> &rsaquo; 
+        <span>Daily Water Intake Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Daily Water Intake Calculator" }}</h1>
+    <p class="page-lead">
+        Determine your optimal daily fluid consumption using National Academies Dietary Reference Intakes (DRI), metabolic body mass scaling, and exercise sweat loss replacement kinetics.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Human Hydration Physiology &amp; Fluid Turnover Engine</span>
+    </div>
+
+    <!-- Unit Toggle -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Measurement Units
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline water-unit-btn active" data-unit="metric">
+                🌍 Metric (kg, mL, Liters)
+            </button>
+            <button type="button" class="btn btn-outline water-unit-btn" data-unit="imperial">
+                📐 US Customary (lbs, fl oz, 8-oz Cups)
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Lifestyle Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Hydration Lifestyle Presets
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline water-preset-btn active" data-gender="male" data-weight="75" data-activity="0" data-climate="temperate" style="padding: 6px 14px; font-size: 0.85rem;">
+                💼 Office Worker (Sedentary)
+            </button>
+            <button type="button" class="btn btn-outline water-preset-btn" data-gender="male" data-weight="80" data-activity="45" data-climate="temperate" style="padding: 6px 14px; font-size: 0.85rem;">
+                🏋️ Fitness Gym Enthusiast (45 min)
+            </button>
+            <button type="button" class="btn btn-outline water-preset-btn" data-gender="female" data-weight="62" data-activity="60" data-climate="hot" style="padding: 6px 14px; font-size: 0.85rem;">
+                🏃 Summer Outdoor Runner (60 min)
+            </button>
+            <button type="button" class="btn btn-outline water-preset-btn" data-gender="female" data-weight="68" data-activity="30" data-climate="temperate" data-gestation="lactating" style="padding: 6px 14px; font-size: 0.85rem;">
+                🍼 Nursing Mother (Lactating)
+            </button>
+        </div>
+    </div>
+
+    <form id="water-form" onsubmit="return false;" novalidate>
+        <!-- Biological Sex Selection -->
+        <div style="margin-bottom: 20px;">
+            <label class="form-label" style="display: block; margin-bottom: 8px;">Biological Sex</label>
+            <div style="display: flex; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 6px; flex: 1;">
+                    <input type="radio" name="water_sex" value="male" checked style="accent-color: var(--color-primary);">
+                    <span style="font-weight: 600; font-size: 0.95rem;">Male (Men)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 16px; background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 6px; flex: 1;">
+                    <input type="radio" name="water_sex" value="female" style="accent-color: var(--color-primary);">
+                    <span style="font-weight: 600; font-size: 0.95rem;">Female (Women)</span>
+                </label>
+            </div>
+            <span class="form-hint">National Academies DRI baselines: 3.7 L total water for men, 2.7 L for women</span>
+        </div>
+
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 20px;">
+            <!-- Body Weight -->
+            <div class="form-group">
+                <label for="water-weight" class="form-label" id="water-weight-label">Body Weight (kg)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="water-weight" class="form-control" value="75" min="20" max="300" step="0.5" required>
+                    <span class="input-suffix" id="water-weight-suffix">kg</span>
+                </div>
+                <span class="form-hint">Current scale body weight</span>
+            </div>
+
+            <!-- Daily Physical Exercise Duration -->
+            <div class="form-group">
+                <label for="water-exercise" class="form-label">Exercise Duration (Minutes/Day)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="water-exercise" class="form-control" value="0" min="0" max="360" step="5" required>
+                    <span class="input-suffix">mins</span>
+                </div>
+                <span class="form-hint">Moderate to intense physical training</span>
+            </div>
+
+            <!-- Ambient Climate -->
+            <div class="form-group">
+                <label for="water-climate" class="form-label">Ambient Climate / Weather</label>
+                <select id="water-climate" class="form-control">
+                    <option value="temperate" selected>Temperate &amp; Air Conditioned (&lt; 22&deg;C / 72&deg;F)</option>
+                    <option value="warm">Warm or Arid Weather (23&deg;C - 30&deg;C)</option>
+                    <option value="hot">Hot or Humid Tropical (&gt; 30&deg;C / 86&deg;F)</option>
+                </select>
+                <span class="form-hint">Perspiratory evaporation multiplier</span>
+            </div>
+        </div>
+
+        <!-- Special Physiological Condition (for women) -->
+        <div id="water-gestation-group" style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px 18px; margin-bottom: 24px; display: none;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+                Maternal Physiological Demands
+            </span>
+            <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                    <input type="radio" name="water_gestation" value="none" checked style="accent-color: var(--color-primary);">
+                    <span>Standard Baseline</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                    <input type="radio" name="water_gestation" value="pregnant" style="accent-color: var(--color-primary);">
+                    <span>Pregnant (+300 mL / 10 oz amniotic support)</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                    <input type="radio" name="water_gestation" value="lactating" style="accent-color: var(--color-primary);">
+                    <span>Nursing / Lactating (+750 mL / 25 oz milk production)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 10px; margin-bottom: 24px;">
+            <button type="button" id="water-calculate-btn" class="btn btn-primary" style="min-width: 180px;">
+                Calculate Water Intake
+            </button>
+            <button type="button" id="water-reset-btn" class="btn btn-outline" style="min-width: 120px;">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="water-results" style="margin-top: 24px; display: block;">
+        <!-- Primary 4 KPI Cards -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <div class="result-card" style="text-align: center; border-left: 4px solid #0284c7;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Daily Fluid Target (Beverages)
+                </div>
+                <div id="res-water-volume" style="font-size: 2.2rem; font-weight: 800; color: #0284c7; line-height: 1.1;">
+                    2.6 Liters
+                </div>
+                <div id="res-water-volume-sub" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    2,625 mL drinking water
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #06b6d4;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Standard 8-oz Glasses
+                </div>
+                <div id="res-water-cups" style="font-size: 2.2rem; font-weight: 800; color: #06b6d4; line-height: 1.1;">
+                    11.1 Cups
+                </div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Based on 237 mL (8 fl oz) glass
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #10b981;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Total Fluid (Inc. Food)
+                </div>
+                <div id="res-water-total-fluid" style="font-size: 2.2rem; font-weight: 800; color: #10b981; line-height: 1.1;">
+                    3.3 Liters
+                </div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    ~20% derived from solid food
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #f59e0b;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Exercise &amp; Climate Add-on
+                </div>
+                <div id="res-water-boost" style="font-size: 2.2rem; font-weight: 800; color: #f59e0b; line-height: 1.1;">
+                    +0 mL
+                </div>
+                <div id="res-water-boost-desc" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Sedentary baseline
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Hydration Meter -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text);">
+                    Daily Fluid Sourcing Composition
+                </span>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);" id="res-water-status-label">
+                    Optimal Hydration Equilibrium
+                </span>
+            </div>
+
+            <!-- Two-segment stacked bar -->
+            <div style="height: 28px; border-radius: 6px; overflow: hidden; display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);">
+                <div id="bar-beverage-segment" style="width: 80%; background: linear-gradient(90deg, #0284c7, #38bdf8); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.8rem; font-weight: 700; transition: width 0.4s ease;">
+                    Drinking Beverages (~80%)
+                </div>
+                <div id="bar-food-segment" style="width: 20%; background: linear-gradient(90deg, #059669, #10b981); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.8rem; font-weight: 700; transition: width 0.4s ease;">
+                    Food Moisture (~20%)
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8rem; color: var(--color-text-muted);">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #0284c7;"></span>
+                    <span>Direct Hydration: Plain water, herbal tea, unsweetened fluids</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #10b981;"></span>
+                    <span>Dietary Moisture: Fresh fruits, vegetables, broths &amp; soups</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personalized 4-Phase Hourly Pacing Schedule -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 6px 0;">
+                    Optimal Daily Hydration Pacing Schedule
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0;">
+                    Pacing fluid intake prevents renal overload and exercise-associated hyponatremia while maximizing cellular bioavailability.
+                </p>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <th style="padding: 10px 12px; text-align: left;">Time Window</th>
+                            <th class="th-right" style="padding: 10px 12px;">Pacing %</th>
+                            <th class="th-right" style="padding: 10px 12px;">Fluid Target</th>
+                            <th class="th-right" style="padding: 10px 12px;">8-oz Cups</th>
+                            <th style="padding: 10px 12px; text-align: left;">Physiological Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody id="water-schedule-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Sports Electrolytes &amp; Cellular Osmotic Health</div>
+                <div class="line-desc">Clinical hydration formulations designed for endurance performance and muscle recovery.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/water_intake.js' %}"></script>
+{% endblock %}

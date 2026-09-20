@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Income Tax Calculator - 2024/2025 Federal Brackets, FICA & Take-Home Pay | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate federal income tax, FICA Social Security and Medicare, state tax estimation, and net take-home pay with progressive bracket breakdowns." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Income Tax Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Income Tax Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate your exact federal income tax liability, FICA payroll contributions (Social Security &amp; Medicare), optional state tax, and net take-home pay across 2024 and 2025 progressive tax brackets.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Federal &amp; State Progressive Income Taxation Engine</span>
+    </div>
+
+    <!-- Filing Status Selector Tabs -->
+    <div style="margin-bottom: 20px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            IRS Tax Filing Status
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline tax-status-btn active" data-status="single">
+                👤 Single
+            </button>
+            <button type="button" class="btn btn-outline tax-status-btn" data-status="mfj">
+                👥 Married Filing Jointly
+            </button>
+            <button type="button" class="btn btn-outline tax-status-btn" data-status="mfs">
+                📄 Married Filing Separately
+            </button>
+            <button type="button" class="btn btn-outline tax-status-btn" data-status="hoh">
+                🏠 Head of Household
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Compensation Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Standard Salary Benchmarks
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline tax-preset-btn" data-income="55000" style="padding: 6px 14px; font-size: 0.85rem;">
+                $55,000 / yr
+            </button>
+            <button type="button" class="btn btn-outline tax-preset-btn active" data-income="85000" style="padding: 6px 14px; font-size: 0.85rem;">
+                $85,000 / yr
+            </button>
+            <button type="button" class="btn btn-outline tax-preset-btn" data-income="130000" style="padding: 6px 14px; font-size: 0.85rem;">
+                $130,000 / yr
+            </button>
+            <button type="button" class="btn btn-outline tax-preset-btn" data-income="220000" style="padding: 6px 14px; font-size: 0.85rem;">
+                $220,000 / yr
+            </button>
+        </div>
+    </div>
+
+    <form id="tax-form" onsubmit="return false;" novalidate>
+        <div class="grid grid-3" style="gap: 20px; margin-bottom: 20px;">
+            <!-- Gross Annual Wages -->
+            <div class="form-group">
+                <label for="tax-gross-income" class="form-label">Gross Annual Wages / Salary ($)</label>
+                <div class="input-wrapper">
+                    <span class="input-prefix">$</span>
+                    <input type="number" id="tax-gross-income" class="form-control" value="85000" min="0" max="100000000" step="1000" required>
+                </div>
+                <span class="form-hint">Total W-2 wages or 1099 gross earnings</span>
+            </div>
+
+            <!-- Tax Year Selection -->
+            <div class="form-group">
+                <label for="tax-year" class="form-label">Tax Year</label>
+                <select id="tax-year" class="form-control">
+                    <option value="2024" selected>2024 (Filing in early 2025)</option>
+                    <option value="2025">2025 (Projected IRS inflation brackets)</option>
+                </select>
+                <span class="form-hint">Federal bracket indexing standard</span>
+            </div>
+
+            <!-- State Income Tax Model -->
+            <div class="form-group">
+                <label for="tax-state-rate" class="form-label">State Income Tax Rate (%)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="tax-state-rate" class="form-control" value="4.5" min="0" max="15" step="0.1">
+                    <span class="input-suffix">%</span>
+                </div>
+                <span class="form-hint">Enter 0% for TX, FL, WA, NV, TN, WY, AK</span>
+            </div>
+        </div>
+
+        <!-- Pre-Tax Deductions Accordion -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 16px 18px; margin-bottom: 24px;">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--color-text-muted); display: block; margin-bottom: 12px;">
+                Pre-Tax Deferrals &amp; Deduction Method
+            </span>
+            <div class="grid grid-3" style="gap: 16px;">
+                <div class="form-group">
+                    <label for="tax-401k" class="form-label">Traditional 401(k) / 403(b) / IRA</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="tax-401k" class="form-control" value="5000" min="0" max="100000" step="500">
+                    </div>
+                    <span class="form-hint">Reduces federal taxable income</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="tax-hsa" class="form-label">HSA / FSA Healthcare Contributions</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input type="number" id="tax-hsa" class="form-control" value="1500" min="0" max="50000" step="100">
+                    </div>
+                    <span class="form-hint">Pre-tax health savings deferrals</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Deduction Method</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                            <input type="radio" name="tax_deduction_type" value="standard" checked style="accent-color: var(--color-primary);">
+                            <span id="label-standard-deduction">Standard Deduction ($14,600)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; cursor: pointer;">
+                            <input type="radio" name="tax_deduction_type" value="itemized" style="accent-color: var(--color-primary);">
+                            <span>Custom Itemized Deductions</span>
+                        </label>
+                    </div>
+                    <div id="wrapper-itemized" style="margin-top: 8px; display: none;">
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="tax-itemized-amount" class="form-control" value="16000" min="0" step="500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 10px; margin-bottom: 24px;">
+            <button type="button" id="tax-calculate-btn" class="btn btn-primary" style="min-width: 180px;">
+                Calculate Income Taxes
+            </button>
+            <button type="button" id="tax-reset-btn" class="btn btn-outline" style="min-width: 120px;">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Section -->
+    <div id="tax-results" style="margin-top: 24px; display: block;">
+        <!-- Primary 4 KPI Cards -->
+        <div class="grid grid-4" style="gap: 16px; margin-bottom: 24px;">
+            <div class="result-card" style="text-align: center; border-left: 4px solid #10b981;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Net Annual Take-Home Pay
+                </div>
+                <div id="res-take-home-annual" style="font-size: 2rem; font-weight: 800; color: #10b981; line-height: 1.1;">
+                    $63,137
+                </div>
+                <div id="res-take-home-monthly" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    $5,261 / month
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid var(--color-primary);">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Federal Income Tax
+                </div>
+                <div id="res-federal-tax" style="font-size: 2rem; font-weight: 800; color: var(--color-primary); line-height: 1.1;">
+                    $9,840
+                </div>
+                <div id="res-effective-rate" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    11.58% Effective Rate (22% Marginal)
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #3b82f6;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    FICA Payroll Taxes
+                </div>
+                <div id="res-fica-total" style="font-size: 2rem; font-weight: 800; color: #3b82f6; line-height: 1.1;">
+                    $6,503
+                </div>
+                <div id="res-fica-breakdown" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    SS: $5,270 • Med: $1,233
+                </div>
+            </div>
+
+            <div class="result-card" style="text-align: center; border-left: 4px solid #8b5cf6;">
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600; margin-bottom: 6px;">
+                    Estimated State Tax
+                </div>
+                <div id="res-state-tax" style="font-size: 2rem; font-weight: 800; color: #8b5cf6; line-height: 1.1;">
+                    $3,825
+                </div>
+                <div id="res-state-rate-desc" style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px;">
+                    Based on 4.5% flat estimate
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Proportion Stacked Bar -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text);">
+                    Gross Compensation Distribution ($85,000)
+                </span>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);" id="res-total-tax-burden">
+                    Total Taxes: $20,168 (23.7%)
+                </span>
+            </div>
+
+            <!-- Multi-segment stacked bar -->
+            <div style="height: 28px; border-radius: 6px; overflow: hidden; display: flex; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);">
+                <div id="bar-takehome-segment" style="width: 74.3%; background: linear-gradient(90deg, #059669, #10b981); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.78rem; font-weight: 700; transition: width 0.4s ease;">
+                    Take-Home (74.3%)
+                </div>
+                <div id="bar-fed-segment" style="width: 11.6%; background: linear-gradient(90deg, #1e40af, #3b82f6); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.78rem; font-weight: 700; transition: width 0.4s ease;">
+                    Fed (11.6%)
+                </div>
+                <div id="bar-fica-segment" style="width: 7.6%; background: linear-gradient(90deg, #6366f1, #818cf8); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.78rem; font-weight: 700; transition: width 0.4s ease;">
+                    FICA (7.6%)
+                </div>
+                <div id="bar-state-segment" style="width: 4.5%; background: linear-gradient(90deg, #8b5cf6, #a855f7); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.78rem; font-weight: 700; transition: width 0.4s ease;">
+                    State (4.5%)
+                </div>
+                <div id="bar-pretax-segment" style="width: 2.0%; background: #64748b; display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 0.75rem; font-weight: 700; transition: width 0.4s ease;">
+                    Pre
+                </div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; font-size: 0.8rem; color: var(--color-text-muted);">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #10b981;"></span>
+                    <span>Net Take-Home Pay</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #3b82f6;"></span>
+                    <span>Federal Income Tax</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #818cf8;"></span>
+                    <span>FICA (SS &amp; Medicare)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #a855f7;"></span>
+                    <span>State Income Tax</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: #64748b;"></span>
+                    <span>Pre-tax 401(k) / HSA Deferrals</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progressive Bracket Breakdown Table -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="margin-bottom: 16px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 6px 0;">
+                    Progressive Federal Tax Brackets Breakdown
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0;" id="tax-bracket-subtext">
+                    Taxable Income: $63,900 after $14,600 standard deduction and $6,500 pre-tax deferrals.
+                </p>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <th style="padding: 10px 12px; text-align: left;">Bracket Tier</th>
+                            <th class="th-right" style="padding: 10px 12px;">Marginal Rate</th>
+                            <th class="th-right" style="padding: 10px 12px;">Bracket Range</th>
+                            <th class="th-right" style="padding: 10px 12px;">Taxable in Bracket</th>
+                            <th class="th-right" style="padding: 10px 12px;">Tax Paid in Bracket</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tax-brackets-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pay Frequency Take-Home Schedule -->
+        <div style="background: var(--color-bg-subtle); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <div style="margin-bottom: 14px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; margin: 0 0 4px 0;">
+                    Paycheck Take-Home Schedule
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0;">
+                    Estimated net cash deposit per pay period after all taxes and elective deductions.
+                </p>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="data-table" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <th style="padding: 10px 12px; text-align: left;">Pay Frequency</th>
+                            <th class="th-right" style="padding: 10px 12px;">Paychecks / Year</th>
+                            <th class="th-right" style="padding: 10px 12px;">Gross Pay</th>
+                            <th class="th-right" style="padding: 10px 12px;">Total Taxes</th>
+                            <th class="th-right" style="padding: 10px 12px; color: #10b981;">Net Take-Home Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tax-frequency-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technical Educational Article (Directly above #ad-bottom-content) -->
+<div class="calculator-article-section" style="margin-top: 40px;">
+    {{ calculator.article_content|safe }}
+</div>
+
+<!-- Bottom AdSense Placeholder -->
+<div class="ad-placeholder ad-bottom" id="ad-bottom-content">
+    <div class="ad-header-row">
+        <span class="ad-badge">Google AdSense</span>
+        <span class="ad-dimension">Leaderboard • 728 × 90</span>
+    </div>
+    <div class="ad-body">
+        <div class="ad-content-simulated">
+            <div class="ad-icon-circle">AD</div>
+            <div class="ad-text-lines">
+                <div class="line-title">Tax Advisory &amp; Certified Public Accounting Network</div>
+                <div class="line-desc">Optimize multi-state corporate and personal tax liabilities with certified tax strategists.</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/income_tax.js' %}"></script>
+{% endblock %}

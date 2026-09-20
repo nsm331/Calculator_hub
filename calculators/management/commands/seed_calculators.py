@@ -55,6 +55,12 @@ from calculators.default_articles_batch9 import (
     RIGHT_TRIANGLE_ARTICLE,
     TIP_CALCULATOR_ARTICLE,
 )
+from calculators.default_articles_batch10 import (
+    INCOME_TAX_ARTICLE,
+    WATER_INTAKE_ARTICLE,
+    EXPONENT_ARTICLE,
+    FUEL_COST_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -379,6 +385,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Tip & Split Bill Calculator - Group Dining, Tax & Tip Per Person | CalculatorHub',
         'meta_description': 'Calculate restaurant tips, split bills evenly among dining parties, isolate pre-tax food charges, and apply convenient rounding to the nearest dollar.',
         'article_content': TIP_CALCULATOR_ARTICLE,
+    },
+    # Batch 11 Calculators (User Batch #10)
+    {
+        'slug': 'income-tax-calculator',
+        'title': 'Income Tax Calculator',
+        'category': 'financial',
+        'meta_title': 'Income Tax Calculator - 2024/2025 Federal Brackets, FICA & Take-Home Pay | CalculatorHub',
+        'meta_description': 'Calculate federal income tax, FICA Social Security and Medicare, state tax estimation, and net take-home pay with progressive bracket breakdowns.',
+        'article_content': INCOME_TAX_ARTICLE,
+    },
+    {
+        'slug': 'water-intake-calculator',
+        'title': 'Daily Water Intake Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Daily Water Intake Calculator - Hydration Goals, Sweat Loss & Pacing | CalculatorHub',
+        'meta_description': 'Calculate your optimal daily water intake based on body weight, exercise duration, ambient climate, and physiological state with customized hydration pacing.',
+        'article_content': WATER_INTAKE_ARTICLE,
+    },
+    {
+        'slug': 'exponent-calculator',
+        'title': 'Exponent & Power Calculator',
+        'category': 'math',
+        'meta_title': 'Exponent & Power Calculator - Large Numbers, Negative & Fractional Powers | CalculatorHub',
+        'meta_description': 'Solve exponents and power functions online. Supports integer, negative, and fractional rational exponents with step-by-step algebraic expansion rules.',
+        'article_content': EXPONENT_ARTICLE,
+    },
+    {
+        'slug': 'fuel-cost-calculator',
+        'title': 'Fuel Cost & Mileage Trip Planner',
+        'category': 'other',
+        'meta_title': 'Fuel Cost & Mileage Trip Planner - Gas Mileage, Tolls & Carpool Split | CalculatorHub',
+        'meta_description': 'Calculate road trip fuel costs, gas consumption, toll charges, and passenger carpool splits using MPG or L/100km fuel economy metrics.',
+        'article_content': FUEL_COST_ARTICLE,
     },
 ]
 

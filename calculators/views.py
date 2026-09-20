@@ -57,6 +57,12 @@ from .default_articles_batch9 import (
     RIGHT_TRIANGLE_ARTICLE,
     TIP_CALCULATOR_ARTICLE,
 )
+from .default_articles_batch10 import (
+    INCOME_TAX_ARTICLE,
+    WATER_INTAKE_ARTICLE,
+    EXPONENT_ARTICLE,
+    FUEL_COST_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -656,6 +662,60 @@ def tip_calculator(request):
     }
     calculator = _get_or_seed_calculator('tip-calculator', default_data)
     return render(request, 'calculators/tip_calculator.html', {'calculator': calculator})
+
+
+def income_tax_calculator(request):
+    """Dynamic view for Income Tax Calculator."""
+    default_data = {
+        'title': 'Income Tax Calculator',
+        'category': 'financial',
+        'meta_title': 'Income Tax Calculator - 2024/2025 Federal Brackets, FICA & Take-Home Pay | CalculatorHub',
+        'meta_description': 'Calculate federal income tax, FICA Social Security and Medicare, state tax estimation, and net take-home pay with progressive bracket breakdowns.',
+        'article_content': INCOME_TAX_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('income-tax-calculator', default_data)
+    return render(request, 'calculators/income_tax_calculator.html', {'calculator': calculator})
+
+
+def water_intake_calculator(request):
+    """Dynamic view for Daily Water Intake Calculator."""
+    default_data = {
+        'title': 'Daily Water Intake Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Daily Water Intake Calculator - Hydration Goals, Sweat Loss & Pacing | CalculatorHub',
+        'meta_description': 'Calculate your optimal daily water intake based on body weight, exercise duration, ambient climate, and physiological state with customized hydration pacing.',
+        'article_content': WATER_INTAKE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('water-intake-calculator', default_data)
+    return render(request, 'calculators/water_intake_calculator.html', {'calculator': calculator})
+
+
+def exponent_calculator(request):
+    """Dynamic view for Exponent & Power Calculator."""
+    default_data = {
+        'title': 'Exponent & Power Calculator',
+        'category': 'math',
+        'meta_title': 'Exponent & Power Calculator - Large Numbers, Negative & Fractional Powers | CalculatorHub',
+        'meta_description': 'Solve exponents and power functions online. Supports integer, negative, and fractional rational exponents with step-by-step algebraic expansion rules.',
+        'article_content': EXPONENT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('exponent-calculator', default_data)
+    return render(request, 'calculators/exponent_power_calculator.html', {'calculator': calculator})
+
+
+def fuel_cost_calculator(request):
+    """Dynamic view for Fuel Cost & Mileage Trip Planner."""
+    default_data = {
+        'title': 'Fuel Cost & Mileage Trip Planner',
+        'category': 'other',
+        'meta_title': 'Fuel Cost & Mileage Trip Planner - Gas Mileage, Tolls & Carpool Split | CalculatorHub',
+        'meta_description': 'Calculate road trip fuel costs, gas consumption, toll charges, and passenger carpool splits using MPG or L/100km fuel economy metrics.',
+        'article_content': FUEL_COST_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('fuel-cost-calculator', default_data)
+    return render(request, 'calculators/fuel_cost_calculator.html', {'calculator': calculator})
+
+
 
 
 # --------------------------------------------------------------------------

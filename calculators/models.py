@@ -71,6 +71,10 @@ class Calculator(models.Model):
             'lean-body-mass-calculator': 'lean_body_mass_calculator',
             'right-triangle-solver': 'right_triangle_solver',
             'tip-calculator': 'tip_calculator',
+            'income-tax-calculator': 'income_tax_calculator',
+            'water-intake-calculator': 'water_intake_calculator',
+            'exponent-calculator': 'exponent_calculator',
+            'fuel-cost-calculator': 'fuel_cost_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])
