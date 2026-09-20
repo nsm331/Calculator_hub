@@ -109,6 +109,28 @@ urlpatterns = [
         name='work_hours_calculator'
     ),
 
+    # Batch 6 Calculators (User Batch #5)
+    path(
+        'financial-calculators/refinance-calculator/',
+        views.refinance_calculator,
+        name='refinance_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/running-pace-calculator/',
+        views.running_pace_calculator,
+        name='running_pace_calculator'
+    ),
+    path(
+        'math-calculators/graphing-calculator/',
+        views.graphing_calculator,
+        name='graphing_calculator'
+    ),
+    path(
+        'other-calculators/gpa-calculator/',
+        views.gpa_calculator,
+        name='gpa_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

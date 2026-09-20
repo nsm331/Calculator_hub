@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Running Pace Calculator - Calculate Pace, Speed, Time & Splits | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Running Pace Calculator. Convert between minutes per mile, minutes per km, mph, and km/h. Plan race splits for 5K, 10K, half marathon, and marathon with Pete Riegel predictions." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health Calculators</a> &rsaquo; 
+        <span>Running Pace Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Running Pace Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate your running pace, elapsed time, or race distance. Instantly convert between imperial (min/mile, mph) and metric (min/km, km/h) scales, project race splits, and forecast performance across distance events.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Kinematic Pacing &amp; Aerobic Velocity Engine</span>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="unit-toggle-tabs" style="margin-bottom: 24px;">
+        <button type="button" class="tab-btn active" id="tab-mode-pace" data-mode="pace">Calculate Pace</button>
+        <button type="button" class="tab-btn" id="tab-mode-time" data-mode="time">Calculate Time</button>
+        <button type="button" class="tab-btn" id="tab-mode-distance" data-mode="distance">Calculate Distance</button>
+    </div>
+
+    <form id="running-pace-form" class="calculator-form" novalidate>
+        
+        <!-- Distance Section (shown for pace and time modes) -->
+        <div id="section-distance" class="form-group" style="margin-bottom: 20px;">
+            <label style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Race or Workout Distance</span>
+                <span class="field-hint" style="margin: 0;">Select standard preset or custom</span>
+            </label>
+            
+            <!-- Quick Distance Presets -->
+            <div class="term-presets" style="margin-bottom: 12px;">
+                <button type="button" class="preset-pill-btn" data-dist="1" data-unit="mi">1 Mile</button>
+                <button type="button" class="preset-pill-btn" data-dist="5" data-unit="km">5K (3.11 mi)</button>
+                <button type="button" class="preset-pill-btn active" data-dist="10" data-unit="km">10K (6.21 mi)</button>
+                <button type="button" class="preset-pill-btn" data-dist="10" data-unit="mi">10 Miles</button>
+                <button type="button" class="preset-pill-btn" data-dist="21.0975" data-unit="km">Half Marathon (13.11 mi)</button>
+                <button type="button" class="preset-pill-btn" data-dist="42.195" data-unit="km">Marathon (26.22 mi)</button>
+            </div>
+
+            <!-- Custom Distance Input -->
+            <div style="display: grid; grid-template-columns: 1fr 140px; gap: 12px;">
+                <input type="number" id="race-distance" class="form-control" value="10" min="0.01" max="1000" step="0.01" required>
+                <select id="race-distance-unit" class="form-control">
+                    <option value="km" selected>Kilometers (km)</option>
+                    <option value="mi">Miles (mi)</option>
+                    <option value="m">Meters (m)</option>
+                    <option value="yd">Yards (yd)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Time Section (shown for pace and distance modes) -->
+        <div id="section-time" class="form-group" style="margin-bottom: 20px;">
+            <label>Elapsed Finish Time (Hours : Minutes : Seconds)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                <div class="input-with-addon">
+                    <input type="number" id="time-hours" class="form-control" value="0" min="0" max="999" step="1">
+                    <span class="input-addon">hr</span>
+                </div>
+                <div class="input-with-addon">
+                    <input type="number" id="time-minutes" class="form-control" value="48" min="0" max="59" step="1">
+                    <span class="input-addon">min</span>
+                </div>
+                <div class="input-with-addon">
+                    <input type="number" id="time-seconds" class="form-control" value="30" min="0" max="59" step="1">
+                    <span class="input-addon">sec</span>
+                </div>
+            </div>
+            <span class="field-hint">Sexagesimal time format (e.g., 0 hr 48 min 30 sec for a 10K)</span>
+        </div>
+
+        <!-- Pace Section (shown for time and distance modes) -->
+        <div id="section-pace" class="form-group" style="margin-bottom: 20px; display: none;">
+            <label>Target Running Pace (Minutes : Seconds per Unit)</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 140px; gap: 12px;">
+                <div class="input-with-addon">
+                    <input type="number" id="pace-minutes" class="form-control" value="4" min="0" max="59" step="1">
+                    <span class="input-addon">min</span>
+                </div>
+                <div class="input-with-addon">
+                    <input type="number" id="pace-seconds" class="form-control" value="51" min="0" max="59" step="1">
+                    <span class="input-addon">sec</span>
+                </div>
+                <select id="pace-unit" class="form-control">
+                    <option value="km" selected>per Kilometer</option>
+                    <option value="mi">per Mile</option>
+                </select>
+            </div>
+            <span class="field-hint">Enter your planned target cadence pace</span>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="form-actions" style="margin-top: 20px;">
+            <button type="submit" class="btn btn-primary" id="btn-calculate-pace">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Calculate Now
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-reset-pace">Reset Defaults</button>
+        </div>
+    </form>
+
+    <!-- Results Display -->
+    <div id="pace-results-container" class="calculator-results-wrapper" style="margin-top: 32px;">
+        
+        <!-- Hero Primary Result Banner -->
+        <div class="result-hero-banner">
+            <div class="hero-label" id="pace-hero-label">Target Running Pace</div>
+            <div class="hero-primary-val" id="pace-hero-value">4:51 <span style="font-size: 1.25rem; font-weight: 500; color: var(--color-text-muted);">/ km</span></div>
+            <div class="hero-secondary-metric" id="pace-hero-subvalue">Equivalent to 7:48 / mi &bull; Speed: 12.37 km/h (7.69 mph)</div>
+        </div>
+
+        <!-- Core Kinematic Metric Cards -->
+        <div class="breakdown-grid" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Pace (Imperial)</span>
+                <span class="breakdown-card-value" id="card-pace-mile" style="color: var(--color-accent-blue);">7:48 / mi</span>
+                <span class="breakdown-card-sub" id="card-speed-mph">7.69 mph</span>
+            </div>
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Pace (Metric)</span>
+                <span class="breakdown-card-value" id="card-pace-km" style="color: #10b981;">4:51 / km</span>
+                <span class="breakdown-card-sub" id="card-speed-kmh">12.37 km/h</span>
+            </div>
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Finish Time</span>
+                <span class="breakdown-card-value" id="card-total-time">0h 48m 30s</span>
+                <span class="breakdown-card-sub" id="card-decimal-minutes">48.50 decimal minutes</span>
+            </div>
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Total Distance</span>
+                <span class="breakdown-card-value" id="card-total-dist">10.00 km</span>
+                <span class="breakdown-card-sub" id="card-dist-secondary">6.21 miles</span>
+            </div>
+        </div>
+
+        <!-- Splits Table Section -->
+        <div class="advanced-section-box" style="margin-top: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                <h3 style="font-size: 1.15rem; margin: 0; color: var(--color-text-main);">
+                    ⏱️ Cumulative Race Splits
+                </h3>
+                <div class="unit-toggle-tabs" style="margin: 0; padding: 2px;">
+                    <button type="button" class="tab-btn active" id="split-toggle-km" style="padding: 4px 12px; font-size: 0.85rem;">Kilometer Splits</button>
+                    <button type="button" class="tab-btn" id="split-toggle-mi" style="padding: 4px 12px; font-size: 0.85rem;">Mile Splits</button>
+                </div>
+            </div>
+            <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+                <table class="table" style="margin: 0; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Split</th>
+                            <th>Interval Distance</th>
+                            <th>Split Pace</th>
+                            <th>Cumulative Elapsed Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="splits-table-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pete Riegel Race Projections Section -->
+        <div class="advanced-section-box" style="margin-top: 24px;">
+            <h3 style="font-size: 1.15rem; margin-bottom: 12px; color: var(--color-text-main);">
+                🏅 Pete Riegel Race Time Predictions ($T_2 = T_1 \cdot (d_2 / d_1)^{1.06}$)
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 16px;">
+                Physiological stamina extrapolation assuming equivalent aerobic conditioning, nutritional glycogen load, and terrain profiles.
+            </p>
+            <div class="table-responsive">
+                <table class="table" style="margin: 0; font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Distance</th>
+                            <th>Estimated Finish Time</th>
+                            <th>Required Avg Pace</th>
+                            <th>Velocity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="riegel-table-body">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/running_pace.js' %}"></script>
+{% endblock %}

@@ -51,6 +51,10 @@ class Calculator(models.Model):
             'ideal-weight-calculator': 'ideal_weight_calculator',
             'decimal-to-fraction-calculator': 'decimal_to_fraction_calculator',
             'work-hours-calculator': 'work_hours_calculator',
+            'refinance-calculator': 'refinance_calculator',
+            'running-pace-calculator': 'running_pace_calculator',
+            'graphing-calculator': 'graphing_calculator',
+            'gpa-calculator': 'gpa_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

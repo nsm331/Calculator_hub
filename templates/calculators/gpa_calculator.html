@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"College GPA Calculator - Weighted & Cumulative Grade Point Average | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online College & High School GPA Calculator. Compute semester and cumulative grade point average, honors/AP weighted quality points, and target graduation GPA requirements." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>College GPA Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"College GPA Calculator" }}</h1>
+    <p class="page-lead">
+        Calculate your semester and cumulative Grade Point Average on the standard 4.0 academic scale. Factor unweighted and weighted course levels (Honors, AP, IB), combine prior transcripts, and project target graduation goals.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Academic Quality Point Analytics &amp; Transcript Modeling</span>
+    </div>
+
+    <form id="gpa-form" class="calculator-form" novalidate onsubmit="return false;">
+        
+        <!-- Courses Table Section -->
+        <div style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <h3 style="font-size: 1.1rem; margin: 0; color: var(--color-text-main);">
+                    📚 Current Semester Courses
+                </h3>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" id="btn-load-sample" style="padding: 6px 12px; font-size: 0.85rem;">
+                        Load Sample
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btn-clear-courses" style="padding: 6px 12px; font-size: 0.85rem;">
+                        Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table class="table" style="margin: 0; font-size: 0.9rem; min-width: 600px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 35%;">Course Name</th>
+                            <th style="width: 20%;">Letter Grade</th>
+                            <th style="width: 15%;">Credits</th>
+                            <th style="width: 20%;">Level / Weight</th>
+                            <th style="width: 10%; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="course-rows-tbody">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 14px;">
+                <button type="button" class="btn btn-secondary" id="btn-add-course" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Another Course
+                </button>
+            </div>
+        </div>
+
+        <!-- Prior Cumulative Transcript Consolidation -->
+        <div class="advanced-section-box" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label style="font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; text-transform: none;">
+                    <input type="checkbox" id="toggle-prior-gpa" style="cursor: pointer; width: 16px; height: 16px;">
+                    <span>Include Prior Cumulative GPA (Combine Transcripts)</span>
+                </label>
+            </div>
+            
+            <div id="prior-gpa-container" style="display: none; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 12px;">
+                <div class="form-group" style="margin: 0;">
+                    <label for="prior-cum-gpa">Prior Cumulative GPA</label>
+                    <input type="number" id="prior-cum-gpa" class="form-control" value="3.40" min="0.00" max="5.00" step="0.01">
+                    <span class="field-hint">Cumulative GPA prior to current term</span>
+                </div>
+                <div class="form-group" style="margin: 0;">
+                    <label for="prior-cum-credits">Prior Earned Credits</label>
+                    <input type="number" id="prior-cum-credits" class="form-control" value="45" min="0" max="300" step="0.5">
+                    <span class="field-hint">Total graded credit hours completed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target GPA Simulator Section -->
+        <div class="advanced-section-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label style="font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0; text-transform: none;">
+                    <input type="checkbox" id="toggle-target-gpa" style="cursor: pointer; width: 16px; height: 16px;">
+                    <span>Future Target Graduation GPA Calculator</span>
+                </label>
+            </div>
+
+            <div id="target-gpa-container" style="display: none; margin-top: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label for="target-desired-gpa">Target Graduation GPA</label>
+                        <input type="number" id="target-desired-gpa" class="form-control" value="3.60" min="1.0" max="4.0" step="0.01">
+                        <span class="field-hint">e.g. 3.50 for Honors, 3.70 for High Honors</span>
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label for="target-future-credits">Future Credits Remaining</label>
+                        <input type="number" id="target-future-credits" class="form-control" value="30" min="1" max="150" step="1">
+                        <span class="field-hint">Upcoming credits before graduation</span>
+                    </div>
+                </div>
+                <div id="target-gpa-verdict" style="margin-top: 14px; padding: 12px 16px; border-radius: 8px; background: var(--bg-surface-secondary); border-left: 4px solid var(--color-accent-blue); font-size: 0.9rem;">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <!-- Results Display -->
+    <div id="gpa-results-container" class="calculator-results-wrapper" style="margin-top: 32px;">
+        
+        <!-- Hero Primary Result Banner -->
+        <div class="result-hero-banner">
+            <div class="hero-label">Semester Grade Point Average</div>
+            <div class="hero-primary-val" id="gpa-hero-value">3.61 <span style="font-size: 1.25rem; font-weight: 500; color: var(--color-text-muted);">/ 4.00</span></div>
+            <div class="hero-secondary-metric" id="gpa-hero-badge">🏅 Dean's List Standing (Magna Cum Laude Trajectory)</div>
+        </div>
+
+        <!-- Metrics Breakdown Grid -->
+        <div class="breakdown-grid" style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Semester Credits</span>
+                <span class="breakdown-card-value" id="card-sem-credits" style="color: var(--color-accent-blue);">16.0</span>
+                <span class="breakdown-card-sub" id="card-course-count">5 courses completed</span>
+            </div>
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Quality Points Earned</span>
+                <span class="breakdown-card-value" id="card-quality-points" style="color: #10b981;">57.70</span>
+                <span class="breakdown-card-sub">Credit &times; Grade Points sum</span>
+            </div>
+            <div class="breakdown-card" id="card-cum-container">
+                <span class="breakdown-card-title">Cumulative GPA</span>
+                <span class="breakdown-card-value" id="card-cum-gpa" style="color: #a855f7;">3.45</span>
+                <span class="breakdown-card-sub" id="card-cum-credits">Across 61.0 total credits</span>
+            </div>
+            <div class="breakdown-card">
+                <span class="breakdown-card-title">Letter Equivalent</span>
+                <span class="breakdown-card-value" id="card-letter-grade" style="color: #f59e0b;">A- / B+</span>
+                <span class="breakdown-card-sub">Weighted academic bracket</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/gpa.js' %}"></script>
+{% endblock %}

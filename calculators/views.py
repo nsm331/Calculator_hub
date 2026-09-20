@@ -27,6 +27,12 @@ from .default_articles_batch5 import (
     DECIMAL_TO_FRACTION_ARTICLE,
     WORK_HOURS_ARTICLE,
 )
+from .default_articles_batch6 import (
+    REFINANCE_ARTICLE,
+    RUNNING_PACE_ARTICLE,
+    GRAPHING_ARTICLE,
+    GPA_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -366,6 +372,58 @@ def work_hours_calculator(request):
     }
     calculator = _get_or_seed_calculator('work-hours-calculator', default_data)
     return render(request, 'calculators/work_hours_calculator.html', {'calculator': calculator})
+
+
+def refinance_calculator(request):
+    """Dynamic view for Mortgage Refinance Calculator."""
+    default_data = {
+        'title': 'Refinance Calculator',
+        'category': 'financial',
+        'meta_title': 'Refinance Calculator - Compare Monthly Payments & Break-Even | CalculatorHub',
+        'meta_description': 'Free online Mortgage Refinance Calculator. Compare current vs new interest rates, monthly savings, closing cost break-even point, and lifetime interest reduction.',
+        'article_content': REFINANCE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('refinance-calculator', default_data)
+    return render(request, 'calculators/refinance_calculator.html', {'calculator': calculator})
+
+
+def running_pace_calculator(request):
+    """Dynamic view for Running Pace Calculator."""
+    default_data = {
+        'title': 'Running Pace Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Running Pace Calculator - Target Pace, Splits & Race Time Predictor | CalculatorHub',
+        'meta_description': 'Calculate running pace per mile or km, split times, and linear speeds (mph/kmh). Predict marathon and half-marathon finishes using Riegel\'s formula.',
+        'article_content': RUNNING_PACE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('running-pace-calculator', default_data)
+    return render(request, 'calculators/running_pace_calculator.html', {'calculator': calculator})
+
+
+def graphing_calculator(request):
+    """Dynamic view for 2D Function Graphing Tool."""
+    default_data = {
+        'title': '2D Function Graphing Tool',
+        'category': 'math',
+        'meta_title': '2D Function Graphing Tool - Plot Functions, Roots & Derivatives | CalculatorHub',
+        'meta_description': 'Interactive online 2D function grapher. Plot multiple curves with zoom, pan, coordinate tracing, numerical derivative evaluation, and roots inspection.',
+        'article_content': GRAPHING_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('graphing-calculator', default_data)
+    return render(request, 'calculators/graphing_calculator.html', {'calculator': calculator})
+
+
+def gpa_calculator(request):
+    """Dynamic view for College GPA Calculator."""
+    default_data = {
+        'title': 'College GPA Calculator',
+        'category': 'other',
+        'meta_title': 'College GPA Calculator - Weighted Semester, Cumulative & Target GPA | CalculatorHub',
+        'meta_description': 'Calculate semester and cumulative college GPA on the 4.0 scale with course credit weighting, honors/AP bonuses, and target graduation GPA simulation.',
+        'article_content': GPA_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('gpa-calculator', default_data)
+    return render(request, 'calculators/gpa_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

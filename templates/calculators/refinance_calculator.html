@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Refinance Calculator - Compare Monthly Payments & Break-Even | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Mortgage Refinance Calculator. Compare current vs new interest rates, monthly savings, closing cost break-even point, and lifetime interest reduction." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Refinance Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Mortgage Refinance Calculator" }}</h1>
+    <p class="page-lead">
+        Compare your existing mortgage against new financing terms. Calculate monthly cash-flow savings, upfront closing cost break-even periods, and net lifetime interest reductions.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Mortgage Comparison &amp; Break-Even Economics</span>
+    </div>
+
+    <form id="refinance-form" class="calculator-form" novalidate>
+        <!-- Two Column Setup: Current Loan vs. New Refinance Loan -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            
+            <!-- Column 1: Current Loan Parameters -->
+            <div class="advanced-section-box" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--color-accent-blue); display: flex; align-items: center; gap: 8px;">
+                    <span>🏠 Current Mortgage</span>
+                </h3>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="ref-current-balance">Remaining Principal Balance</label>
+                    <div class="input-with-addon">
+                        <span class="input-addon-prefix">$</span>
+                        <input type="number" id="ref-current-balance" class="form-control" value="280000" min="1000" max="50000000" step="1000" required>
+                    </div>
+                    <span class="field-hint">Current payoff amount from monthly statement</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="ref-current-rate">Current Interest Rate</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="ref-current-rate" class="form-control" value="6.75" min="0.1" max="30" step="0.05" required>
+                        <span class="input-addon">%</span>
+                    </div>
+                    <span class="field-hint">Existing nominal annual note rate</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="ref-current-term-years">Remaining Term</label>
+                    <div class="term-dual-inputs">
+                        <div class="input-with-addon">
+                            <input type="number" id="ref-current-term-years" class="form-control" value="25" min="1" max="50" step="1" required>
+                            <span class="input-addon">Yrs</span>
+                        </div>
+                        <div class="input-with-addon">
+                            <input type="number" id="ref-current-term-months" class="form-control" value="0" min="0" max="11" step="1">
+                            <span class="input-addon">Mos</span>
+                        </div>
+                    </div>
+                    <span class="field-hint">Time remaining on current amortization</span>
+                </div>
+            </div>
+
+            <!-- Column 2: New Refinanced Loan Parameters -->
+            <div class="advanced-section-box" style="margin-bottom: 0;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #22c55e; display: flex; align-items: center; gap: 8px;">
+                    <span>🔄 New Refinance Loan</span>
+                </h3>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="ref-new-rate">New Interest Rate</label>
+                    <div class="input-with-addon">
+                        <input type="number" id="ref-new-rate" class="form-control" value="5.25" min="0.1" max="30" step="0.05" required>
+                        <span class="input-addon">%</span>
+                    </div>
+                    <span class="field-hint">Offered annual APR or fixed note rate</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="ref-new-term">New Loan Term</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <div class="input-with-addon" style="flex: 1;">
+                            <input type="number" id="ref-new-term" class="form-control" value="30" min="5" max="40" step="1" required>
+                            <span class="input-addon">Years</span>
+                        </div>
+                        <!-- Term preset buttons -->
+                        <div class="quick-presets" style="flex-shrink: 0;">
+                            <button type="button" class="preset-pill-btn ref-term-btn" data-years="15">15y</button>
+                            <button type="button" class="preset-pill-btn ref-term-btn" data-years="20">20y</button>
+                            <button type="button" class="preset-pill-btn ref-term-btn" data-years="30">30y</button>
+                        </div>
+                    </div>
+                    <span class="field-hint">Duration of new financing contract</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="ref-closing-costs">Closing Costs &amp; Fees</label>
+                    <div class="input-with-addon">
+                        <span class="input-addon-prefix">$</span>
+                        <input type="number" id="ref-closing-costs" class="form-control" value="4500" min="0" max="100000" step="100">
+                    </div>
+                    <span class="field-hint">Origination, appraisal, title &amp; escrow fees</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="radio-pill" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="ref-roll-closing-costs" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="font-size: 0.88rem; color: var(--color-text-main);">Finance Closing Costs (Roll into new loan balance)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 1.5rem;">
+            <button type="button" id="ref-calculate-btn" class="btn btn-primary">
+                Calculate Refinance Savings
+            </button>
+            <button type="button" id="ref-reset-btn" class="btn btn-secondary">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Panel -->
+    <div id="ref-results" class="calculator-results" style="margin-top: 2rem;">
+        
+        <!-- Hero Savings Banner -->
+        <div class="result-hero-banner" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(15, 25, 39, 0.8) 100%); border-color: #22c55e;">
+            <div class="hero-label" id="ref-hero-label">Monthly Payment Reduction</div>
+            <div class="hero-val" id="ref-monthly-diff" style="color: #22c55e;">-$270.64 / mo</div>
+            <div class="hero-subtext" id="ref-hero-subtext">
+                Break-even in <strong>17 Months (1.4 Years)</strong> with total lifetime interest savings of <strong>$58,412</strong>.
+            </div>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="results-grid">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Break-Even Horizon</div>
+                <div class="breakdown-val" id="ref-breakeven-val" style="color: var(--color-accent-blue);">17 Months</div>
+                <span class="field-hint">To recoup closing fees</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Lifetime Savings</div>
+                <div class="breakdown-val" id="ref-lifetime-savings" style="color: #22c55e;">$58,412</div>
+                <span class="field-hint">Principal &amp; interest net savings</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">New Monthly Payment</div>
+                <div class="breakdown-val" id="ref-new-payment">$1,546.73</div>
+                <span class="field-hint">Principal &amp; Interest</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Current Monthly Payment</div>
+                <div class="breakdown-val" id="ref-current-payment">$1,817.37</div>
+                <span class="field-hint">Principal &amp; Interest</span>
+            </div>
+        </div>
+
+        <!-- Side-by-Side Comparison Table -->
+        <div class="growth-table-section">
+            <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--color-text-main);">
+                Side-by-Side Financial Comparison
+            </h3>
+            <div class="table-responsive" style="border: 1px solid var(--color-border-subtle); border-radius: var(--border-radius-md);">
+                <table class="article-table" style="margin: 0; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Comparison Dimension</th>
+                            <th>Current Mortgage</th>
+                            <th>Refinanced Mortgage</th>
+                            <th>Net Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Loan Balance</strong></td>
+                            <td id="tbl-curr-balance">$280,000.00</td>
+                            <td id="tbl-new-balance">$280,000.00</td>
+                            <td id="tbl-diff-balance">$0.00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Interest Rate (APR)</strong></td>
+                            <td id="tbl-curr-rate">6.75%</td>
+                            <td id="tbl-new-rate">5.25%</td>
+                            <td id="tbl-diff-rate" style="color: #22c55e;">-1.50%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Monthly P&amp;I Payment</strong></td>
+                            <td id="tbl-curr-pmt">$1,817.37</td>
+                            <td id="tbl-new-pmt">$1,546.73</td>
+                            <td id="tbl-diff-pmt" style="color: #22c55e; font-weight: 700;">-$270.64 / mo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remaining Term</strong></td>
+                            <td id="tbl-curr-term">25 Yrs (300 Mos)</td>
+                            <td id="tbl-new-term">30 Yrs (360 Mos)</td>
+                            <td id="tbl-diff-term">+5 Yrs (+60 Mos)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Remaining Interest</strong></td>
+                            <td id="tbl-curr-interest">$265,211.00</td>
+                            <td id="tbl-new-interest">$276,822.80</td>
+                            <td id="tbl-diff-interest" style="color: #f59e0b;">+$11,611.80</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Remaining Cost</strong></td>
+                            <td id="tbl-curr-total">$545,211.00</td>
+                            <td id="tbl-new-total">$561,322.80</td>
+                            <td id="tbl-diff-total">+$16,111.80</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-muted);" id="ref-verdict-note">
+                ℹ️ Note: While extending a 25-year mortgage to 30 years lowers the monthly payment, it can increase aggregate lifetime interest if the rate reduction is not substantial.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/refinance.js' %}"></script>
+{% endblock %}

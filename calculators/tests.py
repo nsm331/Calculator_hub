@@ -241,6 +241,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Overtime Remuneration Models", calc.article_content)
 
+    def test_refinance_calculator_view(self):
+        response = self.client.get(reverse('refinance_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Refinance Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/refinance.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='refinance-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Break-Even", calc.article_content)
+
+    def test_running_pace_calculator_view(self):
+        response = self.client.get(reverse('running_pace_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Running Pace Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/running_pace.js")
+        self.assertNotContains(response, "js/calorie.js")
+        calc = Calculator.objects.filter(slug='running-pace-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Pete Riegel", calc.article_content)
+
+    def test_graphing_calculator_view(self):
+        response = self.client.get(reverse('graphing_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "2D Function Graphing Tool")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/graphing.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='graphing-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Affine World-to-Screen", calc.article_content)
+
+    def test_gpa_calculator_view(self):
+        response = self.client.get(reverse('gpa_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "College GPA Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/gpa.js")
+        self.assertNotContains(response, "js/age.js")
+        calc = Calculator.objects.filter(slug='gpa-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Academic Quality Point Systems", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -264,6 +308,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "ideal-weight-calculator")
         self.assertContains(response, "decimal-to-fraction-calculator")
         self.assertContains(response, "work-hours-calculator")
+        self.assertContains(response, "refinance-calculator")
+        self.assertContains(response, "running-pace-calculator")
+        self.assertContains(response, "graphing-calculator")
+        self.assertContains(response, "gpa-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -286,6 +334,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('ideal_weight_calculator'))
         self.client.get(reverse('decimal_to_fraction_calculator'))
         self.client.get(reverse('work_hours_calculator'))
+        self.client.get(reverse('refinance_calculator'))
+        self.client.get(reverse('running_pace_calculator'))
+        self.client.get(reverse('graphing_calculator'))
+        self.client.get(reverse('gpa_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -309,6 +361,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "ideal-weight-calculator")
         self.assertContains(response, "decimal-to-fraction-calculator")
         self.assertContains(response, "work-hours-calculator")
+        self.assertContains(response, "refinance-calculator")
+        self.assertContains(response, "running-pace-calculator")
+        self.assertContains(response, "graphing-calculator")
+        self.assertContains(response, "gpa-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')
