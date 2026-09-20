@@ -197,6 +197,50 @@ class CalculatorNetTests(TestCase):
         self.assertIn("Time and Duration Arithmetic", calc.article_content)
         self.assertContains(response, "Sexagesimal Mechanics")
 
+    def test_amortization_calculator_view(self):
+        response = self.client.get(reverse('amortization_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Amortization Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/amortization.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='amortization-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("The Mathematics of Loan Amortization", calc.article_content)
+
+    def test_ideal_weight_calculator_view(self):
+        response = self.client.get(reverse('ideal_weight_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ideal Body Weight Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/ideal_weight.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='ideal-weight-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Devine Formula", calc.article_content)
+
+    def test_decimal_to_fraction_calculator_view(self):
+        response = self.client.get(reverse('decimal_to_fraction_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Decimal to Fraction Converter")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/decimal_to_fraction.js")
+        self.assertNotContains(response, "js/percentage.js")
+        calc = Calculator.objects.filter(slug='decimal-to-fraction-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Euclidean Algorithm", calc.article_content)
+
+    def test_work_hours_calculator_view(self):
+        response = self.client.get(reverse('work_hours_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Work Hours &amp; Timesheet Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/work_hours.js")
+        self.assertNotContains(response, "js/time_duration.js")
+        calc = Calculator.objects.filter(slug='work-hours-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Overtime Remuneration Models", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -216,6 +260,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "bmr-calculator")
         self.assertContains(response, "binary-hex-converter")
         self.assertContains(response, "time-duration-calculator")
+        self.assertContains(response, "amortization-calculator")
+        self.assertContains(response, "ideal-weight-calculator")
+        self.assertContains(response, "decimal-to-fraction-calculator")
+        self.assertContains(response, "work-hours-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -234,6 +282,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('bmr_calculator'))
         self.client.get(reverse('binary_hex_converter'))
         self.client.get(reverse('time_duration_calculator'))
+        self.client.get(reverse('amortization_calculator'))
+        self.client.get(reverse('ideal_weight_calculator'))
+        self.client.get(reverse('decimal_to_fraction_calculator'))
+        self.client.get(reverse('work_hours_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -253,6 +305,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "bmr-calculator")
         self.assertContains(response, "binary-hex-converter")
         self.assertContains(response, "time-duration-calculator")
+        self.assertContains(response, "amortization-calculator")
+        self.assertContains(response, "ideal-weight-calculator")
+        self.assertContains(response, "decimal-to-fraction-calculator")
+        self.assertContains(response, "work-hours-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

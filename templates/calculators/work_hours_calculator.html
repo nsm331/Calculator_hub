@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Work Hours & Timesheet Calculator - Gross Pay, Overtime & Decimal Hours | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate weekly work hours, lunch breaks, overtime compensation, and decimal payroll hours with standard overtime rules." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Work Hours &amp; Timesheet Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Work Hours & Timesheet Calculator" }}</h1>
+    <p class="page-lead">
+        Track daily work shifts, deduct unpaid lunch breaks, and compute total weekly decimal hours, FLSA overtime pay, and gross earnings with instant payroll calculations.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <span class="card-subtitle-tag">Weekly Payroll, Break Deductions &amp; Overtime Engine</span>
+        
+        <!-- Quick Preset Buttons -->
+        <div class="quick-presets" style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button type="button" id="wh-preset-standard" class="pill-btn" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">
+                Mon–Fri (9am–5pm, 30m break)
+            </button>
+            <button type="button" id="wh-preset-8to5" class="pill-btn" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">
+                Mon–Fri (8am–5pm, 1h break)
+            </button>
+            <button type="button" id="wh-preset-clear" class="pill-btn" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-muted); cursor: pointer;">
+                Clear All
+            </button>
+        </div>
+    </div>
+
+    <!-- Wage & Overtime Settings Strip -->
+    <div class="wage-settings-strip" style="background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <div class="form-row" style="margin-bottom: 0;">
+            <div class="form-group">
+                <label for="wh-hourly-rate">Base Hourly Wage</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix">$</span>
+                    <input type="number" id="wh-hourly-rate" class="form-control" value="25.00" min="0" max="1000" step="0.50">
+                    <span class="input-addon">/ hr</span>
+                </div>
+                <span class="field-hint">Standard regular hourly pay rate</span>
+            </div>
+
+            <div class="form-group">
+                <label for="wh-ot-threshold">Weekly Overtime Threshold</label>
+                <div class="input-with-addon">
+                    <input type="number" id="wh-ot-threshold" class="form-control" value="40" min="1" max="80" step="1">
+                    <span class="input-addon">Hours</span>
+                </div>
+                <span class="field-hint">Hours before overtime rate begins (FLSA = 40)</span>
+            </div>
+
+            <div class="form-group">
+                <label for="wh-ot-rate-mult">Overtime Rate Multiplier</label>
+                <select id="wh-ot-rate-mult" class="form-control">
+                    <option value="1.5" selected>1.5&times; (Time and a Half)</option>
+                    <option value="2.0">2.0&times; (Double Time)</option>
+                    <option value="1.0">1.0&times; (Straight Time - No Bonus)</option>
+                </select>
+                <span class="field-hint">FLSA statutory rate multiplier</span>
+            </div>
+        </div>
+    </div>
+
+    <form id="wh-form" class="calculator-form" novalidate>
+        <!-- 7-Day Timesheet Table -->
+        <div class="table-responsive" style="margin-bottom: 1.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+            <table class="article-table timesheet-table" style="margin: 0; width: 100%;">
+                <thead style="background: var(--bg-surface);">
+                    <tr>
+                        <th style="width: 15%;">Day</th>
+                        <th style="width: 25%;">Time In</th>
+                        <th style="width: 25%;">Time Out</th>
+                        <th style="width: 20%;">Unpaid Break</th>
+                        <th style="width: 15%; text-align: right;">Daily Total</th>
+                    </tr>
+                </thead>
+                <tbody id="wh-timesheet-tbody">
+                    <!-- Monday -->
+                    <tr data-day="mon">
+                        <td><strong>Monday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value="08:00"></td>
+                        <td><input type="time" class="form-control wh-time-out" value="17:00"></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="60" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--accent-primary);" class="wh-daily-total">8.00 hrs</td>
+                    </tr>
+                    <!-- Tuesday -->
+                    <tr data-day="tue">
+                        <td><strong>Tuesday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value="08:00"></td>
+                        <td><input type="time" class="form-control wh-time-out" value="17:30"></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="60" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--accent-primary);" class="wh-daily-total">8.50 hrs</td>
+                    </tr>
+                    <!-- Wednesday -->
+                    <tr data-day="wed">
+                        <td><strong>Wednesday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value="08:00"></td>
+                        <td><input type="time" class="form-control wh-time-out" value="18:00"></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="60" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--accent-primary);" class="wh-daily-total">9.00 hrs</td>
+                    </tr>
+                    <!-- Thursday -->
+                    <tr data-day="thu">
+                        <td><strong>Thursday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value="08:30"></td>
+                        <td><input type="time" class="form-control wh-time-out" value="17:30"></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="45" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--accent-primary);" class="wh-daily-total">8.25 hrs</td>
+                    </tr>
+                    <!-- Friday -->
+                    <tr data-day="fri">
+                        <td><strong>Friday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value="08:00"></td>
+                        <td><input type="time" class="form-control wh-time-out" value="17:00"></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="30" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--accent-primary);" class="wh-daily-total">8.50 hrs</td>
+                    </tr>
+                    <!-- Saturday -->
+                    <tr data-day="sat">
+                        <td><strong style="color: var(--text-muted);">Saturday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value=""></td>
+                        <td><input type="time" class="form-control wh-time-out" value=""></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="0" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--text-muted);" class="wh-daily-total">0.00 hrs</td>
+                    </tr>
+                    <!-- Sunday -->
+                    <tr data-day="sun">
+                        <td><strong style="color: var(--text-muted);">Sunday</strong></td>
+                        <td><input type="time" class="form-control wh-time-in" value=""></td>
+                        <td><input type="time" class="form-control wh-time-out" value=""></td>
+                        <td>
+                            <div class="input-with-addon">
+                                <input type="number" class="form-control wh-break" value="0" min="0" max="300" step="5">
+                                <span class="input-addon">min</span>
+                            </div>
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--text-muted);" class="wh-daily-total">0.00 hrs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="wh-calculate-btn" class="btn btn-primary">
+                Calculate Payroll &amp; Hours
+            </button>
+            <button type="button" id="wh-reset-btn" class="btn btn-secondary">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Panel -->
+    <div id="wh-results" class="calculator-results" style="margin-top: 2rem;">
+        <!-- Hero Earnings Banner -->
+        <div class="result-hero-banner" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(30, 41, 59, 0.4) 100%); border: 1px solid #22c55e; border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+            <div class="hero-label" style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.35rem;">
+                Estimated Weekly Gross Pay
+            </div>
+            <div class="hero-val" id="wh-gross-pay" style="font-size: 2.75rem; font-weight: 800; color: #22c55e; line-height: 1.1;">
+                $1,084.38
+            </div>
+            <div class="hero-subtext" id="wh-hours-subtext" style="font-size: 1rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                Total Hours Worked: <strong>42.25 Decimal Hours (42 hrs 15 mins)</strong>
+            </div>
+        </div>
+
+        <!-- Hours & Pay Breakdown Cards -->
+        <div class="results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Regular Hours</div>
+                <div class="breakdown-val" id="wh-reg-hours" style="color: var(--accent-primary);">40.00 hrs</div>
+                <span class="field-hint" id="wh-reg-pay" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-top: 4px;">$1,000.00</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Overtime Hours</div>
+                <div class="breakdown-val" id="wh-ot-hours" style="color: #f59e0b;">2.25 hrs</div>
+                <span class="field-hint" id="wh-ot-pay" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-top: 4px;">$84.38 (@ 1.5&times;)</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Total Unpaid Breaks</div>
+                <div class="breakdown-val" id="wh-total-breaks">4 hrs 15 mins</div>
+                <span class="field-hint" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Deducted from gross shift</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Effective Hourly Rate</div>
+                <div class="breakdown-val" id="wh-effective-rate" style="color: #38bdf8;">$25.67 / hr</div>
+                <span class="field-hint" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Blended average including OT</span>
+            </div>
+        </div>
+
+        <!-- Weekly Summary Details Box -->
+        <div style="background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem 1.5rem;">
+            <h3 style="margin-top: 0; margin-bottom: 0.75rem; font-size: 1.1rem; color: var(--text-primary);">
+                Timesheet Payroll Summary
+            </h3>
+            <ul style="list-style: none; padding: 0; margin: 0; line-height: 1.8; font-size: 0.92rem; color: var(--text-secondary);">
+                <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding: 6px 0;">
+                    <span>Regular Earnings (<span id="sum-reg-hrs">40.00</span> hrs &times; $<span id="sum-reg-rate">25.00</span>/hr):</span>
+                    <strong style="color: var(--text-primary);"><span id="sum-reg-earnings">$1,000.00</span></strong>
+                </li>
+                <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding: 6px 0;">
+                    <span>Overtime Earnings (<span id="sum-ot-hrs">2.25</span> hrs &times; $<span id="sum-ot-rate">37.50</span>/hr):</span>
+                    <strong style="color: #f59e0b;"><span id="sum-ot-earnings">$84.38</span></strong>
+                </li>
+                <li style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 1.05rem; font-weight: 700;">
+                    <span style="color: var(--text-primary);">Total Gross Earnings:</span>
+                    <span id="sum-total-earnings" style="color: #22c55e;">$1,084.38</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/work_hours.js' %}"></script>
+{% endblock %}

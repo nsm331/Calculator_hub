@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Decimal to Fraction Converter - Terminating & Repeating Decimals | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Convert any terminating or repeating decimal into its exact simplified fraction and mixed number with step-by-step algebraic proof." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Decimal to Fraction Converter</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Decimal to Fraction Converter" }}</h1>
+    <p class="page-lead">
+        Convert terminating and repeating decimals into reduced proper fractions, improper fractions, and mixed numbers with step-by-step Euclidean $\gcd$ reductions and algebraic proofs.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Rational Number &amp; Repetend Reduction Engine</span>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="quick-presets" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <span style="font-size: 0.85rem; color: var(--text-muted); align-self: center; margin-right: 4px;">Examples:</span>
+        <button type="button" class="preset-pill-btn" data-val="0.625" data-rep="" style="padding: 4px 12px; font-size: 0.82rem; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">0.625 (5/8)</button>
+        <button type="button" class="preset-pill-btn" data-val="0.333333" data-rep="3" style="padding: 4px 12px; font-size: 0.82rem; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">0.333... (1/3)</button>
+        <button type="button" class="preset-pill-btn" data-val="2.75" data-rep="" style="padding: 4px 12px; font-size: 0.82rem; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">2.75 (2 3/4)</button>
+        <button type="button" class="preset-pill-btn" data-val="0.166666" data-nonrep="1" data-rep="6" style="padding: 4px 12px; font-size: 0.82rem; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">0.166... (1/6)</button>
+        <button type="button" class="preset-pill-btn" data-val="0.142857" data-rep="142857" style="padding: 4px 12px; font-size: 0.82rem; border-radius: 100px; border: 1px solid var(--border-color); background: var(--bg-surface-secondary); color: var(--text-primary); cursor: pointer;">0.142857... (1/7)</button>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="unit-toggle-tabs" style="display: flex; gap: 8px; margin-bottom: 1.5rem; background: var(--bg-surface-secondary); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); width: fit-content;">
+        <button type="button" id="dec-mode-terminating" class="pill-btn active" style="padding: 6px 18px; border: none; border-radius: 4px; background: var(--accent-primary); color: #fff; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+            Standard / Terminating Decimal
+        </button>
+        <button type="button" id="dec-mode-repeating" class="pill-btn" style="padding: 6px 18px; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+            Repeating Decimal (with Overline)
+        </button>
+    </div>
+
+    <form id="dec-form" class="calculator-form" novalidate>
+        <!-- Terminating Decimal Input -->
+        <div id="dec-terminating-container" class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="dec-input-val">Enter Decimal Number</label>
+                <div class="input-with-addon">
+                    <input type="text" id="dec-input-val" class="form-control" value="0.625" placeholder="e.g. 0.625 or 3.14" required style="font-size: 1.25rem; font-weight: 600;">
+                </div>
+                <span class="field-hint">Supports negative values, integer numbers, and decimals (e.g. 0.875, 1.25, -0.375)</span>
+            </div>
+        </div>
+
+        <!-- Repeating Decimal Inputs -->
+        <div id="dec-repeating-container" class="form-row" style="display: none;">
+            <div class="form-group">
+                <label for="dec-whole-nonrep">Whole &amp; Non-Repeating Part</label>
+                <input type="text" id="dec-whole-nonrep" class="form-control" value="0.1" placeholder="e.g. 0.1" style="font-size: 1.1rem; font-weight: 600;">
+                <span class="field-hint">Digits before repeating sequence (e.g., 0.1 for 0.1666...)</span>
+            </div>
+
+            <div class="form-group">
+                <label for="dec-repetend">Repeating Pattern (Repetend $\bar{x}$)</label>
+                <div class="input-with-addon">
+                    <span class="input-addon-prefix" style="font-weight: bold;">(</span>
+                    <input type="text" id="dec-repetend" class="form-control" value="6" placeholder="e.g. 6 or 3 or 142857" style="font-size: 1.1rem; font-weight: 600;">
+                    <span class="input-addon" style="font-weight: bold;">)&#773;</span>
+                </div>
+                <span class="field-hint">Digits under the repeating vinculum overbar</span>
+            </div>
+        </div>
+
+        <!-- Inch Fraction Tolerance Selector -->
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="dec-inch-precision">Ruler / Tape Measure Precision</label>
+                <select id="dec-inch-precision" class="form-control">
+                    <option value="16">Nearest 1/16 inch</option>
+                    <option value="32">Nearest 1/32 inch</option>
+                    <option value="64" selected>Nearest 1/64 inch (High Precision)</option>
+                </select>
+                <span class="field-hint">Calculates architectural / woodworking nearest inch fraction</span>
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 1.25rem;">
+            <button type="button" id="dec-calculate-btn" class="btn btn-primary">
+                Convert to Fraction
+            </button>
+            <button type="button" id="dec-reset-btn" class="btn btn-secondary">
+                Reset
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Panel -->
+    <div id="dec-results" class="calculator-results" style="margin-top: 2rem;">
+        <!-- Hero Display: Large Fraction Notation -->
+        <div class="result-hero-banner" style="background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(30, 41, 59, 0.4) 100%); border: 1px solid var(--accent-primary); border-radius: var(--radius-lg); padding: 1.75rem; text-align: center; margin-bottom: 1.5rem;">
+            <div class="hero-label" style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">
+                Exact Simplified Fraction
+            </div>
+            
+            <div id="dec-fraction-hero" style="display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 2.75rem; font-weight: 800; color: var(--accent-primary);">
+                <span id="dec-whole-display" style="display: none; color: var(--text-primary);"></span>
+                <div class="fraction-display-inline" style="display: inline-flex; flex-direction: column; align-items: center; line-height: 1;">
+                    <span id="dec-hero-numerator" style="border-bottom: 3px solid currentColor; padding: 0 8px; width: 100%; text-align: center;">5</span>
+                    <span id="dec-hero-denominator" style="padding: 0 8px; width: 100%; text-align: center;">8</span>
+                </div>
+            </div>
+
+            <div class="hero-subtext" id="dec-mixed-subtext" style="font-size: 1.05rem; color: var(--text-secondary); margin-top: 0.75rem;">
+                Mixed Number: <strong id="dec-mixed-val">None (Proper Fraction)</strong>
+            </div>
+        </div>
+
+        <!-- Detailed Breakdown Grid -->
+        <div class="results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Percentage</div>
+                <div class="breakdown-val" id="dec-pct-val" style="color: #4ade80;">62.5%</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Scientific Notation</div>
+                <div class="breakdown-val" id="dec-sci-val">6.25 &times; 10⁻¹</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Nearest Tape Measure</div>
+                <div class="breakdown-val" id="dec-ruler-val" style="color: #38bdf8;">5/8 in</div>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Reciprocal ($1/x$)</div>
+                <div class="breakdown-val" id="dec-reciprocal-val">8/5 = 1.6</div>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Mathematical Solution Container -->
+        <div class="step-solution-box" style="background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem 1.5rem;">
+            <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px;">
+                <span>📐 Step-by-Step Mathematical Derivation</span>
+            </div>
+            <div id="dec-step-solution-content" style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7;">
+                <!-- Populated dynamically via Vanilla JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/decimal_to_fraction.js' %}"></script>
+{% endblock %}

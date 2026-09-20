@@ -87,6 +87,28 @@ urlpatterns = [
         name='time_duration_calculator'
     ),
 
+    # Batch 5 Calculators (User Batch #4)
+    path(
+        'financial-calculators/amortization-calculator/',
+        views.amortization_calculator,
+        name='amortization_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/ideal-weight-calculator/',
+        views.ideal_weight_calculator,
+        name='ideal_weight_calculator'
+    ),
+    path(
+        'math-calculators/decimal-to-fraction-calculator/',
+        views.decimal_to_fraction_calculator,
+        name='decimal_to_fraction_calculator'
+    ),
+    path(
+        'other-calculators/work-hours-calculator/',
+        views.work_hours_calculator,
+        name='work_hours_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

@@ -19,6 +19,12 @@ from calculators.default_articles_batch4 import (
     BINARY_HEX_ARTICLE,
     TIME_DURATION_ARTICLE,
 )
+from calculators.default_articles_batch5 import (
+    AMORTIZATION_ARTICLE,
+    IDEAL_WEIGHT_ARTICLE,
+    DECIMAL_TO_FRACTION_ARTICLE,
+    WORK_HOURS_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -145,6 +151,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Time & Duration Calculator - Add, Subtract & Measure Elapsed Time | CalculatorHub',
         'meta_description': 'Calculate duration between two times, add or subtract hours/minutes/seconds, and convert elapsed time to decimal hours for payroll.',
         'article_content': TIME_DURATION_ARTICLE,
+    },
+    # Batch 5 Calculators (User Batch #4)
+    {
+        'slug': 'amortization-calculator',
+        'title': 'Amortization Calculator',
+        'category': 'financial',
+        'meta_title': 'Amortization Calculator - Loan Schedule, Extra Payments & Payoff | CalculatorHub',
+        'meta_description': 'Free online Amortization Calculator with comprehensive annual and monthly payoff schedules, principal-interest breakdown, and extra prepayment savings analysis.',
+        'article_content': AMORTIZATION_ARTICLE,
+    },
+    {
+        'slug': 'ideal-weight-calculator',
+        'title': 'Ideal Body Weight Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Ideal Body Weight Calculator - Devine, Robinson, Miller & Hamwi Formulas | CalculatorHub',
+        'meta_description': 'Calculate your ideal body weight (IBW) using scientific formulas (Devine, Robinson, Miller, Hamwi) and WHO healthy BMI ranges for men and women.',
+        'article_content': IDEAL_WEIGHT_ARTICLE,
+    },
+    {
+        'slug': 'decimal-to-fraction-calculator',
+        'title': 'Decimal to Fraction Converter',
+        'category': 'math',
+        'meta_title': 'Decimal to Fraction Converter - Repeating Decimals & Mixed Fractions | CalculatorHub',
+        'meta_description': 'Convert terminating and repeating decimals to simplified fractions and mixed numbers. Features Euclidean GCD reduction, algebraic proofs, and inch fraction rulers.',
+        'article_content': DECIMAL_TO_FRACTION_ARTICLE,
+    },
+    {
+        'slug': 'work-hours-calculator',
+        'title': 'Work Hours & Timesheet Calculator',
+        'category': 'other',
+        'meta_title': 'Work Hours Calculator - Weekly Timesheet, Overtime & Gross Pay | CalculatorHub',
+        'meta_description': 'Free online Work Hours & Timesheet Calculator. Track daily shift hours, unpaid meal breaks, 40-hour overtime rates, and gross payroll earnings.',
+        'article_content': WORK_HOURS_ARTICLE,
     },
 ]
 

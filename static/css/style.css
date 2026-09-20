@@ -2993,3 +2993,72 @@ textarea:focus,
     border-color: #ef4444;
 }
 
+/* --------------------------------------------------------------------------
+   Batch 4 Specific Enhancements: Timesheet, Amortization & Fraction Styles
+   -------------------------------------------------------------------------- */
+.timesheet-table input[type="time"] {
+    background-color: var(--color-bg-input, var(--bg-surface-secondary));
+    color: var(--color-text-main, var(--text-primary));
+    border: 1px solid var(--color-border-light, var(--border-color));
+    border-radius: var(--border-radius-sm, 6px);
+    padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    width: 100%;
+    box-sizing: border-box;
+    color-scheme: dark light;
+    transition: border-color var(--transition-fast);
+}
+
+.timesheet-table input[type="time"]:focus {
+    border-color: var(--color-accent-blue);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+.timesheet-table .wh-break {
+    min-width: 60px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.timesheet-table td, .timesheet-table th {
+    padding: 10px 12px;
+    vertical-align: middle;
+}
+
+/* Fraction Hero Inline Display */
+.fraction-display-inline {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.fraction-display-inline #dec-hero-numerator {
+    border-bottom: 2.5px solid currentColor;
+    padding-bottom: 2px;
+    min-width: 32px;
+}
+
+.fraction-display-inline #dec-hero-denominator {
+    padding-top: 3px;
+    min-width: 32px;
+}
+
+/* Amortization & Growth Tables */
+.growth-data-table tbody tr:hover {
+    background-color: rgba(56, 189, 248, 0.04);
+}
+
+.savings-callout {
+    animation: fadeInCallout 0.3s ease-in-out;
+}
+
+@keyframes fadeInCallout {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

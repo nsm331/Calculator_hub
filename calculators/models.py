@@ -47,6 +47,10 @@ class Calculator(models.Model):
             'bmr-calculator': 'bmr_calculator',
             'binary-hex-converter': 'binary_hex_converter',
             'time-duration-calculator': 'time_duration_calculator',
+            'amortization-calculator': 'amortization_calculator',
+            'ideal-weight-calculator': 'ideal_weight_calculator',
+            'decimal-to-fraction-calculator': 'decimal_to_fraction_calculator',
+            'work-hours-calculator': 'work_hours_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

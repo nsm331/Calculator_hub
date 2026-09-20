@@ -21,6 +21,12 @@ from .default_articles_batch4 import (
     BINARY_HEX_ARTICLE,
     TIME_DURATION_ARTICLE,
 )
+from .default_articles_batch5 import (
+    AMORTIZATION_ARTICLE,
+    IDEAL_WEIGHT_ARTICLE,
+    DECIMAL_TO_FRACTION_ARTICLE,
+    WORK_HOURS_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -308,6 +314,58 @@ def time_duration_calculator(request):
     }
     calculator = _get_or_seed_calculator('time-duration-calculator', default_data)
     return render(request, 'calculators/time_duration_calculator.html', {'calculator': calculator})
+
+
+def amortization_calculator(request):
+    """Dynamic view for Amortization Calculator."""
+    default_data = {
+        'title': 'Amortization Calculator',
+        'category': 'financial',
+        'meta_title': 'Amortization Calculator - Monthly Schedule, Principal & Extra Payments | CalculatorHub',
+        'meta_description': 'Calculate complete loan and mortgage amortization schedules with principal reduction, monthly interest, and early payoff acceleration.',
+        'article_content': AMORTIZATION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('amortization-calculator', default_data)
+    return render(request, 'calculators/amortization_calculator.html', {'calculator': calculator})
+
+
+def ideal_weight_calculator(request):
+    """Dynamic view for Ideal Body Weight (IBW) Calculator."""
+    default_data = {
+        'title': 'Ideal Body Weight Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Ideal Weight Calculator - Devine, Robinson, Miller & WHO Formulas | CalculatorHub',
+        'meta_description': 'Determine your ideal healthy body weight range based on clinical pharmacology formulas (Devine, Robinson, Miller, Hamwi) and WHO standards.',
+        'article_content': IDEAL_WEIGHT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('ideal-weight-calculator', default_data)
+    return render(request, 'calculators/ideal_weight_calculator.html', {'calculator': calculator})
+
+
+def decimal_to_fraction_calculator(request):
+    """Dynamic view for Decimal to Fraction Converter."""
+    default_data = {
+        'title': 'Decimal to Fraction Converter',
+        'category': 'math',
+        'meta_title': 'Decimal to Fraction Converter - Terminating & Repeating Decimals | CalculatorHub',
+        'meta_description': 'Convert any terminating or repeating decimal into its exact simplified fraction and mixed number with step-by-step algebraic proof.',
+        'article_content': DECIMAL_TO_FRACTION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('decimal-to-fraction-calculator', default_data)
+    return render(request, 'calculators/decimal_to_fraction_calculator.html', {'calculator': calculator})
+
+
+def work_hours_calculator(request):
+    """Dynamic view for Work Hours & Timesheet Calculator."""
+    default_data = {
+        'title': 'Work Hours & Timesheet Calculator',
+        'category': 'other',
+        'meta_title': 'Work Hours & Timesheet Calculator - Gross Pay, Overtime & Decimal Hours | CalculatorHub',
+        'meta_description': 'Calculate weekly work hours, lunch breaks, overtime compensation, and decimal payroll hours with standard overtime rules.',
+        'article_content': WORK_HOURS_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('work-hours-calculator', default_data)
+    return render(request, 'calculators/work_hours_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

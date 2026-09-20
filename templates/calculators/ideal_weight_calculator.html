@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Ideal Weight Calculator - Devine, Robinson, Miller & WHO Formulas | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Determine your ideal healthy body weight range based on clinical pharmacology formulas (Devine, Robinson, Miller, Hamwi) and WHO standards." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health Calculators</a> &rsaquo; 
+        <span>Ideal Body Weight Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Ideal Body Weight Calculator" }}</h1>
+    <p class="page-lead">
+        Determine your scientific ideal body weight (IBW) based on medical and clinical formulas including Devine, Robinson, Miller, Hamwi, and the World Health Organization (WHO) healthy BMI interval.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Clinical IBW &amp; Healthy Weight Range Analysis</span>
+    </div>
+
+    <!-- Unit Selector Tabs -->
+    <div class="unit-toggle-tabs" style="display: flex; gap: 8px; margin-bottom: 1.5rem; background: var(--bg-surface-secondary); padding: 4px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); width: fit-content;">
+        <button type="button" id="ibw-unit-us" class="pill-btn active" style="padding: 6px 18px; border: none; border-radius: 4px; background: var(--accent-primary); color: #fff; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+            US Units (ft, in, lbs)
+        </button>
+        <button type="button" id="ibw-unit-metric" class="pill-btn" style="padding: 6px 18px; border: none; border-radius: 4px; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+            Metric Units (cm, kg)
+        </button>
+    </div>
+
+    <form id="ibw-form" class="calculator-form" novalidate>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Biological Sex</label>
+                <div class="radio-pill-group" style="display: flex; gap: 8px;">
+                    <label class="radio-pill-label" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-surface-secondary);">
+                        <input type="radio" name="ibw-gender" value="male" checked style="margin-right: 6px;">
+                        <span>Male</span>
+                    </label>
+                    <label class="radio-pill-label" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; background: var(--bg-surface-secondary);">
+                        <input type="radio" name="ibw-gender" value="female" style="margin-right: 6px;">
+                        <span>Female</span>
+                    </label>
+                </div>
+                <span class="field-hint">Used for sex-specific clinical coefficients</span>
+            </div>
+
+            <div class="form-group">
+                <label for="ibw-age">Age (Optional)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="ibw-age" class="form-control" value="30" min="14" max="110" step="1">
+                    <span class="input-addon">Years</span>
+                </div>
+                <span class="field-hint">Adults age 18+ recommended</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <!-- Height Inputs (US vs Metric) -->
+            <div class="form-group">
+                <label>Height</label>
+                <!-- US Imperial Height -->
+                <div id="ibw-height-us-container" style="display: flex; gap: 8px;">
+                    <div class="input-with-addon" style="flex: 1;">
+                        <input type="number" id="ibw-height-ft" class="form-control" value="5" min="3" max="8" step="1">
+                        <span class="input-addon">ft</span>
+                    </div>
+                    <div class="input-with-addon" style="flex: 1;">
+                        <input type="number" id="ibw-height-in" class="form-control" value="10" min="0" max="11" step="1">
+                        <span class="input-addon">in</span>
+                    </div>
+                </div>
+                <!-- Metric Height -->
+                <div id="ibw-height-metric-container" style="display: none;">
+                    <div class="input-with-addon">
+                        <input type="number" id="ibw-height-cm" class="form-control" value="178" min="100" max="250" step="1">
+                        <span class="input-addon">cm</span>
+                    </div>
+                </div>
+                <span class="field-hint">Base for baseline stature formulas</span>
+            </div>
+
+            <!-- Current Weight (Optional for delta comparison) -->
+            <div class="form-group">
+                <label for="ibw-current-weight">Current Weight (Optional)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="ibw-current-weight" class="form-control" value="175" min="30" max="800" step="0.5">
+                    <span class="input-addon" id="ibw-weight-addon">lbs</span>
+                </div>
+                <span class="field-hint">Enables weight gain/loss target delta</span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="grid-column: span 2;">
+                <label for="ibw-frame-size">Body Frame Size (Hamwi Adjustment)</label>
+                <select id="ibw-frame-size" class="form-control">
+                    <option value="small">Small Frame (-10% on Hamwi)</option>
+                    <option value="medium" selected>Medium Frame (Standard Formula)</option>
+                    <option value="large">Large Frame (+10% on Hamwi)</option>
+                </select>
+                <span class="field-hint">Wrist circumference or elbow breadth indicator</span>
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 1.5rem;">
+            <button type="button" id="ibw-calculate-btn" class="btn btn-primary">
+                Calculate Ideal Weight
+            </button>
+            <button type="button" id="ibw-reset-btn" class="btn btn-secondary">
+                Reset Defaults
+            </button>
+        </div>
+    </form>
+
+    <!-- Results Display -->
+    <div id="ibw-results" class="calculator-results" style="margin-top: 2rem;">
+        <!-- Hero Display: Consensus Target Range -->
+        <div class="result-hero-banner" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(30, 41, 59, 0.4) 100%); border: 1px solid #10b981; border-radius: var(--radius-lg); padding: 1.5rem; text-align: center; margin-bottom: 1.5rem;">
+            <div class="hero-label" style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.35rem;">
+                Consensus Ideal Body Weight Range
+            </div>
+            <div class="hero-val" id="ibw-range-hero" style="font-size: 2.5rem; font-weight: 800; color: #10b981; line-height: 1.1;">
+                149.0 – 166.4 lbs
+            </div>
+            <div class="hero-subtext" id="ibw-median-hero" style="font-size: 1rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                Clinical Formula Average: <strong>157.7 lbs (71.5 kg)</strong>
+            </div>
+        </div>
+
+        <!-- Delta from Current Weight Indicator -->
+        <div id="ibw-delta-card" style="background: var(--bg-surface-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">Current Weight Assessment</span>
+                <div id="ibw-delta-status" style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-top: 2px;">
+                    175.0 lbs &mdash; Slightly Above Median Ideal
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Delta to Target Average</span>
+                <div id="ibw-delta-val" style="font-size: 1.3rem; font-weight: 800; color: #f59e0b;">
+                    -17.3 lbs
+                </div>
+            </div>
+        </div>
+
+        <!-- WHO BMI Healthy Weight Range Callout -->
+        <div class="who-bmi-range-box" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <span style="font-weight: 700; color: #60a5fa;">WHO Healthy BMI Interval (18.5 – 24.9 kg/m²)</span>
+                    <p style="margin: 3px 0 0 0; font-size: 0.88rem; color: var(--text-secondary);">
+                        Epidemiological normal weight bracket for your height (<span id="ibw-who-height-text">5'10"</span>):
+                    </p>
+                </div>
+                <div id="ibw-who-range" style="font-size: 1.25rem; font-weight: 800; color: #60a5fa;">
+                    128.9 – 173.5 lbs
+                </div>
+            </div>
+        </div>
+
+        <!-- Formula Breakdown Comparison Cards -->
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text-primary);">
+            Scientific &amp; Medical Formula Breakdown
+        </h3>
+        <div class="results-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div class="breakdown-card">
+                <div class="breakdown-label">Devine Formula (1974)</div>
+                <div class="breakdown-val" id="ibw-devine-val" style="color: var(--accent-primary);">159.8 lbs</div>
+                <span class="field-hint" style="margin-top: 4px; font-size: 0.76rem;">Gold standard in clinical drug dosing</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Robinson Formula (1983)</div>
+                <div class="breakdown-val" id="ibw-robinson-val">157.0 lbs</div>
+                <span class="field-hint" style="margin-top: 4px; font-size: 0.76rem;">Refined empirical regression</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Miller Formula (1983)</div>
+                <div class="breakdown-val" id="ibw-miller-val">153.9 lbs</div>
+                <span class="field-hint" style="margin-top: 4px; font-size: 0.76rem;">Optimized for lower standard deviation</span>
+            </div>
+            <div class="breakdown-card">
+                <div class="breakdown-label">Hamwi Formula (1964)</div>
+                <div class="breakdown-val" id="ibw-hamwi-val">166.0 lbs</div>
+                <span class="field-hint" style="margin-top: 4px; font-size: 0.76rem;">Adjusted for frame size</span>
+            </div>
+        </div>
+
+        <!-- Metric Reference Comparison Table -->
+        <div class="table-responsive" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden;">
+            <table class="article-table" style="margin: 0; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Calculation Method</th>
+                        <th>Target Weight (US)</th>
+                        <th>Target Weight (Metric)</th>
+                        <th>Clinical Focus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Devine Equation</strong></td>
+                        <td id="tbl-devine-us">159.8 lbs</td>
+                        <td id="tbl-devine-metric">72.5 kg</td>
+                        <td>Pharmacology, Clearance &amp; ICU Dosing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Robinson Equation</strong></td>
+                        <td id="tbl-robinson-us">157.0 lbs</td>
+                        <td id="tbl-robinson-metric">71.2 kg</td>
+                        <td>Empirical General Population Fit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Miller Equation</strong></td>
+                        <td id="tbl-miller-us">153.9 lbs</td>
+                        <td id="tbl-miller-metric">69.8 kg</td>
+                        <td>Reduced Height Stature Bias</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hamwi Formula</strong></td>
+                        <td id="tbl-hamwi-us">166.0 lbs</td>
+                        <td id="tbl-hamwi-metric">75.3 kg</td>
+                        <td>Endocrine &amp; Diabetic Dietetics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>WHO Healthy BMI (18.5-24.9)</strong></td>
+                        <td id="tbl-who-us">128.9 &ndash; 173.5 lbs</td>
+                        <td id="tbl-who-metric">58.5 &ndash; 78.7 kg</td>
+                        <td>Global Morbidity &amp; Mortality Risk Range</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/ideal_weight.js' %}"></script>
+{% endblock %}
