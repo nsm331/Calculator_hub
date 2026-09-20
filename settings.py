@@ -2,6 +2,7 @@
 Django settings for calculator_net project.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -15,12 +16,30 @@ if str(BASE_DIR.parent) not in sys.path:
     sys.path.insert(0, str(BASE_DIR.parent))
 
 # Quick-start development settings - unsuitable for production
-SECRET_KEY = 'django-insecure-!+ei%02yfj31x@@3hp(b#)4x!7-1%+=5aq5)jid37&+l5e&&b+'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-!+ei%02yfj31x@@3hp(b#)4x!7-1%+=5aq5)jid37&+l5e&&b+'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = ['*']
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# CSRF trusted origins for production deployments & local testing
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    # Custom domain placeholder: Add your custom domain below once configured on Render:
+    # 'https://yourcustomdomain.com',
+    # 'https://www.yourcustomdomain.com',
+]
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 
 # Application definition
@@ -31,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'calculators.apps.CalculatorsConfig',
@@ -38,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -46,7 +67,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'calculator_net.urls'
+# URLs and WSGI config
+ROOT_URLCONF = 'urls'
+WSGI_APPLICATION = 'wsgi.application'
 
 TEMPLATES = [
     {
@@ -62,8 +85,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'calculator_net.wsgi.application'
 
 
 # Database
@@ -104,6 +125,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT.mkdir(parents=True, exist_ok=True)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -14,7 +14,11 @@ def main():
     if str(current_dir.parent) not in sys.path:
         sys.path.insert(0, str(current_dir.parent))
 
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'calculator_net.settings')
+    if os.path.exists(current_dir / 'settings.py'):
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'calculator_net.settings')
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
