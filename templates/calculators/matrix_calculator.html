@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Matrix Operations Calculator - Determinant, Inverse & Multiplication | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Free online Matrix Calculator. Compute determinants, inverse matrices, matrix multiplication, addition, subtraction, trace, and transpose up to 4x4." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Matrix Operations Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Matrix Operations Calculator" }}</h1>
+    <p class="page-lead">
+        Perform computational linear algebra with dynamic dimensions up to 4&times;4. Calculate matrix inverses, determinants, matrix products ($A \times B$), transposes, and rank with step-by-step proofs.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Computational Linear Algebra &amp; Vector Spaces</span>
+    </div>
+
+    <!-- Quick Dimension Presets -->
+    <div style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Quick Matrix Dimension Presets
+        </label>
+        <div class="term-presets">
+            <button type="button" class="preset-pill-btn" data-dim="2">2 &times; 2 (Standard)</button>
+            <button type="button" class="preset-pill-btn active" data-dim="3">3 &times; 3 (Space)</button>
+            <button type="button" class="preset-pill-btn" data-dim="4">4 &times; 4 (Affine)</button>
+            <button type="button" class="preset-pill-btn" data-dim="custom">Custom Dimensions</button>
+        </div>
+    </div>
+
+    <!-- Dual Matrix Input Setup -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 24px;">
+        
+        <!-- Matrix A Container -->
+        <div class="advanced-section-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <h3 style="font-size: 1.1rem; margin: 0; color: var(--color-accent-blue); display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--color-accent-blue);"></span>
+                    <span>Matrix A</span>
+                </h3>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <select id="matrix-a-rows" class="form-control" style="width: 70px; padding: 4px 8px; font-size: 0.85rem;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                    <span>&times;</span>
+                    <select id="matrix-a-cols" class="form-control" style="width: 70px; padding: 4px 8px; font-size: 0.85rem;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Matrix A Tools -->
+            <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" id="btn-a-identity" style="padding: 3px 8px; font-size: 0.78rem;">Identity</button>
+                <button type="button" class="btn btn-secondary" id="btn-a-zero" style="padding: 3px 8px; font-size: 0.78rem;">Zeros</button>
+                <button type="button" class="btn btn-secondary" id="btn-a-random" style="padding: 3px 8px; font-size: 0.78rem;">Random</button>
+            </div>
+
+            <!-- Matrix A Grid Inputs -->
+            <div id="grid-matrix-a" style="display: grid; gap: 8px; max-width: 100%; overflow-x: auto; padding: 12px; background: var(--bg-surface-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
+                <!-- Dynamic Input Cells -->
+            </div>
+        </div>
+
+        <!-- Matrix B Container -->
+        <div class="advanced-section-box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <h3 style="font-size: 1.1rem; margin: 0; color: #fb923c; display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #fb923c;"></span>
+                    <span>Matrix B</span>
+                </h3>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <select id="matrix-b-rows" class="form-control" style="width: 70px; padding: 4px 8px; font-size: 0.85rem;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                    <span>&times;</span>
+                    <select id="matrix-b-cols" class="form-control" style="width: 70px; padding: 4px 8px; font-size: 0.85rem;">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3" selected>3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Matrix B Tools -->
+            <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-secondary" id="btn-b-identity" style="padding: 3px 8px; font-size: 0.78rem;">Identity</button>
+                <button type="button" class="btn btn-secondary" id="btn-b-zero" style="padding: 3px 8px; font-size: 0.78rem;">Zeros</button>
+                <button type="button" class="btn btn-secondary" id="btn-b-random" style="padding: 3px 8px; font-size: 0.78rem;">Random</button>
+            </div>
+
+            <!-- Matrix B Grid Inputs -->
+            <div id="grid-matrix-b" style="display: grid; gap: 8px; max-width: 100%; overflow-x: auto; padding: 12px; background: var(--bg-surface-secondary); border-radius: 8px; border: 1px solid var(--border-color);">
+                <!-- Dynamic Input Cells -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Operations Action Bar -->
+    <div class="advanced-section-box" style="margin-bottom: 24px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 12px;">
+            Select Linear Algebra Operation
+        </label>
+        
+        <!-- Binary Operations (A and B) -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+            <button type="button" class="btn btn-primary op-btn" data-op="multiply">A &times; B (Product)</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="add">A + B (Sum)</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="subtract">A &minus; B (Diff)</button>
+            <button type="button" class="btn btn-secondary" id="btn-swap-matrices">A &harr; B (Swap)</button>
+        </div>
+
+        <!-- Unary Operations on Matrix A -->
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+            <span style="font-size: 0.82rem; font-weight: 600; color: var(--color-text-muted); margin-right: 4px;">Matrix A Operations:</span>
+            <button type="button" class="btn btn-secondary op-btn" data-op="det">det(A)</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="inv">Inverse A⁻¹</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="transpose">Transpose Aᵀ</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="trace">Trace Tr(A)</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="power2">A² (Square)</button>
+            <button type="button" class="btn btn-secondary op-btn" data-op="rank">Rank(A)</button>
+            
+            <div style="display: inline-flex; align-items: center; gap: 6px; margin-left: 6px;">
+                <input type="number" id="scalar-k" value="2" style="width: 50px; padding: 4px 6px; font-size: 0.85rem;" class="form-control">
+                <button type="button" class="btn btn-secondary op-btn" data-op="scalar">k &times; A</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Display -->
+    <div id="matrix-results-container" class="calculator-results-wrapper">
+        
+        <!-- Hero Primary Result Banner -->
+        <div class="result-hero-banner" style="text-align: left; padding: 24px;">
+            <div class="hero-label" id="matrix-res-title">Calculation Result: A &times; B</div>
+            <div id="matrix-res-display" style="font-size: 1.25rem; overflow-x: auto; padding: 12px 0; color: var(--color-text-main);">
+                <!-- Dynamic KaTeX rendered matrix result -->
+            </div>
+            <div class="hero-secondary-metric" id="matrix-res-meta">
+                Dimension: 3 &times; 3 &bull; Rank: 3 &bull; Non-Singular
+            </div>
+        </div>
+
+        <!-- Step-by-Step Mathematical Explanation -->
+        <div class="advanced-section-box" style="margin-top: 24px; margin-bottom: 0;">
+            <h3 style="font-size: 1.05rem; margin-bottom: 12px; color: var(--color-text-main);">
+                📝 Step-by-Step Computational Derivation
+            </h3>
+            <div id="matrix-step-by-step" style="font-size: 0.9rem; line-height: 1.6; color: var(--color-text-muted);">
+                <!-- Populated dynamically with formulas & proofs -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/matrix.js' %}"></script>
+{% endblock %}

@@ -131,6 +131,28 @@ urlpatterns = [
         name='gpa_calculator'
     ),
 
+    # Batch 7 Calculators (User Batch #6)
+    path(
+        'financial-calculators/retirement-calculator/',
+        views.retirement_calculator,
+        name='retirement_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/target-heart-rate-calculator/',
+        views.target_heart_rate_calculator,
+        name='target_heart_rate_calculator'
+    ),
+    path(
+        'math-calculators/matrix-calculator/',
+        views.matrix_calculator,
+        name='matrix_calculator'
+    ),
+    path(
+        'other-calculators/final-grade-calculator/',
+        views.final_grade_calculator,
+        name='final_grade_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

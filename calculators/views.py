@@ -33,6 +33,12 @@ from .default_articles_batch6 import (
     GRAPHING_ARTICLE,
     GPA_ARTICLE,
 )
+from .default_articles_batch7 import (
+    RETIREMENT_ARTICLE,
+    TARGET_HEART_RATE_ARTICLE,
+    MATRIX_ARTICLE,
+    FINAL_GRADE_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -424,6 +430,58 @@ def gpa_calculator(request):
     }
     calculator = _get_or_seed_calculator('gpa-calculator', default_data)
     return render(request, 'calculators/gpa_calculator.html', {'calculator': calculator})
+
+
+def retirement_calculator(request):
+    """Dynamic view for Retirement Calculator."""
+    default_data = {
+        'title': 'Retirement Calculator',
+        'category': 'financial',
+        'meta_title': 'Retirement Calculator - Nest Egg, Savings & 4% Drawdown | CalculatorHub',
+        'meta_description': 'Free online Retirement Calculator. Project compound savings nest egg, safe withdrawal rates, inflation-adjusted spending, and pension/social security.',
+        'article_content': RETIREMENT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('retirement-calculator', default_data)
+    return render(request, 'calculators/retirement_calculator.html', {'calculator': calculator})
+
+
+def target_heart_rate_calculator(request):
+    """Dynamic view for Target Heart Rate Zones Calculator."""
+    default_data = {
+        'title': 'Target Heart Rate Zones Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Target Heart Rate Zones - Karvonen HRR & Tanaka Formula | CalculatorHub',
+        'meta_description': 'Calculate 5 cardiovascular training zones using Karvonen Heart Rate Reserve (HRR) and Tanaka MHR formulas. Tailored for fat-burn, aerobic base, and VO2 max.',
+        'article_content': TARGET_HEART_RATE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('target-heart-rate-calculator', default_data)
+    return render(request, 'calculators/target_heart_rate_calculator.html', {'calculator': calculator})
+
+
+def matrix_calculator(request):
+    """Dynamic view for Matrix Operations Calculator."""
+    default_data = {
+        'title': 'Matrix Operations Calculator',
+        'category': 'math',
+        'meta_title': 'Matrix Calculator - Determinant, Inverse, Multiply & Transpose | CalculatorHub',
+        'meta_description': 'Free online Matrix Calculator. Compute determinants, inverse matrices, matrix multiplication, addition, subtraction, trace, and transpose up to 4x4.',
+        'article_content': MATRIX_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('matrix-calculator', default_data)
+    return render(request, 'calculators/matrix_calculator.html', {'calculator': calculator})
+
+
+def final_grade_calculator(request):
+    """Dynamic view for Final Grade Needed Calculator."""
+    default_data = {
+        'title': 'Final Grade Needed Calculator',
+        'category': 'other',
+        'meta_title': 'Final Grade Needed Calculator - Target Exam Score Solver | CalculatorHub',
+        'meta_description': 'Calculate the exact score needed on your final exam to secure your desired course grade. Supports weighted grading categories and feasibility analysis.',
+        'article_content': FINAL_GRADE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('final-grade-calculator', default_data)
+    return render(request, 'calculators/final_grade_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

@@ -31,6 +31,12 @@ from calculators.default_articles_batch6 import (
     GRAPHING_ARTICLE,
     GPA_ARTICLE,
 )
+from calculators.default_articles_batch7 import (
+    RETIREMENT_ARTICLE,
+    TARGET_HEART_RATE_ARTICLE,
+    MATRIX_ARTICLE,
+    FINAL_GRADE_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -223,6 +229,39 @@ CALCULATORS_DATA = [
         'meta_title': 'College GPA Calculator - Weighted Semester, Cumulative & Target GPA | CalculatorHub',
         'meta_description': 'Calculate semester and cumulative college GPA on the 4.0 scale with course credit weighting, honors/AP bonuses, and target graduation GPA simulation.',
         'article_content': GPA_ARTICLE,
+    },
+    # Batch 7 Calculators (User Batch #6)
+    {
+        'slug': 'retirement-calculator',
+        'title': 'Retirement Calculator',
+        'category': 'financial',
+        'meta_title': 'Retirement Calculator - Nest Egg, Savings & 4% Drawdown | CalculatorHub',
+        'meta_description': 'Free online Retirement Calculator. Project compound savings nest egg, safe withdrawal rates, inflation-adjusted spending, and pension/social security.',
+        'article_content': RETIREMENT_ARTICLE,
+    },
+    {
+        'slug': 'target-heart-rate-calculator',
+        'title': 'Target Heart Rate Zones Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Target Heart Rate Zones - Karvonen HRR & Tanaka Formula | CalculatorHub',
+        'meta_description': 'Calculate 5 cardiovascular training zones using Karvonen Heart Rate Reserve (HRR) and Tanaka MHR formulas. Tailored for fat-burn, aerobic base, and VO2 max.',
+        'article_content': TARGET_HEART_RATE_ARTICLE,
+    },
+    {
+        'slug': 'matrix-calculator',
+        'title': 'Matrix Operations Calculator',
+        'category': 'math',
+        'meta_title': 'Matrix Calculator - Determinant, Inverse, Multiply & Transpose | CalculatorHub',
+        'meta_description': 'Free online Matrix Calculator. Compute determinants, inverse matrices, matrix multiplication, addition, subtraction, trace, and transpose up to 4x4.',
+        'article_content': MATRIX_ARTICLE,
+    },
+    {
+        'slug': 'final-grade-calculator',
+        'title': 'Final Grade Needed Calculator',
+        'category': 'other',
+        'meta_title': 'Final Grade Needed Calculator - Target Exam Score Solver | CalculatorHub',
+        'meta_description': 'Calculate the exact score needed on your final exam to secure your desired course grade. Supports weighted grading categories and feasibility analysis.',
+        'article_content': FINAL_GRADE_ARTICLE,
     },
 ]
 

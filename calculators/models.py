@@ -55,6 +55,10 @@ class Calculator(models.Model):
             'running-pace-calculator': 'running_pace_calculator',
             'graphing-calculator': 'graphing_calculator',
             'gpa-calculator': 'gpa_calculator',
+            'retirement-calculator': 'retirement_calculator',
+            'target-heart-rate-calculator': 'target_heart_rate_calculator',
+            'matrix-calculator': 'matrix_calculator',
+            'final-grade-calculator': 'final_grade_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

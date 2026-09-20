@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Target Heart Rate Zones - Karvonen HRR & Tanaka Formula | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate 5 cardiovascular training zones using Karvonen Heart Rate Reserve (HRR) and Tanaka MHR formulas. Tailored for fat-burn, aerobic base, and VO2 max." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health Calculators</a> &rsaquo; 
+        <span>Target Heart Rate Zones</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Target Heart Rate Zones Calculator" }}</h1>
+    <p class="page-lead">
+        Determine your personal 5 cardiovascular training zones using the Karvonen Heart Rate Reserve (HRR) methodology, Tanaka maximum heart rate formulas, and substrate bioenergetics.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Cardiovascular Physiology &amp; Aerobic Conditioning</span>
+    </div>
+
+    <!-- Calculation Methodology Toggle Tabs -->
+    <div class="unit-toggle-tabs" style="margin-bottom: 24px;">
+        <button type="button" class="tab-btn active" id="tab-method-karvonen" data-method="karvonen">Karvonen HRR (Recommended)</button>
+        <button type="button" class="tab-btn" id="tab-method-mhr" data-method="mhr">% of Maximum Heart Rate</button>
+    </div>
+
+    <form id="thr-form" class="calculator-form" novalidate onsubmit="return false;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+            
+            <!-- Age Input -->
+            <div class="form-group" style="margin: 0;">
+                <label for="thr-age">Biological Age (Years)</label>
+                <input type="number" id="thr-age" class="form-control" value="35" min="10" max="100" step="1" required>
+                <span class="field-hint">Chronological age for MHR regression models</span>
+            </div>
+
+            <!-- Resting Heart Rate -->
+            <div class="form-group" style="margin: 0;" id="group-rhr">
+                <label for="thr-rhr">Resting Heart Rate (RHR)</label>
+                <div class="input-with-addon">
+                    <input type="number" id="thr-rhr" class="form-control" value="55" min="30" max="120" step="1" required>
+                    <span class="input-addon">BPM</span>
+                </div>
+                <span class="field-hint">Measure pulse immediately upon waking in bed</span>
+            </div>
+
+            <!-- Maximum Heart Rate Formula Selector -->
+            <div class="form-group" style="margin: 0;">
+                <label for="thr-formula">MHR Prediction Formula</label>
+                <select id="thr-formula" class="form-control">
+                    <option value="tanaka" selected>Tanaka et al. (208 - 0.7 × Age) [Best]</option>
+                    <option value="gellish">Gellish et al. (207 - 0.7 × Age)</option>
+                    <option value="fox">Fox &amp; Haskell (220 - Age) [Traditional]</option>
+                    <option value="custom">Custom Lab-Tested MHR</option>
+                </select>
+                <span class="field-hint">Tanaka eliminates age-related inaccuracies</span>
+            </div>
+
+            <!-- Custom MHR Field (Hidden by default) -->
+            <div class="form-group" style="margin: 0; display: none;" id="group-custom-mhr">
+                <label for="thr-custom-mhr">Custom Lab Tested MHR</label>
+                <div class="input-with-addon">
+                    <input type="number" id="thr-custom-mhr" class="form-control" value="185" min="100" max="230" step="1">
+                    <span class="input-addon">BPM</span>
+                </div>
+                <span class="field-hint">From maximal graded stress test / VO₂ Max trial</span>
+            </div>
+
+        </div>
+
+        <!-- Custom Target Intensity Slider Query -->
+        <div class="advanced-section-box" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                <label for="thr-custom-intensity" style="font-size: 0.95rem; font-weight: 600; margin: 0; color: var(--color-text-main);">
+                    🎯 Custom Target Intensity Estimator: <span id="label-custom-pct" style="color: var(--color-accent-blue); font-weight: 700;">72%</span>
+                </label>
+                <span id="label-custom-bpm" style="font-family: monospace; font-size: 1.05rem; font-weight: 700; color: #10b981;">148 BPM</span>
+            </div>
+            <input type="range" id="thr-custom-intensity" min="40" max="100" value="72" step="1" style="width: 100%; cursor: pointer;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--color-text-muted); margin-top: 4px;">
+                <span>40% (Light)</span>
+                <span>60% (Aerobic Base)</span>
+                <span>80% (Threshold)</span>
+                <span>100% (Maximum)</span>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="btn-calc-thr">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Calculate Training Zones
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-reset-thr">Reset Defaults</button>
+        </div>
+    </form>
+
+    <!-- Results Display -->
+    <div id="thr-results-container" class="calculator-results-wrapper" style="margin-top: 32px;">
+        
+        <!-- Hero Primary Result Banner -->
+        <div class="result-hero-banner">
+            <div class="hero-label">Max Heart Rate (MHR) &bull; Heart Rate Reserve (HRR)</div>
+            <div class="hero-primary-val" id="hero-mhr-val">184 <span style="font-size: 1.25rem; font-weight: 500; color: var(--color-text-muted);">BPM</span></div>
+            <div class="hero-secondary-metric" id="hero-zone2-val">
+                Zone 2 (Aerobic Base / FatMax): <strong>132 &ndash; 145 BPM</strong> &bull; Reserve: 129 BPM
+            </div>
+        </div>
+
+        <!-- 5 Color-Coded Interactive Training Zones -->
+        <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 24px;">
+            
+            <!-- Zone 1 -->
+            <div class="advanced-section-box" style="margin-bottom: 0; border-left: 5px solid #94a3b8; padding: 16px 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(148, 163, 184, 0.2); color: #94a3b8;">ZONE 1</span>
+                            <strong style="font-size: 1.05rem; color: var(--color-text-main);">Active Recovery &amp; Warm-Up</strong>
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px;">
+                            Substrate: &gt; 85% Free Fatty Acids &bull; Effort: Very Easy, Can Sing Comfortably
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="z1-bpm-range" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; color: #94a3b8;">120 &ndash; 132 BPM</span>
+                        <div style="font-size: 0.78rem; color: var(--color-text-muted);">50% &ndash; 60% Intensity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone 2 -->
+            <div class="advanced-section-box" style="margin-bottom: 0; border-left: 5px solid #10b981; padding: 16px 20px; background: rgba(16, 185, 129, 0.04);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.2); color: #10b981;">ZONE 2</span>
+                            <strong style="font-size: 1.05rem; color: #10b981;">Aerobic Base &amp; FatMax (Essential Endurance)</strong>
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px;">
+                            Substrate: 65% &ndash; 85% Lipids &bull; Mitochondrial biogenesis, conversational pace
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="z2-bpm-range" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; color: #10b981;">132 &ndash; 145 BPM</span>
+                        <div style="font-size: 0.78rem; color: var(--color-text-muted);">60% &ndash; 70% Intensity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone 3 -->
+            <div class="advanced-section-box" style="margin-bottom: 0; border-left: 5px solid #38bdf8; padding: 16px 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(56, 189, 248, 0.2); color: #38bdf8;">ZONE 3</span>
+                            <strong style="font-size: 1.05rem; color: var(--color-text-main);">Aerobic Endurance &amp; Tempo</strong>
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px;">
+                            Substrate: 50% Lipids / 50% Glycogen &bull; Cardiac stroke volume hypertrophy
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="z3-bpm-range" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; color: #38bdf8;">145 &ndash; 158 BPM</span>
+                        <div style="font-size: 0.78rem; color: var(--color-text-muted);">70% &ndash; 80% Intensity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone 4 -->
+            <div class="advanced-section-box" style="margin-bottom: 0; border-left: 5px solid #fb923c; padding: 16px 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(251, 146, 60, 0.2); color: #fb923c;">ZONE 4</span>
+                            <strong style="font-size: 1.05rem; color: var(--color-text-main);">Anaerobic &amp; Lactate Threshold</strong>
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px;">
+                            Substrate: &gt; 80% Glycogen &bull; Acidosis tolerance, short sentences only
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="z4-bpm-range" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; color: #fb923c;">158 &ndash; 171 BPM</span>
+                        <div style="font-size: 0.78rem; color: var(--color-text-muted);">80% &ndash; 90% Intensity</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone 5 -->
+            <div class="advanced-section-box" style="margin-bottom: 0; border-left: 5px solid #ef4444; padding: 16px 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: rgba(239, 68, 68, 0.2); color: #ef4444;">ZONE 5</span>
+                            <strong style="font-size: 1.05rem; color: var(--color-text-main);">Neuromuscular Maximum &amp; VO₂ Max</strong>
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--color-text-muted); margin-top: 4px;">
+                            Substrate: 100% Anaerobic Glycolysis &bull; All-out sprinting, gasping for breath
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span id="z5-bpm-range" style="font-size: 1.3rem; font-weight: 800; font-family: monospace; color: #ef4444;">171 &ndash; 184 BPM</span>
+                        <div style="font-size: 0.78rem; color: var(--color-text-muted);">90% &ndash; 100% Intensity</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Comparative Bioenergetics Table -->
+        <div class="advanced-section-box" style="margin-top: 28px;">
+            <h3 style="font-size: 1.15rem; margin-bottom: 14px; color: var(--color-text-main);">
+                🧬 Complete Bioenergetics &amp; Talk-Test Protocol
+            </h3>
+            <div class="table-responsive">
+                <table class="table" style="margin: 0; font-size: 0.88rem;">
+                    <thead>
+                        <tr>
+                            <th>Zone</th>
+                            <th>Intensity</th>
+                            <th>Target Pulse</th>
+                            <th>Perceived Exertion (RPE)</th>
+                            <th>Talk-Test Metric</th>
+                            <th>Target Workout</th>
+                        </tr>
+                    </thead>
+                    <tbody id="thr-table-tbody">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Dynamic SEO Article Content (Positioned Strictly Directly Above #ad-bottom-content) -->
+<div class="article-content-wrapper">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/target_heart_rate.js' %}"></script>
+{% endblock %}
