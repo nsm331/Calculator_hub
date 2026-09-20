@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = ['*', 'nsm331.site', 'www.nsm331.site']
+ALLOWED_HOSTS = ['*', 'nsm331.site', 'www.nsm331.site', 'calculator.nsm331.site', '.nsm331.site']
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -32,8 +32,10 @@ if RENDER_EXTERNAL_HOSTNAME:
 # CSRF trusted origins for production deployments & local testing
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://*.nsm331.site',
     'https://nsm331.site',
     'https://www.nsm331.site',
+    'https://calculator.nsm331.site',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
