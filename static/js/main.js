@@ -110,6 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Calories Burned by Activity Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/calories-burned-calculator/' },
             { title: 'Ratio & Proportion Calculator', category: 'Math', url: '/math-calculators/ratio-calculator/' },
             { title: 'Kitchen Cooking Measurements Converter', category: 'Other', url: '/other-calculators/cooking-measurement-converter/' },
+            { title: 'Present Value (PV) Calculator', category: 'Financial', url: '/financial-calculators/present-value-calculator/' },
+            { title: 'Conception Date Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/conception-calculator/' },
+            { title: '3D Geometric Volume Calculator', category: 'Math', url: '/math-calculators/volume-calculator/' },
+            { title: 'Cryptographic Password Generator', category: 'Other', url: '/other-calculators/password-generator/' },
         ];
 
         searchInput.addEventListener('input', () => {

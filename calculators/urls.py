@@ -373,6 +373,28 @@ urlpatterns = [
         name='cooking_measurement_converter'
     ),
 
+    # Batch 18 Calculators (User Batch #17)
+    path(
+        'financial-calculators/present-value-calculator/',
+        views.present_value_calculator,
+        name='present_value_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/conception-calculator/',
+        views.conception_calculator,
+        name='conception_calculator'
+    ),
+    path(
+        'math-calculators/volume-calculator/',
+        views.volume_calculator,
+        name='volume_calculator'
+    ),
+    path(
+        'other-calculators/password-generator/',
+        views.password_generator,
+        name='password_generator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

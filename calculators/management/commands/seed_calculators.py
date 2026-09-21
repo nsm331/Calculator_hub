@@ -97,6 +97,12 @@ from calculators.default_articles_batch16 import (
     RATIO_PROPORTION_ARTICLE,
     COOKING_MEASUREMENTS_ARTICLE,
 )
+from calculators.default_articles_batch17 import (
+    PRESENT_VALUE_ARTICLE,
+    CONCEPTION_DATE_ARTICLE,
+    VOLUME_3D_ARTICLE,
+    PASSWORD_GENERATOR_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -652,6 +658,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Kitchen Cooking Measurement Converter - Cups, Grams, Tbsp & Ingredients | CalculatorHub',
         'meta_description': 'Convert kitchen cooking and baking measurements. Convert volume to weight for flour, sugar, butter, and liquids. Supports US cups, metric grams, tbsp, tsp, fl oz, and ml.',
         'article_content': COOKING_MEASUREMENTS_ARTICLE,
+    },
+    # Batch 17 Calculators
+    {
+        'slug': 'present-value-calculator',
+        'title': 'Present Value (PV) Calculator',
+        'category': 'financial',
+        'meta_title': 'Present Value (PV) Calculator - Lump Sum, Annuities & Discount Rates | CalculatorHub',
+        'meta_description': 'Calculate present value (PV) for future lump sums and ordinary or due annuities. Features cash flow discounting, compounding frequencies, and inflation adjustment.',
+        'article_content': PRESENT_VALUE_ARTICLE,
+    },
+    {
+        'slug': 'conception-calculator',
+        'title': 'Conception Date Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Conception Date Calculator - Reverse Due Date, LMP & Fertility Window | CalculatorHub',
+        'meta_description': 'Calculate the most likely conception date, probable intercourse window, gestational age, and trimester milestones based on estimated due date, last period (LMP), or ultrasound.',
+        'article_content': CONCEPTION_DATE_ARTICLE,
+    },
+    {
+        'slug': 'volume-calculator',
+        'title': '3D Geometric Volume Calculator',
+        'category': 'math',
+        'meta_title': '3D Geometric Volume Calculator - Sphere, Cylinder, Cone, Prism & Pyramid | CalculatorHub',
+        'meta_description': 'Calculate volume and surface area for 10+ three-dimensional solids: sphere, cylinder, cone, rectangular prism (box), pyramid, torus, ellipsoid, and frustum.',
+        'article_content': VOLUME_3D_ARTICLE,
+    },
+    {
+        'slug': 'password-generator',
+        'title': 'Cryptographic Password Generator',
+        'category': 'other',
+        'meta_title': 'Cryptographic Password Generator - True CSPRNG Entropy & Memorable Passphrases | CalculatorHub',
+        'meta_description': 'Generate cryptographically secure passwords and Diceware multi-word passphrases using browser Web Crypto API (crypto.getRandomValues). Calculate Shannon entropy bits and crack time.',
+        'article_content': PASSWORD_GENERATOR_ARTICLE,
     },
 ]
 

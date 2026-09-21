@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Present Value (PV) Calculator - Lump Sum, Annuities & Discount Rates | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate present value (PV) for future lump sums and ordinary or due annuities. Features cash flow discounting, compounding frequencies, and inflation adjustment.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .pv-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .pv-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+        .pv-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .pv-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+    }
+    .pv-form-group {
+        margin-bottom: 18px;
+    }
+    .pv-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .pv-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .pv-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .pv-input-wrap span.prefix,
+    .pv-input-wrap span.suffix {
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .pv-input-wrap input,
+    .pv-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: monospace;
+        outline: none;
+        padding: 0 8px;
+    }
+    .pv-results-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .pv-hero-val {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-weight: 900;
+        color: var(--color-primary);
+        line-height: 1.1;
+        margin: 8px 0;
+        font-family: monospace;
+    }
+    .pv-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .pv-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+        padding: 14px;
+        text-align: center;
+    }
+    .pv-metric-box .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        display: block;
+        margin-bottom: 4px;
+    }
+    .pv-metric-box .val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        font-family: monospace;
+        color: var(--color-text-main);
+    }
+    .pv-table-wrap {
+        max-height: 320px;
+        overflow-y: auto;
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+    }
+    .pv-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .pv-table th {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .pv-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+</style>
+
+<div class="pv-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#financial" style="color: var(--color-text-muted); text-decoration: none;">Financial Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Present Value (PV) Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Present Value (PV) Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Calculate the current lump-sum worth of future payments, investments, or annuities discounted by opportunity cost, inflation, and compounding intervals.
+        </p>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="pv-grid">
+        <!-- Input Form Card -->
+        <div class="pv-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Cash Flow Parameters
+            </h2>
+
+            <!-- Future Value (FV) -->
+            <div class="pv-form-group">
+                <label for="pv-fv">Future Lump-Sum Value (FV)</label>
+                <div class="pv-input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="pv-fv" value="50000" min="0" step="any" placeholder="50000">
+                </div>
+            </div>
+
+            <!-- Periodic Payment (PMT) -->
+            <div class="pv-form-group">
+                <label for="pv-pmt">Periodic Annuity Payment (PMT, Optional)</label>
+                <div class="pv-input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="pv-pmt" value="0" min="0" step="any" placeholder="0">
+                </div>
+            </div>
+
+            <!-- Payment Timing -->
+            <div class="pv-form-group">
+                <label for="pv-timing">Annuity Payment Timing</label>
+                <div class="pv-input-wrap">
+                    <select id="pv-timing">
+                        <option value="end" selected>End of Period (Ordinary Annuity)</option>
+                        <option value="begin">Beginning of Period (Annuity Due)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Discount Rate (r) -->
+            <div class="pv-form-group">
+                <label for="pv-rate">Annual Discount Rate (r)</label>
+                <div class="pv-input-wrap">
+                    <input type="number" id="pv-rate" value="7.0" min="0.01" step="0.01" placeholder="7.0">
+                    <span class="suffix">% per year</span>
+                </div>
+            </div>
+
+            <!-- Term Duration (t) -->
+            <div class="pv-form-group">
+                <label for="pv-term">Time Horizon (Years)</label>
+                <div class="pv-input-wrap">
+                    <input type="number" id="pv-term" value="10" min="0.1" step="any" placeholder="10">
+                    <span class="suffix">years</span>
+                </div>
+            </div>
+
+            <!-- Compounding / Discounting Frequency -->
+            <div class="pv-form-group" style="margin-bottom: 0;">
+                <label for="pv-freq">Compounding / Discounting Frequency</label>
+                <div class="pv-input-wrap">
+                    <select id="pv-freq">
+                        <option value="1" selected>Annual (1/year)</option>
+                        <option value="2">Semi-Annual (2/year)</option>
+                        <option value="4">Quarterly (4/year)</option>
+                        <option value="12">Monthly (12/year)</option>
+                        <option value="365">Daily (365/year)</option>
+                        <option value="continuous">Continuous (e^-rt)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div class="pv-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Present Value Summary
+            </h2>
+
+            <div class="pv-results-hero">
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Present Value (PV)</span>
+                <div id="pv-hero-val" class="pv-hero-val">$25,417.47</div>
+                <span style="font-size: 0.9rem; color: var(--color-text-muted);">
+                    Discount Factor: <strong id="pv-discount-factor" style="color: var(--color-text-main); font-family: monospace;">0.5083</strong>
+                </span>
+            </div>
+
+            <!-- Metrics Row -->
+            <div class="pv-metrics-grid">
+                <div class="pv-metric-box">
+                    <span class="label">Undiscounted Future Sum</span>
+                    <span id="pv-total-future" class="val">$50,000.00</span>
+                </div>
+                <div class="pv-metric-box">
+                    <span class="label">Total Discount Amount</span>
+                    <span id="pv-total-discount" class="val" style="color: var(--color-accent-orange, #f59e0b);">$24,582.53</span>
+                </div>
+                <div class="pv-metric-box">
+                    <span class="label">Erosion Percentage</span>
+                    <span id="pv-discount-pct" class="val">49.2%</span>
+                </div>
+            </div>
+
+            <!-- Sensitivity Analysis Table -->
+            <h3 style="font-size: 0.95rem; font-weight: 700; margin: 20px 0 10px; color: var(--color-text-main);">
+                Discount Rate Sensitivity Analysis
+            </h3>
+            <div class="pv-table-wrap" style="max-height: 200px;">
+                <table class="pv-table">
+                    <thead>
+                        <tr>
+                            <th>Discount Rate</th>
+                            <th>Present Value</th>
+                            <th>Difference</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pv-sensitivity-body">
+                        <!-- Dynamic rows inserted by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annual Discounting Schedule Card -->
+    <div class="pv-card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0; margin-bottom: 14px; color: var(--color-text-main);">
+            Year-by-Year Discounting Schedule
+        </h3>
+        <div class="pv-table-wrap">
+            <table class="pv-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Future Cash Flow</th>
+                        <th>Discount Factor</th>
+                        <th>Discounted Value (PV)</th>
+                        <th>Cumulative PV</th>
+                    </tr>
+                </thead>
+                <tbody id="pv-schedule-body">
+                    <!-- Dynamic rows inserted by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/present_value.js' %}"></script>
+{% endblock %}

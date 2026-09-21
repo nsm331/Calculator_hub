@@ -99,6 +99,10 @@ class Calculator(models.Model):
             'calories-burned-calculator': 'calories_burned_calculator',
             'ratio-calculator': 'ratio_calculator',
             'cooking-measurement-converter': 'cooking_measurement_converter',
+            'present-value-calculator': 'present_value_calculator',
+            'conception-calculator': 'conception_calculator',
+            'volume-calculator': 'volume_calculator',
+            'password-generator': 'password_generator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

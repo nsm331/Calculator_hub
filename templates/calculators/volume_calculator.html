@@ -1,0 +1,481 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}3D Geometric Volume Calculator - Sphere, Cylinder, Cone, Prism &amp; Pyramid | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate volume and surface area for 10+ three-dimensional solids: sphere, cylinder, cone, rectangular prism (box), pyramid, torus, ellipsoid, and frustum.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .vol-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .vol-shape-picker {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+    .vol-shape-btn {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-sm);
+        padding: 10px 8px;
+        color: var(--color-text-muted);
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    .vol-shape-btn:hover {
+        border-color: var(--color-primary);
+        color: var(--color-text-main);
+    }
+    .vol-shape-btn.active {
+        background: var(--color-primary);
+        color: #ffffff;
+        border-color: var(--color-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .vol-shape-btn .icon {
+        font-size: 1.3rem;
+    }
+    .vol-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+        .vol-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .vol-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+    }
+    .vol-form-group {
+        margin-bottom: 16px;
+    }
+    .vol-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .vol-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .vol-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .vol-input-wrap input,
+    .vol-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: monospace;
+        outline: none;
+        padding: 0 6px;
+    }
+    .vol-results-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .vol-hero-val {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-weight: 900;
+        color: var(--color-primary);
+        line-height: 1.1;
+        margin: 8px 0 4px;
+        font-family: monospace;
+    }
+    .vol-svg-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 140px;
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        margin-bottom: 20px;
+        padding: 10px;
+    }
+    .vol-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .vol-table th {
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .vol-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+        font-family: monospace;
+    }
+</style>
+
+<div class="vol-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#math" style="color: var(--color-text-muted); text-decoration: none;">Math Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">3D Geometric Volume Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            3D Geometric Volume Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Solve volume ($V$) and total boundary surface area ($A$) for 10 common three-dimensional geometric solids with dynamic wireframe visual models.
+        </p>
+    </header>
+
+    <!-- Shape Picker Buttons -->
+    <div class="vol-shape-picker" role="tablist">
+        <button class="vol-shape-btn active" data-shape="cylinder">
+            <span class="icon">&#128718;</span>
+            <span>Cylinder</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="sphere">
+            <span class="icon">&#9899;</span>
+            <span>Sphere</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="cone">
+            <span class="icon">&#9650;</span>
+            <span>Cone</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="box">
+            <span class="icon">&#128230;</span>
+            <span>Box / Prism</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="pyramid">
+            <span class="icon">&#9651;</span>
+            <span>Pyramid</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="ellipsoid">
+            <span class="icon">&#11093;</span>
+            <span>Ellipsoid</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="torus">
+            <span class="icon">&#9678;</span>
+            <span>Torus</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="frustum">
+            <span class="icon">&#9207;</span>
+            <span>Frustum</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="triangular-prism">
+            <span class="icon">&#9699;</span>
+            <span>Tri Prism</span>
+        </button>
+        <button class="vol-shape-btn" data-shape="hemisphere">
+            <span class="icon">&#9698;</span>
+            <span>Hemisphere</span>
+        </button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="vol-grid">
+        <!-- Input Form Card -->
+        <div class="vol-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2 style="font-size: 1.15rem; font-weight: 700; margin: 0; color: var(--color-text-main);">
+                    Dimensions Input
+                </h2>
+                <div style="width: 130px;">
+                    <div class="vol-input-wrap" style="height: 38px;">
+                        <select id="vol-unit-select">
+                            <option value="cm" selected>Centimeters (cm)</option>
+                            <option value="m">Meters (m)</option>
+                            <option value="mm">Millimeters (mm)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="yd">Yards (yd)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 1: Cylinder -->
+            <div id="vol-sec-cylinder" class="vol-shape-form">
+                <div class="vol-form-group">
+                    <label for="cyl-r">Radius (r)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="cyl-r" value="5" min="0" step="any" placeholder="5">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="cyl-h">Height (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="cyl-h" value="12" min="0" step="any" placeholder="12">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 2: Sphere -->
+            <div id="vol-sec-sphere" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="sph-r">Radius (r)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="sph-r" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 3: Cone -->
+            <div id="vol-sec-cone" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="cone-r">Base Radius (r)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="cone-r" value="4" min="0" step="any" placeholder="4">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="cone-h">Vertical Height (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="cone-h" value="9" min="0" step="any" placeholder="9">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 4: Rectangular Prism (Box) -->
+            <div id="vol-sec-box" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="box-l">Length (l)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="box-l" value="8" min="0" step="any" placeholder="8">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="box-w">Width (w)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="box-w" value="5" min="0" step="any" placeholder="5">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="box-h">Height (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="box-h" value="4" min="0" step="any" placeholder="4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 5: Regular Pyramid -->
+            <div id="vol-sec-pyramid" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="pyr-l">Base Length (l)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="pyr-l" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="pyr-w">Base Width (w)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="pyr-w" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="pyr-h">Vertical Height (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="pyr-h" value="10" min="0" step="any" placeholder="10">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 6: Ellipsoid -->
+            <div id="vol-sec-ellipsoid" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="elp-a">Semi-Axis a</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="elp-a" value="7" min="0" step="any" placeholder="7">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="elp-b">Semi-Axis b</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="elp-b" value="5" min="0" step="any" placeholder="5">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="elp-c">Semi-Axis c</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="elp-c" value="4" min="0" step="any" placeholder="4">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 7: Torus -->
+            <div id="vol-sec-torus" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="tor-R">Major Radius (R, Center to Tube Center)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="tor-R" value="8" min="0" step="any" placeholder="8">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="tor-r">Minor Radius (r, Tube Radius &lt; R)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="tor-r" value="2" min="0" step="any" placeholder="2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 8: Frustum -->
+            <div id="vol-sec-frustum" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="fru-R">Bottom Radius (R)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="fru-R" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="fru-r">Top Radius (r)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="fru-r" value="3" min="0" step="any" placeholder="3">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="fru-h">Vertical Height (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="fru-h" value="8" min="0" step="any" placeholder="8">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 9: Triangular Prism -->
+            <div id="vol-sec-triangular-prism" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="tp-b">Triangular Base Edge (b)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="tp-b" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="tp-h">Triangle Altitude (h)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="tp-h" value="5" min="0" step="any" placeholder="5">
+                    </div>
+                </div>
+                <div class="vol-form-group">
+                    <label for="tp-L">Prism Length (L)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="tp-L" value="12" min="0" step="any" placeholder="12">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shape 10: Hemisphere -->
+            <div id="vol-sec-hemisphere" class="vol-shape-form" style="display: none;">
+                <div class="vol-form-group">
+                    <label for="hemi-r">Radius (r)</label>
+                    <div class="vol-input-wrap">
+                        <input type="number" id="hemi-r" value="6" min="0" step="any" placeholder="6">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div class="vol-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Calculation Results
+            </h2>
+
+            <!-- SVG Wireframe Preview -->
+            <div class="vol-svg-container" id="vol-svg-preview">
+                <!-- Dynamic SVG drawn by JS -->
+            </div>
+
+            <div class="vol-results-hero">
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Volume (V)</span>
+                <div class="vol-hero-val">
+                    <span id="vol-result-val">942.48</span> <span id="vol-unit-tag" style="font-size: 1.2rem; color: var(--color-text-muted);">cm³</span>
+                </div>
+                <div style="font-size: 0.95rem; color: var(--color-text-muted); margin-top: 6px;">
+                    Surface Area (A): <strong id="vol-area-val" style="color: var(--color-text-main); font-family: monospace;">534.07</strong> <span id="vol-area-tag">cm²</span>
+                </div>
+                <div id="vol-extra-metric" style="font-size: 0.82rem; color: var(--color-primary); margin-top: 6px;"></div>
+            </div>
+
+            <!-- Unit Conversion Equivalents -->
+            <h3 style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin: 16px 0 8px;">
+                Volumetric Unit Equivalents
+            </h3>
+            <div style="border: 1px solid var(--color-border-light); border-radius: var(--border-radius-sm); overflow: hidden;">
+                <table class="vol-table">
+                    <thead>
+                        <tr>
+                            <th>Unit Scale</th>
+                            <th>Volume Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Liters (L)</td>
+                            <td id="vol-conv-liters">0.9425 L</td>
+                        </tr>
+                        <tr>
+                            <td>Gallons (US Liq)</td>
+                            <td id="vol-conv-gallons">0.2489 gal</td>
+                        </tr>
+                        <tr>
+                            <td>Cubic Meters (m³)</td>
+                            <td id="vol-conv-m3">0.00094 m³</td>
+                        </tr>
+                        <tr>
+                            <td>Cubic Feet (ft³)</td>
+                            <td id="vol-conv-ft3">0.03328 ft³</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/volume.js' %}"></script>
+{% endblock %}

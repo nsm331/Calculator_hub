@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Conception Date Calculator - Reverse Due Date, LMP & Fertility Window | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate the most likely conception date, probable intercourse window, gestational age, and trimester milestones based on estimated due date, last period (LMP), or ultrasound.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .conc-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .conc-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+        background: var(--color-bg-card-alt);
+        padding: 6px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border);
+    }
+    .conc-tab-btn {
+        flex: 1;
+        min-width: 140px;
+        padding: 10px 14px;
+        background: transparent;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+    .conc-tab-btn.active {
+        background: var(--color-primary);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .conc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+        .conc-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .conc-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+    }
+    .conc-form-group {
+        margin-bottom: 18px;
+    }
+    .conc-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .conc-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .conc-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .conc-input-wrap input,
+    .conc-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 1rem;
+        font-weight: 600;
+        outline: none;
+        padding: 0 6px;
+    }
+    .conc-results-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .conc-hero-val {
+        font-size: clamp(1.6rem, 4.5vw, 2.3rem);
+        font-weight: 900;
+        color: var(--color-accent-pink, #ec4899);
+        line-height: 1.2;
+        margin: 8px 0 6px;
+    }
+    .conc-window-box {
+        background: rgba(236, 72, 153, 0.08);
+        border: 1px solid rgba(236, 72, 153, 0.25);
+        border-radius: var(--border-radius-sm);
+        padding: 14px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .conc-progress-container {
+        margin-bottom: 20px;
+    }
+    .conc-progress-track {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        overflow: hidden;
+        margin: 8px 0 4px;
+    }
+    .conc-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ec4899, #8b5cf6);
+        border-radius: 6px;
+        transition: width 0.3s;
+    }
+    .conc-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .conc-table th {
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .conc-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+</style>
+
+<div class="conc-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#fitness" style="color: var(--color-text-muted); text-decoration: none;">Fitness &amp; Health Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Conception Date Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Conception Date Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Pinpoint the most probable biological conception date and fertile intercourse window using your estimated due date, last menstrual period, or ultrasound scan.
+        </p>
+    </header>
+
+    <!-- Method Selection Tabs -->
+    <div class="conc-tabs" role="tablist">
+        <button class="conc-tab-btn active" data-mode="edd">1. Due Date (Reverse EDD)</button>
+        <button class="conc-tab-btn" data-mode="lmp">2. Last Menstrual Period (LMP)</button>
+        <button class="conc-tab-btn" data-mode="ultrasound">3. Ultrasound Scan</button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="conc-grid">
+        <!-- Input Form Card -->
+        <div class="conc-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Calculation Parameters
+            </h2>
+
+            <!-- Section 1: Due Date Mode -->
+            <div id="conc-sec-edd">
+                <div class="conc-form-group">
+                    <label for="conc-edd-date">Your Estimated Due Date (EDD)</label>
+                    <div class="conc-input-wrap">
+                        <input type="date" id="conc-edd-date">
+                    </div>
+                    <small style="display: block; color: var(--color-text-muted); margin-top: 6px; font-size: 0.8rem;">
+                        Conception is calculated as exactly 266 days (38 completed weeks) prior to your full-term due date.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Section 2: LMP Mode -->
+            <div id="conc-sec-lmp" style="display: none;">
+                <div class="conc-form-group">
+                    <label for="conc-lmp-date">First Day of Last Menstrual Period (LMP)</label>
+                    <div class="conc-input-wrap">
+                        <input type="date" id="conc-lmp-date">
+                    </div>
+                </div>
+                <div class="conc-form-group">
+                    <label for="conc-cycle-len">Average Menstrual Cycle Length</label>
+                    <div class="conc-input-wrap">
+                        <input type="number" id="conc-cycle-len" value="28" min="20" max="45" step="1" placeholder="28">
+                        <span style="color: var(--color-text-muted); font-size: 0.9rem; font-weight: 600;">days</span>
+                    </div>
+                    <small style="display: block; color: var(--color-text-muted); margin-top: 6px; font-size: 0.8rem;">
+                        Ovulation occurs approximately 14 days prior to your next expected cycle start.
+                    </small>
+                </div>
+            </div>
+
+            <!-- Section 3: Ultrasound Dating Mode -->
+            <div id="conc-sec-ultrasound" style="display: none;">
+                <div class="conc-form-group">
+                    <label for="conc-us-date">Date of Ultrasound Exam</label>
+                    <div class="conc-input-wrap">
+                        <input type="date" id="conc-us-date">
+                    </div>
+                </div>
+                <div class="conc-form-group">
+                    <label>Gestational Age at Scan</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div class="conc-input-wrap">
+                            <input type="number" id="conc-us-weeks" value="8" min="4" max="40" step="1">
+                            <span style="color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600;">weeks</span>
+                        </div>
+                        <div class="conc-input-wrap">
+                            <input type="number" id="conc-us-days" value="3" min="0" max="6" step="1">
+                            <span style="color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600;">days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div class="conc-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Estimated Conception Timeline
+            </h2>
+
+            <div class="conc-results-hero">
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Most Likely Conception Date</span>
+                <div id="conc-result-date" class="conc-hero-val">Mon, Apr 14, 2025</div>
+                <span style="font-size: 0.88rem; color: var(--color-text-muted);">
+                    Estimated Due Date: <strong id="conc-result-edd" style="color: var(--color-text-main);">-</strong>
+                </span>
+            </div>
+
+            <!-- Fertile Intercourse Window -->
+            <div class="conc-window-box">
+                <span style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--color-accent-pink, #ec4899); display: block; margin-bottom: 4px;">
+                    Probable Intercourse / Conception Window
+                </span>
+                <div style="font-size: 1.05rem; font-weight: 800; color: var(--color-text-main);">
+                    <span id="conc-window-start">-</span> &nbsp;&mdash;&nbsp; <span id="conc-window-end">-</span>
+                </div>
+                <small style="display: block; color: var(--color-text-muted); margin-top: 4px; font-size: 0.78rem;">
+                    Sperm cells can survive up to 5 days in reproductive tract prior to egg ovulation.
+                </small>
+            </div>
+
+            <!-- Pregnancy Progress -->
+            <div class="conc-progress-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600;">
+                    <span>Current Gestational Age: <strong id="conc-gest-age" style="color: var(--color-text-main);">-</strong></span>
+                    <span id="conc-trimester-badge" style="padding: 2px 8px; border-radius: 4px; font-size: 0.78rem; font-weight: 700;">1st Trimester</span>
+                </div>
+                <div class="conc-progress-track">
+                    <div id="conc-progress-bar" class="conc-progress-fill" style="width: 35%;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--color-text-muted);">
+                    <span>Conception</span>
+                    <span>Progress: <strong id="conc-progress-pct">35%</strong></span>
+                    <span>Full Term (40w)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical Milestones Card -->
+    <div class="conc-card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0; margin-bottom: 14px; color: var(--color-text-main);">
+            Key Pregnancy &amp; Fetal Developmental Milestones
+        </h3>
+        <div style="border: 1px solid var(--color-border-light); border-radius: var(--border-radius-sm); overflow: hidden;">
+            <table class="conc-table">
+                <thead>
+                    <tr>
+                        <th>Developmental Event</th>
+                        <th>Gestational Timing</th>
+                        <th>Estimated Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Embryonic Implantation</strong></td>
+                        <td>~3 weeks (~8 days post-conception)</td>
+                        <td id="ms-implantation" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>First Detectable Heartbeat</strong></td>
+                        <td>~6 weeks (ultrasound detectability)</td>
+                        <td id="ms-heartbeat" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Completion of 1st Trimester</strong></td>
+                        <td>13 completed weeks</td>
+                        <td id="ms-trimester1" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mid-Pregnancy Anatomy Scan</strong></td>
+                        <td>18–20 weeks</td>
+                        <td id="ms-anatomy" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fetal Viability Threshold</strong></td>
+                        <td>24 weeks</td>
+                        <td id="ms-viability" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Full Term Milestone</strong></td>
+                        <td>37 completed weeks</td>
+                        <td id="ms-fullterm" style="font-weight: 700; color: var(--color-primary);">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/conception.js' %}"></script>
+{% endblock %}

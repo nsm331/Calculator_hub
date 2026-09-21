@@ -99,6 +99,12 @@ from .default_articles_batch16 import (
     RATIO_PROPORTION_ARTICLE,
     COOKING_MEASUREMENTS_ARTICLE,
 )
+from .default_articles_batch17 import (
+    PRESENT_VALUE_ARTICLE,
+    CONCEPTION_DATE_ARTICLE,
+    VOLUME_3D_ARTICLE,
+    PASSWORD_GENERATOR_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -1070,6 +1076,61 @@ def cooking_measurement_converter(request):
     }
     calculator = _get_or_seed_calculator('cooking-measurement-converter', default_data)
     return render(request, 'calculators/cooking_measurement_converter.html', {'calculator': calculator})
+
+
+# --------------------------------------------------------------------------
+# Batch 17 Calculators
+# --------------------------------------------------------------------------
+def present_value_calculator(request):
+    """Present Value (PV) Calculator view."""
+    default_data = {
+        'title': 'Present Value (PV) Calculator',
+        'category': 'financial',
+        'meta_title': 'Present Value (PV) Calculator - Lump Sum, Annuities & Discount Rates | CalculatorHub',
+        'meta_description': 'Calculate present value (PV) for future lump sums and ordinary or due annuities. Features cash flow discounting, compounding frequencies, and inflation adjustment.',
+        'article_content': PRESENT_VALUE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('present-value-calculator', default_data)
+    return render(request, 'calculators/present_value_calculator.html', {'calculator': calculator})
+
+
+def conception_calculator(request):
+    """Conception Date Calculator view."""
+    default_data = {
+        'title': 'Conception Date Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Conception Date Calculator - Reverse Due Date, LMP & Fertility Window | CalculatorHub',
+        'meta_description': 'Calculate the most likely conception date, probable intercourse window, gestational age, and trimester milestones based on estimated due date, last period (LMP), or ultrasound.',
+        'article_content': CONCEPTION_DATE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('conception-calculator', default_data)
+    return render(request, 'calculators/conception_calculator.html', {'calculator': calculator})
+
+
+def volume_calculator(request):
+    """3D Geometric Volume Calculator view."""
+    default_data = {
+        'title': '3D Geometric Volume Calculator',
+        'category': 'math',
+        'meta_title': '3D Geometric Volume Calculator - Sphere, Cylinder, Cone, Prism & Pyramid | CalculatorHub',
+        'meta_description': 'Calculate volume and surface area for 10+ three-dimensional solids: sphere, cylinder, cone, rectangular prism (box), pyramid, torus, ellipsoid, and frustum.',
+        'article_content': VOLUME_3D_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('volume-calculator', default_data)
+    return render(request, 'calculators/volume_calculator.html', {'calculator': calculator})
+
+
+def password_generator(request):
+    """Cryptographic Password Generator view."""
+    default_data = {
+        'title': 'Cryptographic Password Generator',
+        'category': 'other',
+        'meta_title': 'Cryptographic Password Generator - True CSPRNG Entropy & Memorable Passphrases | CalculatorHub',
+        'meta_description': 'Generate cryptographically secure passwords and Diceware multi-word passphrases using browser Web Crypto API (crypto.getRandomValues). Calculate Shannon entropy bits and crack time.',
+        'article_content': PASSWORD_GENERATOR_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('password-generator', default_data)
+    return render(request, 'calculators/password_generator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

@@ -769,6 +769,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Culinary Physics: Volume vs. Mass Conversions", calc.article_content)
 
+    def test_present_value_calculator_view(self):
+        response = self.client.get(reverse('present_value_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Present Value (PV) Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/present_value.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='present-value-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Discounted Cash Flow Theory & Present Value Mathematics", calc.article_content)
+
+    def test_conception_calculator_view(self):
+        response = self.client.get(reverse('conception_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Conception Date Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/conception.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='conception-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Reproductive Endocrinology: Follicular Dynamics", calc.article_content)
+
+    def test_volume_calculator_view(self):
+        response = self.client.get(reverse('volume_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "3D Geometric Volume Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/volume.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='volume-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Solid Geometry: Stereometry, Volumetric Integrals", calc.article_content)
+
+    def test_password_generator_view(self):
+        response = self.client.get(reverse('password_generator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cryptographic Password Generator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/password.js")
+        self.assertNotContains(response, "js/force.js")
+        calc = Calculator.objects.filter(slug='password-generator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Applied Cryptography: Shannon Entropy", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -894,6 +938,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('calories_burned_calculator'))
         self.client.get(reverse('ratio_calculator'))
         self.client.get(reverse('cooking_measurement_converter'))
+        self.client.get(reverse('present_value_calculator'))
+        self.client.get(reverse('conception_calculator'))
+        self.client.get(reverse('volume_calculator'))
+        self.client.get(reverse('password_generator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -965,6 +1013,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "calories-burned-calculator")
         self.assertContains(response, "ratio-calculator")
         self.assertContains(response, "cooking-measurement-converter")
+        self.assertContains(response, "present-value-calculator")
+        self.assertContains(response, "conception-calculator")
+        self.assertContains(response, "volume-calculator")
+        self.assertContains(response, "password-generator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')
