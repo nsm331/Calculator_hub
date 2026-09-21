@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Circle Calculator - Radius, Diameter, Circumference, Area & Arc Sector | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Solve circle dimensions online. Calculate radius, diameter, circumference, and surface area instantaneously. Features circular sector, arc length, and chord solvers.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .circle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .circle-input-group {
+        min-width: 0;
+    }
+    .circle-input-group label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .circle-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 44px;
+    }
+    .circle-input-wrap input {
+        flex: 1;
+        min-width: 0 !important;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 0.95rem;
+        font-family: monospace;
+        font-weight: 600;
+        outline: none;
+    }
+    .circle-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .circle-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #circle-primary-result {
+        font-size: clamp(1.8rem, 5.5vw, 2.8rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .circle-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .circle-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .circle-metric-val {
+        font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+        font-weight: 800;
+        font-family: monospace;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .circle-svg-container {
+        width: 100%;
+        max-width: 440px;
+        margin: 0 auto;
+        aspect-ratio: 400 / 280;
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border-light);
+        overflow: hidden;
+    }
+    .circle-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--color-accent-blue);
+    }
+    .circle-angle-unit-btn {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-border-light);
+        background: var(--color-bg-card-alt);
+        color: var(--color-text-muted);
+        cursor: pointer;
+    }
+    .circle-angle-unit-btn.active {
+        background: var(--color-accent-blue);
+        color: #ffffff;
+        border-color: var(--color-accent-blue);
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#math" style="color: var(--color-text-muted); text-decoration: none;">Math Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Circle (Area &amp; Circumference)</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Circle (Area &amp; Circumference) Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Solve circle geometry instantaneously from any known parameter (radius, diameter, circumference, or area). Includes circular sector, arc length, chord, and concentric annulus tools.
+        </p>
+    </header>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0 0 16px;">
+            Tip: Enter or edit <strong>any single parameter</strong> below—all remaining metrics synchronize instantly in real-time.
+        </p>
+
+        <div class="circle-grid">
+            <div class="circle-input-group">
+                <label for="circle-r-val">Radius (r)</label>
+                <div class="circle-input-wrap">
+                    <input type="number" id="circle-r-val" value="5" min="0" step="any" placeholder="5">
+                </div>
+            </div>
+
+            <div class="circle-input-group">
+                <label for="circle-d-val">Diameter (d = 2r)</label>
+                <div class="circle-input-wrap">
+                    <input type="number" id="circle-d-val" value="10" min="0" step="any" placeholder="10">
+                </div>
+            </div>
+
+            <div class="circle-input-group">
+                <label for="circle-c-val">Circumference (C = 2πr)</label>
+                <div class="circle-input-wrap">
+                    <input type="number" id="circle-c-val" value="31.4159" min="0" step="any" placeholder="31.42">
+                </div>
+            </div>
+
+            <div class="circle-input-group">
+                <label for="circle-a-val">Surface Area (A = πr²)</label>
+                <div class="circle-input-wrap">
+                    <input type="number" id="circle-a-val" value="78.5398" min="0" step="any" placeholder="78.54">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button type="button" id="circle-calc-btn" class="btn btn-primary" style="width: 100%; min-height: 44px; font-weight: 700; font-size: 0.95rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #ffffff; border: none; cursor: pointer;">
+                Recalculate Circle Geometry
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="circle-results-section">
+        <!-- Hero Card -->
+        <div class="circle-hero-card">
+            <div class="circle-hero-header">
+                <span id="circle-res-title" style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Circular Disk Surface Area
+                </span>
+                <span id="circle-formula-badge" class="circle-badge">
+                    A = π · r²
+                </span>
+            </div>
+
+            <div id="circle-primary-result">Area = 78.5398</div>
+
+            <div id="circle-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5;">
+                Circumference: <strong>31.4159</strong> &bull; Diameter: <strong>10.0000</strong> &bull; Radius: <strong>5.0000</strong>
+            </div>
+        </div>
+
+        <!-- Metric Properties Grid -->
+        <div class="circle-metrics-grid">
+            <div class="circle-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Radius (r)</span>
+                <span id="circle-out-r" class="circle-metric-val" style="color: var(--color-accent-emerald);">5.0000</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Distance from center</span>
+            </div>
+
+            <div class="circle-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Diameter (d)</span>
+                <span id="circle-out-d" class="circle-metric-val" style="color: var(--color-accent-blue);">10.0000</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Across widest span</span>
+            </div>
+
+            <div class="circle-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Circumference (C)</span>
+                <span id="circle-out-c" class="circle-metric-val" style="color: var(--color-text-main);">31.4159</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Perimeter length (2πr)</span>
+            </div>
+
+            <div class="circle-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Enclosed Area (A)</span>
+                <span id="circle-out-a" class="circle-metric-val" style="color: #f59e0b;">78.5398</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Total square units (πr²)</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Vector SVG Canvas -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px; text-align: center;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin: 0 0 4px;">
+                Interactive Geometric Vector Diagram
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0 0 14px;">
+                Live visual rendering of the circle perimeter, center point O, radius line, and subtended sector angle slice.
+            </p>
+            <div class="circle-svg-container">
+                <svg id="circle-svg-canvas" viewBox="0 0 400 280" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; display: block;"></svg>
+            </div>
+        </div>
+
+        <!-- Sector & Arc Trigonometry Module -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                    Circular Sector, Arc &amp; Chord Trigonometry
+                </h4>
+                <div style="display: flex; gap: 4px;">
+                    <button type="button" class="circle-angle-unit-btn active" data-unit="deg">Degrees (°)</button>
+                    <button type="button" class="circle-angle-unit-btn" data-unit="rad">Radians (rad)</button>
+                </div>
+            </div>
+
+            <div style="max-width: 260px; margin-bottom: 16px;">
+                <label for="circle-angle-val" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--color-text-main);">
+                    Central Subtended Angle (θ)
+                </label>
+                <div class="circle-input-wrap">
+                    <input type="number" id="circle-angle-val" value="60" min="0" max="360" step="any" placeholder="60">
+                </div>
+            </div>
+
+            <div class="circle-metrics-grid" style="margin-bottom: 0;">
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Arc Length (s = r·θ)</span>
+                    <span id="circle-out-arc" class="circle-metric-val" style="color: var(--color-accent-blue);">5.2360</span>
+                </div>
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Sector Area (½·r²·θ)</span>
+                    <span id="circle-out-sector-area" class="circle-metric-val" style="color: var(--color-accent-emerald);">13.0900</span>
+                </div>
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Chord Length (2r·sin(θ/2))</span>
+                    <span id="circle-out-chord" class="circle-metric-val" style="color: #f59e0b;">5.0000</span>
+                </div>
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Segment Area</span>
+                    <span id="circle-out-segment-area" class="circle-metric-val" style="color: var(--color-text-main);">2.2649</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Concentric Annulus (Circular Ring) Module -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Concentric Annulus (Ring Surface Area: A = π·(R² - r²))
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label for="circle-ann-R" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--color-text-main);">
+                        Outer Radius (R)
+                    </label>
+                    <div class="circle-input-wrap">
+                        <input type="number" id="circle-ann-R" value="8" min="0" step="any" placeholder="8">
+                    </div>
+                </div>
+                <div>
+                    <label for="circle-ann-r" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; color: var(--color-text-main);">
+                        Inner Radius (r)
+                    </label>
+                    <div class="circle-input-wrap">
+                        <input type="number" id="circle-ann-r" value="5" min="0" step="any" placeholder="5">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Annular Ring Area</span>
+                    <span id="circle-out-annulus" class="circle-metric-val" style="color: var(--color-accent-blue);">122.5221</span>
+                </div>
+                <div class="circle-metric-box">
+                    <span style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Ring Width (R - r)</span>
+                    <span id="circle-out-annulus-w" class="circle-metric-val" style="color: var(--color-text-main);">3.0000</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/circle.js' %}"></script>
+{% endblock %}

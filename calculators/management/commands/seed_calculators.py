@@ -85,6 +85,12 @@ from calculators.default_articles_batch14 import (
     QUADRATIC_ARTICLE,
     ENERGY_ARTICLE,
 )
+from calculators.default_articles_batch15 import (
+    CREDIT_CARD_PAYOFF_ARTICLE,
+    TDEE_ARTICLE,
+    CIRCLE_ARTICLE,
+    PRESSURE_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -574,6 +580,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Kinetic & Potential Energy Calculator - Free Fall & Work Solver | CalculatorHub',
         'meta_description': 'Calculate kinetic energy (½mv²), gravitational potential energy (mgh), mechanical conservation, and free fall impact velocity with multi-unit conversions.',
         'article_content': ENERGY_ARTICLE,
+    },
+    # Batch 15 Calculators
+    {
+        'slug': 'credit-card-payoff-calculator',
+        'title': 'Credit Card Payoff Calculator',
+        'category': 'financial',
+        'meta_title': 'Credit Card Payoff Calculator - Fixed Payment, Amortization & Debt Elimination | CalculatorHub',
+        'meta_description': 'Calculate debt-free payoff dates, total interest charges, and monthly payment schedules for credit cards. Compare budget payoff vs target timeline strategies.',
+        'article_content': CREDIT_CARD_PAYOFF_ARTICLE,
+    },
+    {
+        'slug': 'tdee-calculator',
+        'title': 'Total Daily Energy Expenditure (TDEE) Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'TDEE Calculator - Total Daily Energy Expenditure & Calorie Deficit | CalculatorHub',
+        'meta_description': 'Calculate your Total Daily Energy Expenditure (TDEE) and BMR using Mifflin-St Jeor, Katch-McArdle, and Harris-Benedict formulas. Includes customized cutting and bulking calorie targets.',
+        'article_content': TDEE_ARTICLE,
+    },
+    {
+        'slug': 'circle-calculator',
+        'title': 'Circle (Area & Circumference) Calculator',
+        'category': 'math',
+        'meta_title': 'Circle Calculator - Radius, Diameter, Circumference, Area & Arc Sector | CalculatorHub',
+        'meta_description': 'Solve circle dimensions online. Calculate radius, diameter, circumference, and surface area instantaneously. Features circular sector, arc length, and chord solvers.',
+        'article_content': CIRCLE_ARTICLE,
+    },
+    {
+        'slug': 'pressure-converter',
+        'title': 'Atmospheric Pressure Converter',
+        'category': 'other',
+        'meta_title': 'Atmospheric Pressure Converter - Barometric Formula, Altitude & Units | CalculatorHub',
+        'meta_description': 'Convert between atm, psi, bar, kPa, mmHg, inHg, and Torr. Includes barometric formula elevation pressure calculator and water boiling point variations.',
+        'article_content': PRESSURE_ARTICLE,
     },
 ]
 

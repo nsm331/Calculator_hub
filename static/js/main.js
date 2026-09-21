@@ -102,6 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Blood Alcohol Content (BAC) Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/bac-calculator/' },
             { title: 'Quadratic Equation Solver', category: 'Math', url: '/math-calculators/quadratic-formula-calculator/' },
             { title: 'Kinetic & Potential Energy Calculator', category: 'Other', url: '/other-calculators/kinetic-potential-energy-calculator/' },
+            { title: 'Credit Card Payoff Calculator', category: 'Financial', url: '/financial-calculators/credit-card-payoff-calculator/' },
+            { title: 'Total Daily Energy Expenditure (TDEE) Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/tdee-calculator/' },
+            { title: 'Circle (Area & Circumference) Calculator', category: 'Math', url: '/math-calculators/circle-calculator/' },
+            { title: 'Atmospheric Pressure Converter', category: 'Other', url: '/other-calculators/pressure-converter/' },
         ];
 
         searchInput.addEventListener('input', () => {

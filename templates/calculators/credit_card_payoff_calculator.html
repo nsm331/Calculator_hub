@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Credit Card Payoff Calculator - Fixed Payment & Debt Elimination | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate debt-free payoff dates, total interest charges, and monthly payment schedules for credit cards. Compare budget payoff vs target timeline strategies.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .cc-mode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+    .cc-mode-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        color: var(--color-text-muted);
+        transition: all var(--transition-fast);
+    }
+    .cc-mode-btn:hover {
+        border-color: var(--color-accent-blue);
+        color: var(--color-text-main);
+    }
+    .cc-mode-btn.active {
+        background: var(--color-accent-blue);
+        border-color: var(--color-accent-blue);
+        color: #ffffff;
+    }
+    .cc-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .cc-input-group {
+        min-width: 0;
+    }
+    .cc-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .cc-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 44px;
+    }
+    .cc-input-wrap input {
+        flex: 1;
+        min-width: 0 !important;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 0.95rem;
+        outline: none;
+    }
+    .cc-input-prefix, .cc-input-suffix {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--color-text-muted);
+    }
+    .cc-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .cc-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #cc-primary-result {
+        font-size: clamp(1.8rem, 5vw, 2.7rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .cc-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .cc-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .cc-metric-val {
+        font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .cc-bar-container {
+        height: 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        display: flex;
+        margin: 12px 0 8px;
+    }
+    .cc-bar-segment {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .cc-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .cc-table {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .cc-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--color-accent-blue);
+    }
+    .cc-scroll-hint {
+        display: none;
+        font-size: 0.78rem;
+        color: var(--color-text-muted);
+        text-align: right;
+        margin-bottom: 4px;
+    }
+    @media (max-width: 640px) {
+        .cc-scroll-hint {
+            display: block;
+        }
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#financial" style="color: var(--color-text-muted); text-decoration: none;">Financial Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Credit Card Payoff Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Credit Card Payoff Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Calculate debt-free payoff dates, total finance charges, and interest savings. Compare fixed monthly budgets against target timelines and bank minimum payment traps.
+        </p>
+    </header>
+
+    <!-- Interactive Mode Switcher -->
+    <div class="cc-mode-container" role="tablist">
+        <button type="button" class="cc-mode-btn active" data-mode="fixed_payment" role="tab" aria-selected="true">
+            Fixed Monthly Budget
+        </button>
+        <button type="button" class="cc-mode-btn" data-mode="target_months" role="tab" aria-selected="false">
+            Target Payoff Timeline
+        </button>
+        <button type="button" class="cc-mode-btn" data-mode="minimum_only" role="tab" aria-selected="false">
+            Minimum Payment Trap
+        </button>
+    </div>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <div class="cc-grid">
+            <div class="cc-input-group">
+                <label for="cc-balance-val">Current Card Balance ($)</label>
+                <div class="cc-input-wrap">
+                    <span class="cc-input-prefix">$</span>
+                    <input type="number" id="cc-balance-val" value="5000" min="1" step="50" placeholder="5000" style="padding-left: 6px;">
+                </div>
+            </div>
+
+            <div class="cc-input-group">
+                <label for="cc-apr-val">Annual Percentage Rate (APR %)</label>
+                <div class="cc-input-wrap">
+                    <input type="number" id="cc-apr-val" value="21.99" min="0" max="100" step="0.01" placeholder="21.99">
+                    <span class="cc-input-suffix">%</span>
+                </div>
+            </div>
+
+            <div class="cc-input-group" id="cc-payment-group">
+                <label for="cc-payment-val">Proposed Monthly Payment ($)</label>
+                <div class="cc-input-wrap">
+                    <span class="cc-input-prefix">$</span>
+                    <input type="number" id="cc-payment-val" value="200" min="1" step="10" placeholder="200" style="padding-left: 6px;">
+                </div>
+            </div>
+
+            <div class="cc-input-group" id="cc-months-group" style="display: none;">
+                <label for="cc-months-val">Target Payoff Months</label>
+                <div class="cc-input-wrap">
+                    <input type="number" id="cc-months-val" value="24" min="1" max="600" step="1" placeholder="24">
+                    <span class="cc-input-suffix">months</span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button type="button" id="cc-calc-btn" class="btn btn-primary" style="width: 100%; min-height: 46px; font-weight: 700; font-size: 0.95rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #ffffff; border: none; cursor: pointer;">
+                Calculate Debt Payoff Schedule
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="cc-results-section">
+        <!-- Hero Card -->
+        <div class="cc-hero-card">
+            <div class="cc-hero-header">
+                <span id="cc-res-title" style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Estimated Payoff Duration
+                </span>
+                <span id="cc-formula-badge" class="cc-badge">
+                    N = -ln(1 - B·i/P) / ln(1+i)
+                </span>
+            </div>
+
+            <div id="cc-primary-result">34 Months (2.8 Yrs)</div>
+
+            <div id="cc-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 12px;">
+                Paying $200/month eliminates debt in 34 billing cycles.
+            </div>
+
+            <!-- Distribution Bar -->
+            <div class="cc-bar-container">
+                <div id="cc-bar-principal" class="cc-bar-segment" style="width: 75%; background: var(--color-accent-blue);"></div>
+                <div id="cc-bar-interest" class="cc-bar-segment" style="width: 25%; background: #ef4444;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600;">
+                <span id="cc-bar-principal-text" style="color: var(--color-accent-blue);">Principal: $5,000.00 (75%)</span>
+                <span id="cc-bar-interest-text" style="color: #ef4444;">Interest: $1,672.45 (25%)</span>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="cc-metrics-grid">
+            <div class="cc-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Interest Charges</span>
+                <span id="cc-total-interest" class="cc-metric-val" style="color: #ef4444;">$1,672.45</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Cost of borrowing</span>
+            </div>
+
+            <div class="cc-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Cumulative Payments</span>
+                <span id="cc-total-paid" class="cc-metric-val" style="color: var(--color-text-main);">$6,672.45</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Principal + Interest</span>
+            </div>
+
+            <div class="cc-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Projected Debt-Free Date</span>
+                <span id="cc-payoff-date" class="cc-metric-val" style="color: var(--color-accent-emerald);">July 2029</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Assuming no new purchases</span>
+            </div>
+
+            <div class="cc-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Interest to Payment Ratio</span>
+                <span id="cc-interest-ratio" class="cc-metric-val" style="color: var(--color-accent-blue);">25.1% of payments</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Portion lost to finance fees</span>
+            </div>
+        </div>
+
+        <!-- CARD Act Comparison Banner -->
+        <div id="cc-cardact-card" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--border-radius-md); padding: 16px 20px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-accent-emerald); margin: 0 0 6px;">
+                CARD Act Benchmark: 3-Year Fixed Payoff Plan
+            </h4>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5; margin: 0;">
+                By committing to a disciplined 36-month repayment schedule, you could save approximately <strong id="cc-cardact-savings" style="color: var(--color-accent-emerald);">$0.00</strong> in finance charges and become debt-free <strong id="cc-cardact-time-savings" style="color: var(--color-text-main);">0 months earlier</strong> compared to paying minimums.
+            </p>
+        </div>
+
+        <!-- Monthly Amortization Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 6px;">
+                Monthly Balance &amp; Amortization Schedule
+            </h4>
+            <div class="cc-scroll-hint">&larr; Swipe horizontally to view full schedule &rarr;</div>
+            <div class="cc-table-wrap">
+                <table class="cc-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 9px 10px; white-space: nowrap;">Billing Cycle</th>
+                            <th style="padding: 9px 10px; white-space: nowrap;">Starting Balance</th>
+                            <th style="padding: 9px 10px; white-space: nowrap;">Payment Applied</th>
+                            <th style="padding: 9px 10px; white-space: nowrap;">Principal Paid</th>
+                            <th style="padding: 9px 10px; white-space: nowrap;">Interest Incurred</th>
+                            <th style="padding: 9px 10px; white-space: nowrap;">Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cc-schedule-tbody">
+                        <!-- Populated via credit_card_payoff.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/credit_card_payoff.js' %}"></script>
+{% endblock %}

@@ -91,6 +91,10 @@ class Calculator(models.Model):
             'bac-calculator': 'bac_calculator',
             'quadratic-formula-calculator': 'quadratic_formula_calculator',
             'kinetic-potential-energy-calculator': 'energy_calculator',
+            'credit-card-payoff-calculator': 'credit_card_payoff_calculator',
+            'tdee-calculator': 'tdee_calculator',
+            'circle-calculator': 'circle_calculator',
+            'pressure-converter': 'pressure_converter',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

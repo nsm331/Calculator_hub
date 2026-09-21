@@ -681,6 +681,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Translational Kinetic Energy", calc.article_content)
 
+    def test_credit_card_payoff_calculator_view(self):
+        response = self.client.get(reverse('credit_card_payoff_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Credit Card Payoff Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/credit_card_payoff.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='credit-card-payoff-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Daily Periodic Rate", calc.article_content)
+
+    def test_tdee_calculator_view(self):
+        response = self.client.get(reverse('tdee_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Total Daily Energy Expenditure")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/tdee.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='tdee-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Four Bioenergetic Components of TDEE", calc.article_content)
+
+    def test_circle_calculator_view(self):
+        response = self.client.get(reverse('circle_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Circle (Area &amp; Circumference)")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/circle.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='circle-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Rigorous Derivation of Circular Surface Area", calc.article_content)
+
+    def test_pressure_converter_view(self):
+        response = self.client.get(reverse('pressure_converter'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Atmospheric Pressure Converter")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/pressure_converter.js")
+        self.assertNotContains(response, "js/force.js")
+        calc = Calculator.objects.filter(slug='pressure-converter').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Hydrostatic Fundamental Equation", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -798,6 +842,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('bac_calculator'))
         self.client.get(reverse('quadratic_formula_calculator'))
         self.client.get(reverse('energy_calculator'))
+        self.client.get(reverse('credit_card_payoff_calculator'))
+        self.client.get(reverse('tdee_calculator'))
+        self.client.get(reverse('circle_calculator'))
+        self.client.get(reverse('pressure_converter'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -861,6 +909,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "bac-calculator")
         self.assertContains(response, "quadratic-formula-calculator")
         self.assertContains(response, "kinetic-potential-energy-calculator")
+        self.assertContains(response, "credit-card-payoff-calculator")
+        self.assertContains(response, "tdee-calculator")
+        self.assertContains(response, "circle-calculator")
+        self.assertContains(response, "pressure-converter")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

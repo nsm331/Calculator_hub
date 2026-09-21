@@ -87,6 +87,12 @@ from .default_articles_batch14 import (
     QUADRATIC_ARTICLE,
     ENERGY_ARTICLE,
 )
+from .default_articles_batch15 import (
+    CREDIT_CARD_PAYOFF_ARTICLE,
+    TDEE_ARTICLE,
+    CIRCLE_ARTICLE,
+    PRESSURE_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -950,6 +956,59 @@ def energy_calculator(request):
     }
     calculator = _get_or_seed_calculator('kinetic-potential-energy-calculator', default_data)
     return render(request, 'calculators/energy_calculator.html', {'calculator': calculator})
+
+
+# Batch 16 Calculators (User Batch #15)
+def credit_card_payoff_calculator(request):
+    """Credit Card Payoff Calculator view."""
+    default_data = {
+        'title': 'Credit Card Payoff Calculator',
+        'category': 'financial',
+        'meta_title': 'Credit Card Payoff Calculator - Fixed Payment, Amortization & Debt Elimination | CalculatorHub',
+        'meta_description': 'Calculate debt-free payoff dates, total interest charges, and monthly payment schedules for credit cards. Compare budget payoff vs target timeline strategies.',
+        'article_content': CREDIT_CARD_PAYOFF_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('credit-card-payoff-calculator', default_data)
+    return render(request, 'calculators/credit_card_payoff_calculator.html', {'calculator': calculator})
+
+
+def tdee_calculator(request):
+    """Total Daily Energy Expenditure (TDEE) Calculator view."""
+    default_data = {
+        'title': 'Total Daily Energy Expenditure (TDEE) Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'TDEE Calculator - Total Daily Energy Expenditure & Calorie Deficit | CalculatorHub',
+        'meta_description': 'Calculate your Total Daily Energy Expenditure (TDEE) and BMR using Mifflin-St Jeor, Katch-McArdle, and Harris-Benedict formulas. Includes customized cutting and bulking calorie targets.',
+        'article_content': TDEE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('tdee-calculator', default_data)
+    return render(request, 'calculators/tdee_calculator.html', {'calculator': calculator})
+
+
+def circle_calculator(request):
+    """Circle (Area & Circumference) Calculator view."""
+    default_data = {
+        'title': 'Circle (Area & Circumference) Calculator',
+        'category': 'math',
+        'meta_title': 'Circle Calculator - Radius, Diameter, Circumference, Area & Arc Sector | CalculatorHub',
+        'meta_description': 'Solve circle dimensions online. Calculate radius, diameter, circumference, and surface area instantaneously. Features circular sector, arc length, and chord solvers.',
+        'article_content': CIRCLE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('circle-calculator', default_data)
+    return render(request, 'calculators/circle_calculator.html', {'calculator': calculator})
+
+
+def pressure_converter(request):
+    """Atmospheric Pressure Converter view."""
+    default_data = {
+        'title': 'Atmospheric Pressure Converter',
+        'category': 'other',
+        'meta_title': 'Atmospheric Pressure Converter - Barometric Formula, Altitude & Units | CalculatorHub',
+        'meta_description': 'Convert between atm, psi, bar, kPa, mmHg, inHg, and Torr. Includes barometric formula elevation pressure calculator and water boiling point variations.',
+        'article_content': PRESSURE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('pressure-converter', default_data)
+    return render(request, 'calculators/pressure_converter.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

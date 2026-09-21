@@ -329,6 +329,28 @@ urlpatterns = [
         name='energy_calculator'
     ),
 
+    # Batch 16 Calculators (User Batch #15)
+    path(
+        'financial-calculators/credit-card-payoff-calculator/',
+        views.credit_card_payoff_calculator,
+        name='credit_card_payoff_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/tdee-calculator/',
+        views.tdee_calculator,
+        name='tdee_calculator'
+    ),
+    path(
+        'math-calculators/circle-calculator/',
+        views.circle_calculator,
+        name='circle_calculator'
+    ),
+    path(
+        'other-calculators/pressure-converter/',
+        views.pressure_converter,
+        name='pressure_converter'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),
