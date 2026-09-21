@@ -73,6 +73,12 @@ from calculators.default_articles_batch12 import (
     PERMUTATIONS_COMBINATIONS_ARTICLE,
     FORCE_ARTICLE,
 )
+from calculators.default_articles_batch13 import (
+    ANNUITY_PAYOUT_ARTICLE,
+    ARMY_BODY_FAT_ARTICLE,
+    MEAN_MEDIAN_MODE_ARTICLE,
+    POWER_CONVERTER_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -496,6 +502,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Newton Force Calculator - F = ma, Weight, Friction & Centripetal Solver | CalculatorHub',
         'meta_description': 'Solve Newton’s Second Law of Motion (F = ma) for force, mass, or acceleration. Features planetary gravity weight presets, friction physics, and multi-unit conversions.',
         'article_content': FORCE_ARTICLE,
+    },
+    # Batch 14 Calculators (User Batch #13)
+    {
+        'slug': 'annuity-payout-calculator',
+        'title': 'Annuity Payout Calculator',
+        'category': 'financial',
+        'meta_title': 'Annuity Payout Calculator - Fixed Period & Income Stream | CalculatorHub',
+        'meta_description': 'Calculate periodic annuity payouts, total interest earnings, portfolio longevity, and ordinary annuity vs annuity due distributions with full amortization schedules.',
+        'article_content': ANNUITY_PAYOUT_ARTICLE,
+    },
+    {
+        'slug': 'army-body-fat-calculator',
+        'title': 'Army Body Fat Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Army Body Fat Calculator - AR 600-9 Tape Test Standard | CalculatorHub',
+        'meta_description': 'Official US Army Body Composition Program (AR 600-9) tape test calculator. Compute military body fat percentage for males and females with pass/fail standards.',
+        'article_content': ARMY_BODY_FAT_ARTICLE,
+    },
+    {
+        'slug': 'mean-median-mode-calculator',
+        'title': 'Mean, Median & Mode Calculator',
+        'category': 'math',
+        'meta_title': 'Mean, Median, Mode Calculator - Statistics & Variance Solver | CalculatorHub',
+        'meta_description': 'Compute mean, median, mode, sample and population variance, standard deviation, range, quartiles, and IQR with step-by-step statistical distributions.',
+        'article_content': MEAN_MEDIAN_MODE_ARTICLE,
+    },
+    {
+        'slug': 'power-converter',
+        'title': 'Power & Wattage Converter',
+        'category': 'other',
+        'meta_title': 'Power Converter - Watts, Horsepower, kW, BTU/h & dBm | CalculatorHub',
+        'meta_description': 'Convert power units across Watts, Kilowatts, Mechanical & Metric Horsepower, BTU/h, Tons of Refrigeration, and dBm. Includes appliance energy cost estimation.',
+        'article_content': POWER_CONVERTER_ARTICLE,
     },
 ]
 

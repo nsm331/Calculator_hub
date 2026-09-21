@@ -285,6 +285,28 @@ urlpatterns = [
         name='force_calculator'
     ),
 
+    # Batch 14 Calculators (User Batch #13)
+    path(
+        'financial-calculators/annuity-payout-calculator/',
+        views.annuity_payout_calculator,
+        name='annuity_payout_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/army-body-fat-calculator/',
+        views.army_body_fat_calculator,
+        name='army_body_fat_calculator'
+    ),
+    path(
+        'math-calculators/mean-median-mode-calculator/',
+        views.mean_median_mode_calculator,
+        name='mean_median_mode_calculator'
+    ),
+    path(
+        'other-calculators/power-converter/',
+        views.power_converter,
+        name='power_converter'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

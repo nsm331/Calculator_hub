@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Mean, Median, Mode Calculator - Statistics & Variance Solver | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Compute mean, median, mode, sample and population variance, standard deviation, range, quartiles, and IQR with step-by-step statistical distributions.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Mean Median Mode Calculator Responsive Layout System */
+    .mmm-presets-container {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .mmm-preset-btn {
+        padding: 5px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+    }
+    .mmm-textarea {
+        width: 100%;
+        min-height: 100px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 12px;
+        font-family: monospace;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+    .mmm-action-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    .mmm-hero-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .mmm-hero-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 18px;
+    }
+    .mmm-hero-val {
+        font-size: clamp(1.6rem, 5vw, 2.2rem);
+        font-weight: 900;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .mmm-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .mmm-stat-item {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 14px;
+    }
+    .mmm-stat-val {
+        font-size: clamp(1.2rem, 3.5vw, 1.45rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 3px;
+        color: var(--color-text-main);
+        word-break: break-word;
+    }
+    .mmm-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .mmm-table {
+        width: 100%;
+        min-width: 380px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .seo-article .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 640px) {
+        .mmm-action-row button {
+            flex: 1 1 100%;
+        }
+        .mmm-hero-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .mmm-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
+</style>
+
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Mean, Median &amp; Mode Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Mean, Median & Mode Calculator" }}</h1>
+    <p class="page-lead">
+        Compute essential statistical measures of central tendency and dispersion. Analyze raw numerical datasets to find arithmetic mean ($\bar{x}$), median ($M$), mode ($Mo$), sample and population standard deviation ($s, \sigma$), variance, quartiles, and step-by-step distributions.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Descriptive Statistics &amp; Frequency Distribution Engine</span>
+    </div>
+
+    <!-- Quick Preset Buttons -->
+    <div style="margin-bottom: 14px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 6px;">
+            Load Example Dataset:
+        </label>
+        <div class="mmm-presets-container">
+            <button type="button" class="btn btn-outline mmm-preset-btn" data-preset="scores">
+                Exam Scores (n=12)
+            </button>
+            <button type="button" class="btn btn-outline mmm-preset-btn" data-preset="temps">
+                Daily Temperatures (n=11)
+            </button>
+            <button type="button" class="btn btn-outline mmm-preset-btn" data-preset="bimodal">
+                Bimodal Sample (n=9)
+            </button>
+            <button type="button" class="btn btn-outline mmm-preset-btn" data-preset="integers">
+                Small Integers (n=14)
+            </button>
+        </div>
+    </div>
+
+    <!-- Dataset Textarea Input -->
+    <div>
+        <label for="mmm-data-input" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--color-text-main);">
+            Input Numerical Dataset (Delimited by commas, spaces, or newlines)
+        </label>
+        <textarea 
+            id="mmm-data-input" 
+            class="mmm-textarea" 
+            placeholder="e.g. 88, 92, 75, 88, 95, 68, 84, 91, 78, 88, 90, 82"
+        >88, 92, 75, 88, 95, 68, 84, 91, 78, 88, 90, 82</textarea>
+    </div>
+
+    <div class="mmm-action-row">
+        <button type="button" id="mmm-calc-btn" class="btn btn-primary" style="flex: 2; height: 44px; font-size: 1rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Descriptive Statistics &rarr;
+        </button>
+        <button type="button" id="mmm-clear-btn" class="btn btn-outline" style="flex: 1; height: 44px; font-size: 0.9rem; font-weight: 600; border-radius: var(--border-radius-sm); cursor: pointer;">
+            Clear Data
+        </button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="mmm-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Hero Summary 3 Pillars: Mean, Median, Mode -->
+        <div class="mmm-hero-grid">
+            <div class="mmm-hero-box">
+                <span style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">
+                    Arithmetic Mean ($\bar{x}$)
+                </span>
+                <span id="mmm-mean-val" class="mmm-hero-val" style="color: var(--color-accent-blue);">84.9167</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Average of all observations</span>
+            </div>
+
+            <div class="mmm-hero-box">
+                <span style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">
+                    Median ($M$)
+                </span>
+                <span id="mmm-median-val" class="mmm-hero-val" style="color: var(--color-accent-emerald);">88</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">50th percentile rank value</span>
+            </div>
+
+            <div class="mmm-hero-box">
+                <span style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">
+                    Mode ($Mo$)
+                </span>
+                <span id="mmm-mode-val" class="mmm-hero-val" style="color: var(--color-accent-amber); font-size: clamp(1.2rem, 3.5vw, 1.6rem);">88 (Freq: 3)</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Highest frequency occurrence</span>
+            </div>
+        </div>
+
+        <!-- Comprehensive Measures of Dispersion Grid -->
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+            Dispersion, Shape &amp; Quartile Metrics
+        </h4>
+        <div class="mmm-stats-grid">
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Sample Std Dev ($s$)</span>
+                <span id="mmm-sample-std" class="mmm-stat-val">7.8911</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Bessel's correction ($n-1$)</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Population Std Dev ($\sigma$)</span>
+                <span id="mmm-pop-std" class="mmm-stat-val">7.5552</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Full population ($N$)</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Sample Variance ($s^2$)</span>
+                <span id="mmm-sample-var" class="mmm-stat-val">62.2652</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Degrees of freedom: $n-1$</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Population Variance ($\sigma^2$)</span>
+                <span id="mmm-pop-var" class="mmm-stat-val">57.0764</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Mean squared deviation</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Range ($x_{\max} - x_{\min}$)</span>
+                <span id="mmm-range-val" class="mmm-stat-val">27</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Max spread of data</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Minimum &amp; Maximum</span>
+                <span class="mmm-stat-val"><span id="mmm-min-val">68</span> &bull; <span id="mmm-max-val">95</span></span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Boundary extremes</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Count ($n$) &amp; Sum ($\sum x$)</span>
+                <span class="mmm-stat-val">n=<span id="mmm-count-val">12</span> | &sum;=<span id="mmm-sum-val">1019</span></span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Sample size and aggregate</span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Quartiles ($Q_1, Q_3$, IQR)</span>
+                <span class="mmm-stat-val">Q1: <span id="mmm-q1-val">80</span> | Q3: <span id="mmm-q3-val">90.5</span></span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">IQR: <span id="mmm-iqr-val">10.5</span></span>
+            </div>
+
+            <div class="mmm-stat-item">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Geometric Mean</span>
+                <span id="mmm-geom-mean" class="mmm-stat-val">84.5583</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Logarithmic growth mean</span>
+            </div>
+        </div>
+
+        <!-- Sorted Order Sequence -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px; margin-bottom: 20px;">
+            <h5 style="font-size: 0.88rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 8px;">
+                Ordered Data Array ($x_{(1)} \le x_{(2)} \le \dots \le x_{(n)}$)
+            </h5>
+            <div id="mmm-sorted-data" style="display: flex; flex-wrap: wrap; gap: 4px;">
+                <!-- Populated via mean_median_mode.js -->
+            </div>
+        </div>
+
+        <!-- Frequency Distribution Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px; margin-bottom: 20px;">
+            <h5 style="font-size: 0.88rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 8px;">
+                Frequency Distribution Table
+            </h5>
+            <div class="mmm-table-wrap">
+                <table class="mmm-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 8px 12px;">Value ($x_i$)</th>
+                            <th style="padding: 8px 12px;">Frequency ($f_i$)</th>
+                            <th style="padding: 8px 12px;">Relative Frequency (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mmm-freq-tbody">
+                        <!-- Populated via mean_median_mode.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Mathematical Derivations -->
+        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Step-by-Step Algebraic Derivation
+            </h4>
+            <div id="mmm-steps-container">
+                <!-- Populated via mean_median_mode.js -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/mean_median_mode.js' %}"></script>
+{% endblock %}

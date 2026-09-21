@@ -1,0 +1,387 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Power Converter - Watts, Horsepower, kW, BTU/h & dBm | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Convert power units across Watts, Kilowatts, Mechanical & Metric Horsepower, BTU/h, Tons of Refrigeration, and dBm. Includes appliance energy cost estimation.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Power Converter Responsive Layout System */
+    .power-mode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+    .power-mode-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .power-pair-grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 20px;
+    }
+    .power-input-group {
+        min-width: 0;
+    }
+    .power-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .power-input-wrapper {
+        display: flex;
+        gap: 8px;
+    }
+    .power-input-wrapper input {
+        flex: 1 1 0;
+        min-width: 0 !important;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+    }
+    .power-input-wrapper select,
+    .power-input-group select {
+        width: 100%;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 10px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        box-sizing: border-box;
+    }
+    .power-swap-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-border-light);
+        background: var(--color-bg-card-alt);
+        color: var(--color-accent-blue);
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 2px;
+        transition: all var(--transition-fast);
+    }
+    .power-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    #power-pair-result {
+        font-size: clamp(1.8rem, 6vw, 2.8rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        margin: 10px 0 6px;
+        word-break: break-word;
+    }
+    .power-matrix-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .power-matrix-table {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .power-scroll-hint {
+        display: none;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        margin-bottom: 6px;
+    }
+    .app-presets-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+    .app-preset-btn {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+    }
+    .seo-article .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 640px) {
+        .power-pair-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .power-swap-btn {
+            width: 100%;
+            height: 38px;
+        }
+        .power-scroll-hint {
+            display: block;
+        }
+    }
+</style>
+
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Power &amp; Wattage Converter</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Power & Wattage Converter" }}</h1>
+    <p class="page-lead">
+        Convert instantaneous power and heat transfer rates across SI metric units (Watts, kW, MW), Mechanical &amp; Metric Horsepower ($hp$, $PS$), HVAC cooling standards (BTU/hr, Tons of Refrigeration), and logarithmic telecommunications units ($dBm$, $dBW$). Includes home electrical appliance running cost estimation.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Thermodynamic, Mechanical &amp; Electrical Power Conversion Suite</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div>
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Conversion Workspace
+        </label>
+        <div class="power-mode-container">
+            <button type="button" class="btn btn-outline power-mode-btn active" data-mode="pair">
+                Two-Way Unit Converter
+            </button>
+            <button type="button" class="btn btn-outline power-mode-btn" data-mode="matrix">
+                Multi-Unit Engineering Matrix
+            </button>
+            <button type="button" class="btn btn-outline power-mode-btn" data-mode="appliance">
+                Appliance Energy Cost Estimator
+            </button>
+        </div>
+    </div>
+
+    <!-- Mode 1: Quick Pair Converter -->
+    <div id="power-pair-section">
+        <div class="power-pair-grid">
+            <!-- From Value & Unit -->
+            <div class="power-input-group">
+                <label for="power-pair-val">Value to Convert</label>
+                <div class="power-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="power-pair-val" 
+                        value="1" 
+                        step="any"
+                    >
+                    <select id="power-pair-from" style="width: 140px; flex-shrink: 0;">
+                        <option value="hp_I" selected>Mechanical hp</option>
+                        <option value="W">Watts (W)</option>
+                        <option value="kW">Kilowatts (kW)</option>
+                        <option value="MW">Megawatts (MW)</option>
+                        <option value="mW">Milliwatts (mW)</option>
+                        <option value="hp_M">Metric hp (PS)</option>
+                        <option value="hp_E">Electric hp</option>
+                        <option value="BTU_h">BTU/h</option>
+                        <option value="TR">Tons of Refrig (TR)</option>
+                        <option value="kcal_h">kcal/h</option>
+                        <option value="ft_lbf_s">ft·lbf/s</option>
+                        <option value="dBm">dBm</option>
+                        <option value="dBW">dBW</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Swap Button -->
+            <div>
+                <button type="button" id="power-pair-swap" class="power-swap-btn" title="Swap Units">
+                    &#8644;
+                </button>
+            </div>
+
+            <!-- To Unit -->
+            <div class="power-input-group">
+                <label for="power-pair-to">Target Unit</label>
+                <select id="power-pair-to">
+                    <option value="W">Watts (W)</option>
+                    <option value="kW" selected>Kilowatts (kW)</option>
+                    <option value="MW">Megawatts (MW)</option>
+                    <option value="mW">Milliwatts (mW)</option>
+                    <option value="hp_I">Mechanical hp</option>
+                    <option value="hp_M">Metric hp (PS)</option>
+                    <option value="hp_E">Electric hp</option>
+                    <option value="BTU_h">BTU/h</option>
+                    <option value="TR">Tons of Refrig (TR)</option>
+                    <option value="kcal_h">kcal/h</option>
+                    <option value="ft_lbf_s">ft·lbf/s</option>
+                    <option value="dBm">dBm</option>
+                    <option value="dBW">dBW</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Hero Output -->
+        <div class="power-hero-card">
+            <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                Converted Power Output
+            </span>
+            <div id="power-pair-result">
+                0.7457 kW
+            </div>
+            <div id="power-pair-secondary" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                <strong>1 Mechanical hp</strong> is equal to <strong>745.7 Watts (SI)</strong> &bull; <strong>0.7457 Kilowatts</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode 2: Multi-Unit Matrix -->
+    <div id="power-matrix-section" style="display: none;">
+        <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px;">
+            <div style="flex: 1 1 200px;">
+                <label for="power-matrix-val" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px;">
+                    Enter Power Magnitude
+                </label>
+                <input 
+                    type="number" 
+                    id="power-matrix-val" 
+                    value="100" 
+                    step="any"
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px; font-size: 0.95rem;"
+                >
+            </div>
+            <div style="flex: 1 1 200px;">
+                <label for="power-matrix-unit" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px;">
+                    Select Input Base Unit
+                </label>
+                <select id="power-matrix-unit" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600;">
+                    <option value="W" selected>Watts (W)</option>
+                    <option value="kW">Kilowatts (kW)</option>
+                    <option value="MW">Megawatts (MW)</option>
+                    <option value="mW">Milliwatts (mW)</option>
+                    <option value="hp_I">Mechanical Horsepower (hp)</option>
+                    <option value="hp_M">Metric Horsepower (PS)</option>
+                    <option value="BTU_h">BTU per hour (BTU/h)</option>
+                    <option value="TR">Tons of Refrigeration (TR)</option>
+                    <option value="dBm">dBm</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="power-scroll-hint">&larr; Swipe horizontally to view full table &rarr;</div>
+        <div class="power-matrix-table-wrap">
+            <table class="power-matrix-table">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                        <th style="padding: 10px 12px; white-space: nowrap;">Unit Standard</th>
+                        <th style="padding: 10px 12px; white-space: nowrap;">Converted Magnitude</th>
+                        <th style="padding: 10px 12px; white-space: nowrap;">Domain</th>
+                        <th style="padding: 10px 12px;">Standard Definition</th>
+                    </tr>
+                </thead>
+                <tbody id="power-matrix-tbody">
+                    <!-- Populated via power_converter.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mode 3: Appliance Energy Cost Estimator -->
+    <div id="power-appliance-section" style="display: none;">
+        <div style="margin-bottom: 14px;">
+            <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 6px;">
+                Common Household Appliance Presets:
+            </label>
+            <div class="app-presets-row">
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="ac">Central AC (3,500W)</button>
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="fridge">Refrigerator (150W)</button>
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="pc">Gaming PC (300W)</button>
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="ev">EV Charger (7.2kW)</button>
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="heater">Space Heater (1,500W)</button>
+                <button type="button" class="btn btn-outline app-preset-btn" data-app="tv">Smart TV (100W)</button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div>
+                <label for="app-power-val" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px;">Appliance Power</label>
+                <div style="display: flex; gap: 6px;">
+                    <input type="number" id="app-power-val" value="3500" min="1" style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;">
+                    <select id="app-power-unit" style="width: 80px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600;">
+                        <option value="W" selected>Watts</option>
+                        <option value="kW">kW</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="app-hours-val" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px;">Daily Usage (Hours/Day)</label>
+                <input type="number" id="app-hours-val" value="8" min="0.1" max="24" step="0.5" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;">
+            </div>
+
+            <div>
+                <label for="app-rate-val" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px;">Electricity Rate ($/kWh)</label>
+                <input type="number" id="app-rate-val" value="0.16" min="0.01" step="0.01" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;">
+            </div>
+        </div>
+
+        <!-- Appliance Cost Projection Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Daily Cost</span>
+                <span id="app-daily-cost" style="font-size: 1.5rem; font-weight: 800; color: var(--color-accent-blue); display: block; margin-top: 4px;">$4.48</span>
+                <span id="app-kwh-daily" style="font-size: 0.75rem; color: var(--color-text-muted);">28.00 kWh/day</span>
+            </div>
+
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Monthly Cost (30 Days)</span>
+                <span id="app-monthly-cost" style="font-size: 1.5rem; font-weight: 800; color: var(--color-accent-emerald); display: block; margin-top: 4px;">$136.27</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Average monthly bill impact</span>
+            </div>
+
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Annual Running Cost</span>
+                <span id="app-annual-cost" style="font-size: 1.5rem; font-weight: 800; color: var(--color-accent-amber); display: block; margin-top: 4px;">$1,636.32</span>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Full year continuous operation</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/power_converter.js' %}"></script>
+{% endblock %}

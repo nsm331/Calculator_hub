@@ -1,0 +1,348 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Annuity Payout Calculator - Fixed Period & Income Stream | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate periodic annuity payouts, total interest earnings, portfolio longevity, and ordinary annuity vs annuity due distributions with full amortization schedules.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Annuity Calculator Responsive Layout System */
+    .annuity-mode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+    .annuity-mode-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .annuity-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .annuity-input-group {
+        min-width: 0;
+    }
+    .annuity-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .annuity-input-group input,
+    .annuity-input-group select {
+        width: 100%;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 0.92rem;
+    }
+    .annuity-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .annuity-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #annuity-primary-result {
+        font-size: clamp(1.75rem, 6vw, 2.7rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .annuity-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .annuity-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .annuity-metric-val {
+        font-size: clamp(1.35rem, 4vw, 1.65rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .annuity-bar-wrap {
+        height: 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        display: flex;
+        margin: 14px 0 6px;
+    }
+    .annuity-bar-segment {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+    .annuity-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .annuity-table {
+        width: 100%;
+        min-width: 480px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .annuity-scroll-hint {
+        display: none;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        margin-bottom: 6px;
+    }
+    .seo-article .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 640px) {
+        .annuity-mode-container {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+        .annuity-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .annuity-metrics-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .annuity-scroll-hint {
+            display: block;
+        }
+    }
+</style>
+
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#financial">Financial Calculators</a> &rsaquo; 
+        <span>Annuity Payout Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Annuity Payout Calculator" }}</h1>
+    <p class="page-lead">
+        Compute fixed periodic annuity payouts, total interest generated, and portfolio exhaustion longevity. Model ordinary annuities (in arrears) versus annuities due (in advance) across monthly, quarterly, semiannual, or annual distribution intervals with complete amortization schedules.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Actuarial Present Value &amp; Capital Decumulation Engine</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div>
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Calculation Objective
+        </label>
+        <div class="annuity-mode-container">
+            <button type="button" class="btn btn-outline annuity-mode-btn active" data-mode="payout">
+                Calculate Periodic Payout Amount
+            </button>
+            <button type="button" class="btn btn-outline annuity-mode-btn" data-mode="longevity">
+                Calculate Capital Longevity (Duration)
+            </button>
+        </div>
+    </div>
+
+    <form id="annuity-form" onsubmit="return false;">
+        <div class="annuity-grid">
+            <!-- Starting Principal -->
+            <div class="annuity-input-group">
+                <label for="annuity-principal">Starting Principal ($)</label>
+                <input 
+                    type="number" 
+                    id="annuity-principal" 
+                    value="250000" 
+                    min="100" 
+                    step="500" 
+                    placeholder="e.g. 250000"
+                >
+            </div>
+
+            <!-- Annual Interest Rate -->
+            <div class="annuity-input-group">
+                <label for="annuity-rate">Annual Interest / Growth Rate (%)</label>
+                <input 
+                    type="number" 
+                    id="annuity-rate" 
+                    value="5.5" 
+                    min="0" 
+                    max="30" 
+                    step="0.05" 
+                    placeholder="e.g. 5.5"
+                >
+            </div>
+
+            <!-- Payout Duration in Years (Payout Mode) -->
+            <div class="annuity-input-group" id="annuity-duration-group">
+                <label for="annuity-years">Payout Duration (Years)</label>
+                <input 
+                    type="number" 
+                    id="annuity-years" 
+                    value="20" 
+                    min="1" 
+                    max="100" 
+                    step="1" 
+                    placeholder="e.g. 20"
+                >
+            </div>
+
+            <!-- Desired Withdrawal (Longevity Mode) -->
+            <div class="annuity-input-group" id="annuity-pmt-group" style="display: none;">
+                <label for="annuity-pmt-val">Target Withdrawal per Period ($)</label>
+                <input 
+                    type="number" 
+                    id="annuity-pmt-val" 
+                    value="1800" 
+                    min="1" 
+                    step="50" 
+                    placeholder="e.g. 1800"
+                >
+            </div>
+
+            <!-- Distribution Frequency -->
+            <div class="annuity-input-group">
+                <label for="annuity-freq">Payout Frequency</label>
+                <select id="annuity-freq">
+                    <option value="12" selected>Monthly (12 payouts/year)</option>
+                    <option value="4">Quarterly (4 payouts/year)</option>
+                    <option value="2">Semiannually (2 payouts/year)</option>
+                    <option value="1">Annually (1 payout/year)</option>
+                </select>
+            </div>
+
+            <!-- Payment Timing -->
+            <div class="annuity-input-group">
+                <label for="annuity-timing">Payment Timing</label>
+                <select id="annuity-timing">
+                    <option value="end" selected>Ordinary Annuity (End of Period)</option>
+                    <option value="beginning">Annuity Due (Beginning of Period)</option>
+                </select>
+            </div>
+        </div>
+
+        <button type="button" id="annuity-calc-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Calculate Annuity Cash Flows &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="annuity-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Hero Output Card -->
+        <div class="annuity-hero-card">
+            <div class="annuity-hero-header">
+                <span id="annuity-res-title" style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Estimated Periodic Payout
+                </span>
+                <span id="annuity-formula-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--color-accent-blue); padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">
+                    Fixed Duration Solve
+                </span>
+            </div>
+            <div id="annuity-primary-result">
+                $1,719.72 / Month
+            </div>
+            <div id="annuity-secondary-result" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Total Distributions Over <strong>20 Years</strong>: <strong>$412,732.80</strong>
+            </div>
+
+            <!-- Proportional Balance Bar -->
+            <div class="annuity-bar-wrap">
+                <div id="annuity-bar-principal" class="annuity-bar-segment" style="width: 60.5%; background: var(--color-accent-blue);" title="Principal"></div>
+                <div id="annuity-bar-interest" class="annuity-bar-segment" style="width: 39.5%; background: var(--color-accent-emerald);" title="Compound Interest"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 600;">
+                <span id="annuity-principal-pct" style="color: var(--color-accent-blue);">60.5% Principal</span>
+                <span id="annuity-interest-pct" style="color: var(--color-accent-emerald);">39.5% Interest</span>
+            </div>
+        </div>
+
+        <!-- Analytical Indicators Cards -->
+        <div class="annuity-metrics-grid">
+            <div class="annuity-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Payouts Received</span>
+                <span id="annuity-total-payout" class="annuity-metric-val" style="color: var(--color-accent-blue);">$412,732.80</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Cumulative income stream</span>
+            </div>
+
+            <div class="annuity-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Interest Earned</span>
+                <span id="annuity-total-interest" class="annuity-metric-val" style="color: var(--color-accent-emerald);">$162,732.80</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Compounded growth over time</span>
+            </div>
+        </div>
+
+        <!-- Interactive Amortization Schedule -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 6px;">
+                Annuity Decumulation &amp; Amortization Schedule
+            </h4>
+            <div class="annuity-scroll-hint">&larr; Swipe horizontally to view full schedule &rarr;</div>
+            <div class="annuity-table-wrap">
+                <table class="annuity-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 10px 12px; white-space: nowrap;">Period</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Beginning Balance</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Payout Distributed</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Interest Earned</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Ending Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="annuity-schedule-tbody">
+                        <!-- Populated via annuity.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/annuity.js' %}"></script>
+{% endblock %}

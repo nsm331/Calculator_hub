@@ -593,6 +593,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Newton's Second Law", calc.article_content)
 
+    def test_annuity_payout_calculator_view(self):
+        response = self.client.get(reverse('annuity_payout_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Annuity Payout Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/annuity.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='annuity-payout-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Actuarial Mathematics", calc.article_content)
+
+    def test_army_body_fat_calculator_view(self):
+        response = self.client.get(reverse('army_body_fat_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Army Body Fat Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/army_body_fat.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='army-body-fat-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("AR 600-9", calc.article_content)
+
+    def test_mean_median_mode_calculator_view(self):
+        response = self.client.get(reverse('mean_median_mode_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Mean, Median &amp; Mode Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/mean_median_mode.js")
+        self.assertNotContains(response, "js/standard_deviation.js")
+        calc = Calculator.objects.filter(slug='mean-median-mode-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Measures of Central Tendency", calc.article_content)
+
+    def test_power_converter_view(self):
+        response = self.client.get(reverse('power_converter'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Power &amp; Wattage Converter")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/power_converter.js")
+        self.assertNotContains(response, "js/force.js")
+        calc = Calculator.objects.filter(slug='power-converter').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Physics of Power", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)

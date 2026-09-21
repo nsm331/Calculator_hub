@@ -83,6 +83,10 @@ class Calculator(models.Model):
             'sleep-calculator': 'sleep_calculator',
             'permutations-combinations-calculator': 'permutations_combinations_calculator',
             'force-calculator': 'force_calculator',
+            'annuity-payout-calculator': 'annuity_payout_calculator',
+            'army-body-fat-calculator': 'army_body_fat_calculator',
+            'mean-median-mode-calculator': 'mean_median_mode_calculator',
+            'power-converter': 'power_converter',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

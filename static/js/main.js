@@ -94,6 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Sleep Cycle Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/sleep-calculator/' },
             { title: 'Permutations & Combinations Calculator', category: 'Math', url: '/math-calculators/permutations-combinations-calculator/' },
             { title: 'Newton Force Calculator', category: 'Other', url: '/other-calculators/force-calculator/' },
+            { title: 'Annuity Payout Calculator', category: 'Financial', url: '/financial-calculators/annuity-payout-calculator/' },
+            { title: 'Army Body Fat Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/army-body-fat-calculator/' },
+            { title: 'Mean, Median & Mode Calculator', category: 'Math', url: '/math-calculators/mean-median-mode-calculator/' },
+            { title: 'Power & Wattage Converter', category: 'Other', url: '/other-calculators/power-converter/' },
         ];
 
         searchInput.addEventListener('input', () => {

@@ -75,6 +75,12 @@ from .default_articles_batch12 import (
     PERMUTATIONS_COMBINATIONS_ARTICLE,
     FORCE_ARTICLE,
 )
+from .default_articles_batch13 import (
+    ANNUITY_PAYOUT_ARTICLE,
+    ARMY_BODY_FAT_ARTICLE,
+    MEAN_MEDIAN_MODE_ARTICLE,
+    POWER_CONVERTER_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -832,6 +838,59 @@ def force_calculator(request):
     }
     calculator = _get_or_seed_calculator('force-calculator', default_data)
     return render(request, 'calculators/force_calculator.html', {'calculator': calculator})
+
+
+# Batch 14 Calculators (User Batch #13)
+def annuity_payout_calculator(request):
+    """Annuity Payout Calculator view."""
+    default_data = {
+        'title': 'Annuity Payout Calculator',
+        'category': 'financial',
+        'meta_title': 'Annuity Payout Calculator - Fixed Period & Income Stream | CalculatorHub',
+        'meta_description': 'Calculate periodic annuity payouts, total interest earnings, portfolio longevity, and ordinary annuity vs annuity due distributions with full amortization schedules.',
+        'article_content': ANNUITY_PAYOUT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('annuity-payout-calculator', default_data)
+    return render(request, 'calculators/annuity_payout_calculator.html', {'calculator': calculator})
+
+
+def army_body_fat_calculator(request):
+    """Army Body Fat Calculator view."""
+    default_data = {
+        'title': 'Army Body Fat Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Army Body Fat Calculator - AR 600-9 Tape Test Standard | CalculatorHub',
+        'meta_description': 'Official US Army Body Composition Program (AR 600-9) tape test calculator. Compute military body fat percentage for males and females with pass/fail standards.',
+        'article_content': ARMY_BODY_FAT_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('army-body-fat-calculator', default_data)
+    return render(request, 'calculators/army_body_fat_calculator.html', {'calculator': calculator})
+
+
+def mean_median_mode_calculator(request):
+    """Mean, Median & Mode Calculator view."""
+    default_data = {
+        'title': 'Mean, Median & Mode Calculator',
+        'category': 'math',
+        'meta_title': 'Mean, Median, Mode Calculator - Statistics & Variance Solver | CalculatorHub',
+        'meta_description': 'Compute mean, median, mode, sample and population variance, standard deviation, range, quartiles, and IQR with step-by-step statistical distributions.',
+        'article_content': MEAN_MEDIAN_MODE_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('mean-median-mode-calculator', default_data)
+    return render(request, 'calculators/mean_median_mode_calculator.html', {'calculator': calculator})
+
+
+def power_converter(request):
+    """Power & Wattage Converter view."""
+    default_data = {
+        'title': 'Power & Wattage Converter',
+        'category': 'other',
+        'meta_title': 'Power Converter - Watts, Horsepower, kW, BTU/h & dBm | CalculatorHub',
+        'meta_description': 'Convert power units across Watts, Kilowatts, Mechanical & Metric Horsepower, BTU/h, Tons of Refrigeration, and dBm. Includes appliance energy cost estimation.',
+        'article_content': POWER_CONVERTER_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('power-converter', default_data)
+    return render(request, 'calculators/power_converter.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

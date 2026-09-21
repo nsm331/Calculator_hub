@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Army Body Fat Calculator - AR 600-9 Tape Test Standard | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Official US Army Body Composition Program (AR 600-9) tape test calculator. Compute military body fat percentage for males and females with pass/fail standards.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Army Body Fat Calculator Responsive Layout System */
+    .army-toggle-container {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+    .army-toggle-btn {
+        flex: 1 1 calc(50% - 4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .army-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .army-input-group {
+        min-width: 0;
+    }
+    .army-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .army-input-wrapper {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .army-input-wrapper input {
+        flex: 1 1 0;
+        min-width: 0 !important;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+    }
+    .army-unit-badge {
+        width: 50px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        flex-shrink: 0;
+    }
+    .army-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .army-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #army-primary-result {
+        font-size: clamp(2rem, 7vw, 3.2rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.15;
+        margin: 10px 0 6px;
+    }
+    .army-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+    .army-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .army-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .army-metric-val {
+        font-size: clamp(1.35rem, 4vw, 1.65rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .seo-article .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 6px 0;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    @media (max-width: 640px) {
+        .army-toggle-btn {
+            flex: 1 1 100%;
+        }
+        .army-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .army-metrics-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+    }
+</style>
+
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health Calculators</a> &rsaquo; 
+        <span>Army Body Fat Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Army Body Fat Calculator" }}</h1>
+    <p class="page-lead">
+        Compute your military body fat percentage under the official US Army Body Composition Program (AR 600-9) tape test. Includes DoD circumference equations for male and female soldiers, age-stratified screening limits, and fat mass vs lean mass partitioning.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">US Department of Defense Anthropometric Standards (AR 600-9)</span>
+    </div>
+
+    <!-- Gender Selector -->
+    <div style="margin-bottom: 16px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Service Member Gender
+        </label>
+        <div class="army-toggle-container">
+            <button type="button" class="btn btn-outline army-gender-btn active army-toggle-btn" data-gender="male">
+                &#9794; Male Soldier
+            </button>
+            <button type="button" class="btn btn-outline army-gender-btn army-toggle-btn" data-gender="female">
+                &#9792; Female Soldier
+            </button>
+        </div>
+    </div>
+
+    <!-- Unit Selector -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Measurement System
+        </label>
+        <div class="army-toggle-container">
+            <button type="button" class="btn btn-outline army-unit-btn active army-toggle-btn" data-unit="imperial">
+                US Customary (inches, lbs)
+            </button>
+            <button type="button" class="btn btn-outline army-unit-btn army-toggle-btn" data-unit="metric">
+                Metric Standard (cm, kg)
+            </button>
+        </div>
+    </div>
+
+    <form id="army-form" onsubmit="return false;">
+        <div class="army-grid">
+            <!-- Age Input -->
+            <div class="army-input-group">
+                <label for="army-age">Age (Years)</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-age" 
+                        value="25" 
+                        min="17" 
+                        max="90" 
+                        step="1"
+                    >
+                    <span class="army-unit-badge">yrs</span>
+                </div>
+            </div>
+
+            <!-- Height Input -->
+            <div class="army-input-group">
+                <label for="army-height">Height</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-height" 
+                        value="70" 
+                        min="30" 
+                        max="100" 
+                        step="0.25"
+                    >
+                    <span id="army-height-unit" class="army-unit-badge">in</span>
+                </div>
+            </div>
+
+            <!-- Neck Circumference -->
+            <div class="army-input-group">
+                <label for="army-neck">Neck Circumference</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-neck" 
+                        value="16" 
+                        min="5" 
+                        max="40" 
+                        step="0.25"
+                    >
+                    <span id="army-neck-unit" class="army-unit-badge">in</span>
+                </div>
+            </div>
+
+            <!-- Waist Circumference -->
+            <div class="army-input-group">
+                <label for="army-waist">Waist (Abdomen at Navel)</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-waist" 
+                        value="34" 
+                        min="15" 
+                        max="80" 
+                        step="0.25"
+                    >
+                    <span id="army-waist-unit" class="army-unit-badge">in</span>
+                </div>
+            </div>
+
+            <!-- Hip Circumference (Females Only) -->
+            <div class="army-input-group" id="army-hip-group" style="display: none;">
+                <label for="army-hip">Hip Circumference (Widest Point)</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-hip" 
+                        value="38" 
+                        min="15" 
+                        max="90" 
+                        step="0.25"
+                    >
+                    <span id="army-hip-unit" class="army-unit-badge">in</span>
+                </div>
+            </div>
+
+            <!-- Weight (Optional) -->
+            <div class="army-input-group">
+                <label for="army-weight">Body Weight (Optional)</label>
+                <div class="army-input-wrapper">
+                    <input 
+                        type="number" 
+                        id="army-weight" 
+                        value="185" 
+                        min="50" 
+                        max="500" 
+                        step="0.5"
+                    >
+                    <span id="army-weight-unit" class="army-unit-badge">lbs</span>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="army-calc-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute AR 600-9 Body Composition &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="army-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Hero Output Card -->
+        <div class="army-hero-card">
+            <div class="army-hero-header">
+                <span style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Calculated Army Body Fat
+                </span>
+                <span id="army-status-badge" class="army-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-accent-emerald);">
+                    &#10003; Meets AR 600-9 Standard
+                </span>
+            </div>
+            <div id="army-primary-result">
+                17.2%
+            </div>
+            <div id="army-secondary-result" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Compliant: <strong>4.8% below</strong> the regulatory ceiling of <strong>22.0%</strong> for age 25.
+            </div>
+        </div>
+
+        <!-- Analytical Indicators Cards -->
+        <div class="army-metrics-grid">
+            <div class="army-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Allowable Ceiling</span>
+                <span id="army-max-allowed" class="army-metric-val" style="color: var(--color-accent-blue);">22.0%</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Max allowed for age</span>
+            </div>
+
+            <div class="army-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Standard Variance</span>
+                <span id="army-delta-standard" class="army-metric-val" style="color: var(--color-accent-emerald);">-4.8%</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Difference from limit</span>
+            </div>
+
+            <div class="army-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Fat Mass</span>
+                <span id="army-fat-mass" class="army-metric-val" style="color: var(--color-accent-amber);">31.8 lbs</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Total adipose tissue</span>
+            </div>
+
+            <div class="army-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Lean Muscle Mass</span>
+                <span id="army-lean-mass" class="army-metric-val" style="color: var(--color-accent-blue);">153.2 lbs</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Fat-free body mass</span>
+            </div>
+
+            <div class="army-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Fitness Classification</span>
+                <span id="army-category" class="army-metric-val" style="color: var(--color-accent-emerald); font-size: 1.25rem;">Fit / Operational</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">General tactical tier</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/army_body_fat.js' %}"></script>
+{% endblock %}
