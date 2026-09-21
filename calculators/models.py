@@ -79,6 +79,10 @@ class Calculator(models.Model):
             'macro-calculator': 'macro_calculator',
             'log-calculator': 'log_calculator',
             'density-calculator': 'density_calculator',
+            '401k-calculator': 'four_zero_one_k_calculator',
+            'sleep-calculator': 'sleep_calculator',
+            'permutations-combinations-calculator': 'permutations_combinations_calculator',
+            'force-calculator': 'force_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

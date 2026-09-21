@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Macronutrient Ratio Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/macronutrient-calculator/' },
             { title: 'Logarithm Calculator (Natural & Base 10)', category: 'Math', url: '/math-calculators/logarithm-calculator/' },
             { title: 'Physical Density Calculator', category: 'Other', url: '/other-calculators/density-calculator/' },
+            { title: '401(k) Retirement Calculator', category: 'Financial', url: '/financial-calculators/401k-calculator/' },
+            { title: 'Sleep Cycle Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/sleep-calculator/' },
+            { title: 'Permutations & Combinations Calculator', category: 'Math', url: '/math-calculators/permutations-combinations-calculator/' },
+            { title: 'Newton Force Calculator', category: 'Other', url: '/other-calculators/force-calculator/' },
         ];
 
         searchInput.addEventListener('input', () => {

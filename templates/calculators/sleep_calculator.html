@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Sleep Calculator - 90-Minute Sleep Cycles & Optimal Bedtimes | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate ideal bedtime and wake-up times synchronized with natural 90-minute ultradian sleep cycles to eliminate morning sleep inertia and maximize restorative rest.{% endif %}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health</a> &rsaquo; 
+        <span>Sleep Cycle Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Sleep Cycle Calculator" }}</h1>
+    <p class="page-lead">
+        Wake up feeling energetic by synchronizing your sleep schedule with 90-minute ultradian cycles. Avoid waking during deep Stage 3 Slow-Wave sleep to eliminate morning grogginess and sleep inertia.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Chronobiological 90-Minute Ultradian Sleep Architecture Engine</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Sleep Synchronization Mode
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline sleep-mode-btn active" data-mode="wake">
+                ⏰ I need to wake up at...
+            </button>
+            <button type="button" class="btn btn-outline sleep-mode-btn" data-mode="now">
+                🌙 If I sleep right now...
+            </button>
+            <button type="button" class="btn btn-outline sleep-mode-btn" data-mode="nap">
+                ⚡ Power Nap Calculator
+            </button>
+        </div>
+    </div>
+
+    <form id="sleep-form" onsubmit="return false;">
+        <!-- Wake-Up Time Selector Container (Shown when mode == 'wake') -->
+        <div id="sleep-time-input-group" style="margin-bottom: 20px;">
+            <label class="input-label" style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--color-text-main);">
+                Desired Wake-Up Time
+            </label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                <!-- Hour -->
+                <select id="sleep-hour" style="width: 90px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 1rem; padding: 0 10px;">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7" selected>7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+
+                <!-- Minute -->
+                <select id="sleep-minute" style="width: 90px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 1rem; padding: 0 10px;">
+                    <option value="0" selected>00</option>
+                    <option value="5">05</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
+                    <option value="30">30</option>
+                    <option value="35">35</option>
+                    <option value="40">40</option>
+                    <option value="45">45</option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                </select>
+
+                <!-- AM / PM Toggle -->
+                <div style="display: flex; gap: 4px;">
+                    <button type="button" class="btn btn-outline sleep-ampm-btn" data-ampm="AM" style="height: 44px; padding: 0 16px;">AM</button>
+                    <button type="button" class="btn btn-outline sleep-ampm-btn active" data-ampm="PM" style="height: 44px; padding: 0 16px;">PM</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latency / Time to fall asleep selector -->
+        <div style="margin-bottom: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label for="sleep-latency" style="font-size: 0.84rem; font-weight: 600; color: var(--color-text-main);">
+                    Average Time to Fall Asleep (Sleep Latency):
+                </label>
+                <span id="sleep-latency-display" style="font-size: 0.84rem; font-weight: 700; color: var(--color-accent-blue);">14 minutes (Clinical Average)</span>
+            </div>
+            <select id="sleep-latency" style="width: 100%; height: 42px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600;">
+                <option value="5">Fast Sleep Onset (5 minutes)</option>
+                <option value="10">Swift Onset (10 minutes)</option>
+                <option value="14" selected>Standard Adult Average (14 minutes)</option>
+                <option value="20">Moderate Latency (20 minutes)</option>
+                <option value="30">Extended Latency (30 minutes)</option>
+            </select>
+        </div>
+
+        <button type="button" id="sleep-calculate-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Optimal Sleep Cycles &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="sleep-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+            <h3 id="sleep-results-title" style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-main); margin: 0;">
+                Suggested Bedtimes to Wake Up at 7:00 AM
+            </h3>
+            <span style="font-size: 0.78rem; font-weight: 600; color: var(--color-text-muted);">
+                Cycle Length: 90 Minutes + Latency
+            </span>
+        </div>
+
+        <!-- Dynamic Cycle Cards Grid -->
+        <div id="sleep-cycles-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 22px;">
+            <!-- Populated dynamically via sleep.js -->
+        </div>
+
+        <!-- Neurobiological Sleep Architecture Guidance -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-accent-emerald); text-transform: uppercase; margin-bottom: 8px;">
+                💡 Why Sleep Cycles Matter
+            </h4>
+            <p style="font-size: 0.84rem; color: var(--color-text-muted); line-height: 1.5; margin: 0;">
+                Waking up midway through an ultradian cycle (during <strong>Stage N3 Slow-Wave Sleep</strong>) forces the brain to abruptly reactivate while inundated with delta waves, resulting in severe <em>sleep inertia</em> (brain fog, impaired motor reaction times, and fatigue). Waking at the end of a 90-minute cycle ensures your brain transitions smoothly through light sleep (Stage N1/N2) for effortless awakening.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/sleep.js' %}"></script>
+{% endblock %}

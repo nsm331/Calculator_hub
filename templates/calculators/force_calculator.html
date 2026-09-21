@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Newton Force Calculator - F = ma, Weight, Friction & Centripetal Solver | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Solve Newton’s Second Law of Motion (F = ma) for force, mass, or acceleration. Features planetary gravity weight presets, friction physics, and multi-unit conversions.{% endif %}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Newton Force Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Newton Force Calculator" }}</h1>
+    <p class="page-lead">
+        Compute mechanical force, mass, or acceleration using Newton's Second Law ($F = ma$). Calculate gravitational weight across celestial bodies, friction force ($F_f = \mu N$), and centripetal force ($F_c = mv^2/r$) with comprehensive multi-unit conversions.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Newtonian Mechanics &amp; Kinematic Force Vector Engine</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Physics Formulation &amp; Solve Mode
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline force-mode-btn active" data-mode="solve_f">
+                Solve Force ($F = m \cdot a$)
+            </button>
+            <button type="button" class="btn btn-outline force-mode-btn" data-mode="solve_m">
+                Solve Mass ($m = F / a$)
+            </button>
+            <button type="button" class="btn btn-outline force-mode-btn" data-mode="solve_a">
+                Solve Acceleration ($a = F / m$)
+            </button>
+            <button type="button" class="btn btn-outline force-mode-btn" data-mode="gravity">
+                Planetary Weight ($F_g = m \cdot g$)
+            </button>
+            <button type="button" class="btn btn-outline force-mode-btn" data-mode="friction">
+                Friction Force ($F_f = \mu \cdot N$)
+            </button>
+            <button type="button" class="btn btn-outline force-mode-btn" data-mode="centripetal">
+                Centripetal ($F_c = m v^2 / r$)
+            </button>
+        </div>
+    </div>
+
+    <!-- Planetary Body Selector (Visible in Gravity Mode) -->
+    <div id="force-planet-group" style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px 16px; margin-bottom: 20px; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <label for="force-planet-select" style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-main);">
+                Celestial Body Gravitational Acceleration:
+            </label>
+            <select id="force-planet-select" style="height: 38px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; padding: 0 10px;">
+                <option value="9.80665" selected>Earth (g = 9.807 m/s² | 1.00 g)</option>
+                <option value="1.62">The Moon (g = 1.620 m/s² | 0.165 g)</option>
+                <option value="3.72">Mars (g = 3.720 m/s² | 0.379 g)</option>
+                <option value="24.79">Jupiter (g = 24.790 m/s² | 2.528 g)</option>
+                <option value="8.87">Venus (g = 8.870 m/s² | 0.905 g)</option>
+                <option value="274.0">The Sun (g = 274.00 m/s² | 27.94 g)</option>
+            </select>
+        </div>
+    </div>
+
+    <form id="force-form" onsubmit="return false;">
+        <div class="calculator-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px;">
+            <!-- Force Input Group -->
+            <div class="input-group" id="force-f-group">
+                <label for="force-f-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Force ($F$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="force-f-val" 
+                        class="form-control" 
+                        value="100" 
+                        min="0.0000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="force-f-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="N" selected>Newtons (N)</option>
+                        <option value="kN">Kilonewtons (kN)</option>
+                        <option value="lbf">Pounds-force (lbf)</option>
+                        <option value="dyn">Dynes (dyn)</option>
+                        <option value="kgf">Kiloponds (kgf)</option>
+                        <option value="ozf">Ounces-force (ozf)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mass Input Group -->
+            <div class="input-group" id="force-m-group">
+                <label for="force-m-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Mass ($m$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="force-m-val" 
+                        class="form-control" 
+                        value="10" 
+                        min="0.0000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="force-m-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="kg" selected>kilograms (kg)</option>
+                        <option value="g">grams (g)</option>
+                        <option value="lb">pounds (lb)</option>
+                        <option value="ton_metric">metric tons (t)</option>
+                        <option value="slug">slugs (slug)</option>
+                        <option value="oz">ounces (oz)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Acceleration Input Group -->
+            <div class="input-group" id="force-a-group">
+                <label for="force-a-val" id="force-a-label" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Acceleration ($a$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="force-a-val" 
+                        class="form-control" 
+                        value="10" 
+                        min="0.0000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="force-a-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="m_s2" selected>m/s²</option>
+                        <option value="ft_s2">ft/s²</option>
+                        <option value="g">g-force</option>
+                        <option value="cm_s2">cm/s²</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Friction Coefficient Input (Shown in Friction Mode) -->
+            <div class="input-group" id="force-mu-group" style="display: none;">
+                <label for="force-mu-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Coefficient of Friction ($\mu$)
+                </label>
+                <input 
+                    type="number" 
+                    id="force-mu-val" 
+                    class="form-control" 
+                    value="0.35" 
+                    min="0" 
+                    max="2.0" 
+                    step="0.01" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                >
+            </div>
+
+            <!-- Velocity Input (Shown in Centripetal Mode) -->
+            <div class="input-group" id="force-v-group" style="display: none;">
+                <label for="force-v-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Tangential Velocity ($v$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="force-v-val" 
+                        class="form-control" 
+                        value="20" 
+                        min="0" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="force-v-unit" style="width: 110px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="m_s" selected>m/s</option>
+                        <option value="km_h">km/h</option>
+                        <option value="mph">mph</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Radius Input (Shown in Centripetal Mode) -->
+            <div class="input-group" id="force-r-group" style="display: none;">
+                <label for="force-r-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Radius of Curvature ($r$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="force-r-val" 
+                        class="form-control" 
+                        value="50" 
+                        min="0.0001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="force-r-unit" style="width: 110px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="m" selected>meters (m)</option>
+                        <option value="ft">feet (ft)</option>
+                        <option value="km">km</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="force-calc-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Force Dynamics Solution &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="force-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Hero Output Card -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span id="force-res-title" style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Calculated Net Force ($F$)
+                </span>
+                <span id="force-formula-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--color-accent-blue); padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">
+                    $F = m \cdot a$
+                </span>
+            </div>
+            <div style="margin: 14px 0 6px;">
+                <div id="force-primary-result" style="font-size: 2.6rem; font-weight: 900; color: var(--color-accent-blue); line-height: 1.2;">
+                    100.000000 N
+                </div>
+            </div>
+            <div id="force-secondary-result" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Equivalent: <strong>22.48 lbf</strong> &bull; <strong>0.100 kN</strong>
+            </div>
+        </div>
+
+        <!-- Analytical Indicators Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px;">
+            <!-- SI Newtons -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">SI International Force</span>
+                <span id="force-si-val" style="font-size: 1.6rem; font-weight: 800; color: var(--color-accent-blue); display: block; margin-top: 4px;">100 N</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">$1\text{ N} = 1\text{ kg}\cdot\text{m/s}^2$</span>
+            </div>
+
+            <!-- g-force Acceleration Equivalent -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Relative Acceleration</span>
+                <span id="force-g-val" style="font-size: 1.6rem; font-weight: 800; color: var(--color-accent-emerald); display: block; margin-top: 4px;">1.020 g</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Multiples of Earth gravity ($g_0$)</span>
+            </div>
+
+            <!-- Equivalent Mass Weight on Earth -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Equivalent Earth Weight</span>
+                <span id="force-weight-val" style="font-size: 1.6rem; font-weight: 800; color: var(--color-accent-amber); display: block; margin-top: 4px;">10.197 kgf</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Weight of mass supported at sea level</span>
+            </div>
+        </div>
+
+        <!-- Multi-Unit Force Matrix Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Force Unit Conversion Matrix
+            </h4>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 8px 12px;">Unit System</th>
+                            <th style="padding: 8px 12px;">Magnitude</th>
+                            <th style="padding: 8px 12px;">Standard Definition</th>
+                        </tr>
+                    </thead>
+                    <tbody id="force-matrix-tbody">
+                        <!-- Populated via force.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/force.js' %}"></script>
+{% endblock %}

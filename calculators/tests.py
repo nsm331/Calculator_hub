@@ -549,6 +549,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Physical Density", calc.article_content)
 
+    def test_four_zero_one_k_calculator_view(self):
+        response = self.client.get(reverse('four_zero_one_k_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "401(k) Retirement Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/four_zero_one_k.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='401k-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Fundamentals of 401(k)", calc.article_content)
+
+    def test_sleep_calculator_view(self):
+        response = self.client.get(reverse('sleep_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Sleep Cycle Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/sleep.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='sleep-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Chronobiology and Ultradian", calc.article_content)
+
+    def test_permutations_combinations_calculator_view(self):
+        response = self.client.get(reverse('permutations_combinations_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Permutations &amp; Combinations")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/permutations_combinations.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='permutations-combinations-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Combinatorial Analysis", calc.article_content)
+
+    def test_force_calculator_view(self):
+        response = self.client.get(reverse('force_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Newton Force Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/force.js")
+        self.assertNotContains(response, "js/speed_distance_time.js")
+        calc = Calculator.objects.filter(slug='force-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Newton's Second Law", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -600,6 +644,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "macronutrient-calculator")
         self.assertContains(response, "logarithm-calculator")
         self.assertContains(response, "density-calculator")
+        self.assertContains(response, "401k-calculator")
+        self.assertContains(response, "sleep-calculator")
+        self.assertContains(response, "permutations-combinations-calculator")
+        self.assertContains(response, "force-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -650,6 +698,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('macro_calculator'))
         self.client.get(reverse('log_calculator'))
         self.client.get(reverse('density_calculator'))
+        self.client.get(reverse('four_zero_one_k_calculator'))
+        self.client.get(reverse('sleep_calculator'))
+        self.client.get(reverse('permutations_combinations_calculator'))
+        self.client.get(reverse('force_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -701,6 +753,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "macronutrient-calculator")
         self.assertContains(response, "logarithm-calculator")
         self.assertContains(response, "density-calculator")
+        self.assertContains(response, "401k-calculator")
+        self.assertContains(response, "sleep-calculator")
+        self.assertContains(response, "permutations-combinations-calculator")
+        self.assertContains(response, "force-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

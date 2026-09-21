@@ -263,6 +263,28 @@ urlpatterns = [
         name='density_calculator'
     ),
 
+    # Batch 13 Calculators (User Batch #12)
+    path(
+        'financial-calculators/401k-calculator/',
+        views.four_zero_one_k_calculator,
+        name='four_zero_one_k_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/sleep-calculator/',
+        views.sleep_calculator,
+        name='sleep_calculator'
+    ),
+    path(
+        'math-calculators/permutations-combinations-calculator/',
+        views.permutations_combinations_calculator,
+        name='permutations_combinations_calculator'
+    ),
+    path(
+        'other-calculators/force-calculator/',
+        views.force_calculator,
+        name='force_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

@@ -3650,7 +3650,13 @@ textarea:focus,
 .macro-preset-btn,
 .log-mode-btn,
 .log-preset-btn,
-.density-mode-btn {
+.density-mode-btn,
+.k401-preset-btn,
+.sleep-mode-btn,
+.sleep-ampm-btn,
+.perm-mode-btn,
+.perm-preset-btn,
+.force-mode-btn {
     background-color: #142337 !important;
     border: 1px solid #2b4971 !important;
     color: #f1f5f9 !important;
@@ -3701,7 +3707,13 @@ textarea:focus,
 .macro-preset-btn:hover,
 .log-mode-btn:hover,
 .log-preset-btn:hover,
-.density-mode-btn:hover {
+.density-mode-btn:hover,
+.k401-preset-btn:hover,
+.sleep-mode-btn:hover,
+.sleep-ampm-btn:hover,
+.perm-mode-btn:hover,
+.perm-preset-btn:hover,
+.force-mode-btn:hover {
     border-color: #38bdf8 !important;
     color: #38bdf8 !important;
     background-color: rgba(56, 189, 248, 0.15) !important;
@@ -3742,7 +3754,13 @@ textarea:focus,
 .macro-preset-btn.active,
 .log-mode-btn.active,
 .log-preset-btn.active,
-.density-mode-btn.active {
+.density-mode-btn.active,
+.k401-preset-btn.active,
+.sleep-mode-btn.active,
+.sleep-ampm-btn.active,
+.perm-mode-btn.active,
+.perm-preset-btn.active,
+.force-mode-btn.active {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-color: #38bdf8 !important;
     color: #ffffff !important;
@@ -3784,7 +3802,13 @@ textarea:focus,
 [data-theme="light"] .macro-preset-btn,
 [data-theme="light"] .log-mode-btn,
 [data-theme="light"] .log-preset-btn,
-[data-theme="light"] .density-mode-btn {
+[data-theme="light"] .density-mode-btn,
+[data-theme="light"] .k401-preset-btn,
+[data-theme="light"] .sleep-mode-btn,
+[data-theme="light"] .sleep-ampm-btn,
+[data-theme="light"] .perm-mode-btn,
+[data-theme="light"] .perm-preset-btn,
+[data-theme="light"] .force-mode-btn {
     background-color: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
@@ -3824,7 +3848,13 @@ textarea:focus,
 [data-theme="light"] .macro-preset-btn:hover,
 [data-theme="light"] .log-mode-btn:hover,
 [data-theme="light"] .log-preset-btn:hover,
-[data-theme="light"] .density-mode-btn:hover {
+[data-theme="light"] .density-mode-btn:hover,
+[data-theme="light"] .k401-preset-btn:hover,
+[data-theme="light"] .sleep-mode-btn:hover,
+[data-theme="light"] .sleep-ampm-btn:hover,
+[data-theme="light"] .perm-mode-btn:hover,
+[data-theme="light"] .perm-preset-btn:hover,
+[data-theme="light"] .force-mode-btn:hover {
     border-color: #1e60b5 !important;
     color: #1e60b5 !important;
     background-color: rgba(30, 96, 181, 0.08) !important;
@@ -3864,7 +3894,13 @@ textarea:focus,
 [data-theme="light"] .macro-preset-btn.active,
 [data-theme="light"] .log-mode-btn.active,
 [data-theme="light"] .log-preset-btn.active,
-[data-theme="light"] .density-mode-btn.active {
+[data-theme="light"] .density-mode-btn.active,
+[data-theme="light"] .k401-preset-btn.active,
+[data-theme="light"] .sleep-mode-btn.active,
+[data-theme="light"] .sleep-ampm-btn.active,
+[data-theme="light"] .perm-mode-btn.active,
+[data-theme="light"] .perm-preset-btn.active,
+[data-theme="light"] .force-mode-btn.active {
     background: #1e60b5 !important;
     border-color: #164e96 !important;
     color: #ffffff !important;

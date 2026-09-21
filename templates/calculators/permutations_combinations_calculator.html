@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Permutations and Combinations Calculator - nPr & nCr Solver | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Compute permutations (nPr) and combinations (nCr) with and without repetition. Features step-by-step factorial algebraic expansion and subset sample generation.{% endif %}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Permutations &amp; Combinations</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Permutations & Combinations Calculator" }}</h1>
+    <p class="page-lead">
+        Evaluate permutations ($nPr$) and combinations ($nCr$) with or without repetition, observe step-by-step factorial expansions and algebraic cancellations, and inspect generated subsets.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Discrete Combinatorial Counting, nPr &amp; nCr Analytical Engine</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Combinatorial Formulation Mode
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline perm-mode-btn active" data-mode="comb">
+                Combinations $C(n, r) = \binom{n}{r}$ (No Repetition)
+            </button>
+            <button type="button" class="btn btn-outline perm-mode-btn" data-mode="perm">
+                Permutations $P(n, r)$ (No Repetition)
+            </button>
+            <button type="button" class="btn btn-outline perm-mode-btn" data-mode="perm_rep">
+                Permutations $n^r$ (With Repetition)
+            </button>
+            <button type="button" class="btn btn-outline perm-mode-btn" data-mode="comb_rep">
+                Combinations $\binom{n+r-1}{r}$ (With Repetition)
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Real-World Presets -->
+    <div style="margin-bottom: 20px;">
+        <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-right: 8px;">Real-World Scenarios:</span>
+        <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+            <button type="button" class="btn btn-outline btn-sm perm-preset-btn" data-mode="comb" data-n="52" data-r="5">🃏 5-Card Poker Hand</button>
+            <button type="button" class="btn btn-outline btn-sm perm-preset-btn" data-mode="comb" data-n="49" data-r="6">🎟️ 6/49 Lottery</button>
+            <button type="button" class="btn btn-outline btn-sm perm-preset-btn" data-mode="perm" data-n="8" data-r="3">🥇 8 Runners Podium (1st, 2nd, 3rd)</button>
+            <button type="button" class="btn btn-outline btn-sm perm-preset-btn" data-mode="comb" data-n="10" data-r="3">👥 Committee of 3 from 10</button>
+            <button type="button" class="btn btn-outline btn-sm perm-preset-btn" data-mode="perm_rep" data-n="10" data-r="4">🔒 4-Digit PIN Code</button>
+        </div>
+    </div>
+
+    <form id="perm-form" onsubmit="return false;">
+        <div class="calculator-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 22px;">
+            <!-- n Input -->
+            <div class="input-group">
+                <label for="perm-n" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Total Number of Items in Set ($n$)
+                </label>
+                <input 
+                    type="number" 
+                    id="perm-n" 
+                    class="form-control" 
+                    value="10" 
+                    min="0" 
+                    max="1000" 
+                    step="1" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    required
+                >
+                <small style="color: var(--color-text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">
+                    Size of the universal set ($n \ge 0$).
+                </small>
+            </div>
+
+            <!-- r Input -->
+            <div class="input-group">
+                <label for="perm-r" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Number of Items to Choose / Arrange ($r$)
+                </label>
+                <input 
+                    type="number" 
+                    id="perm-r" 
+                    class="form-control" 
+                    value="3" 
+                    min="0" 
+                    max="1000" 
+                    step="1" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    required
+                >
+                <small id="perm-r-hint" style="color: var(--color-text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">
+                    Subset sample size ($0 \le r \le n$).
+                </small>
+            </div>
+        </div>
+
+        <button type="button" id="perm-calc-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Combinatorial Solutions &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="perm-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Primary Output Hero Card -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span id="perm-expression" style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-muted);">
+                    $C(10, 3) = \binom{10}{3}$
+                </span>
+                <span id="perm-mode-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--color-accent-blue); padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">
+                    Combinations (Order Irrelevant)
+                </span>
+            </div>
+
+            <div style="margin: 14px 0 6px;">
+                <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Number of Possibilities</span>
+                <div id="perm-main-result" style="font-size: 2.5rem; font-weight: 900; color: var(--color-accent-blue); line-height: 1.2; word-break: break-all;">
+                    120
+                </div>
+            </div>
+
+            <div id="perm-scientific-notation" style="font-size: 0.92rem; color: var(--color-text-muted);">
+                Exact representation
+            </div>
+        </div>
+
+        <!-- Analytical Factorial Expansion & Cancellation Step -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 20px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-accent-emerald); text-transform: uppercase; margin-bottom: 10px;">
+                Step-by-Step Algebraic Factorial Derivation
+            </h4>
+            <div id="perm-step-formula" style="font-size: 0.95rem; font-family: monospace; color: var(--color-text-main); margin-bottom: 8px;">
+                C(n, r) = \frac{n!}{r!(n - r)!}
+            </div>
+            <div id="perm-step-expansion" style="font-size: 0.88rem; color: var(--color-text-muted); line-height: 1.6; word-break: break-all;">
+                <!-- Populated via permutations_combinations.js -->
+            </div>
+        </div>
+
+        <!-- Matrix of All 4 Permutation & Combination Variations -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px; margin-bottom: 20px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Complete Combinatorial Comparison for $n = <span class="matrix-n">10</span>$ and $r = <span class="matrix-r">3</span>$
+            </h4>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 8px 10px;">Grouping Concept</th>
+                            <th style="padding: 8px 10px;">Formula</th>
+                            <th style="padding: 8px 10px;">Order Matters?</th>
+                            <th style="padding: 8px 10px;">Repetition?</th>
+                            <th style="padding: 8px 10px; text-align: right;">Calculated Result</th>
+                        </tr>
+                    </thead>
+                    <tbody id="perm-comparison-tbody">
+                        <!-- Populated via permutations_combinations.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sample Subset Generator (Small n and r) -->
+        <div id="perm-subsets-card" style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px; display: none;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 8px;">
+                Enumerated Sample Subsets ($n \le 6, r \le 4$)
+            </h4>
+            <div id="perm-subsets-list" style="display: flex; gap: 6px; flex-wrap: wrap; font-family: monospace; font-size: 0.84rem;">
+                <!-- Generated subsets -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/permutations_combinations.js' %}"></script>
+{% endblock %}

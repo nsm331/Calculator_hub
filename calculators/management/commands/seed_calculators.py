@@ -67,6 +67,12 @@ from calculators.default_articles_batch11 import (
     LOG_ARTICLE,
     DENSITY_ARTICLE,
 )
+from calculators.default_articles_batch12 import (
+    FOUR_ZERO_ONE_K_ARTICLE,
+    SLEEP_ARTICLE,
+    PERMUTATIONS_COMBINATIONS_ARTICLE,
+    FORCE_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -457,6 +463,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Physical Density Calculator - Mass, Volume & Specific Gravity Solver | CalculatorHub',
         'meta_description': 'Calculate physical density, mass, or volume with multi-unit conversions across SI and Imperial metrics. Includes specific gravity, buoyancy simulation, and material presets.',
         'article_content': DENSITY_ARTICLE,
+    },
+    # Batch 13 Calculators (User Batch #12)
+    {
+        'slug': '401k-calculator',
+        'title': '401(k) Retirement Calculator',
+        'category': 'financial',
+        'meta_title': '401(k) Calculator - Retirement Savings, Employer Match & Growth | CalculatorHub',
+        'meta_description': 'Estimate your 401(k) retirement balance, employer match earnings, compound growth, and projected retirement income with inflation and safe withdrawal models.',
+        'article_content': FOUR_ZERO_ONE_K_ARTICLE,
+    },
+    {
+        'slug': 'sleep-calculator',
+        'title': 'Sleep Cycle Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Sleep Calculator - 90-Minute Sleep Cycles & Optimal Bedtimes | CalculatorHub',
+        'meta_description': 'Calculate ideal bedtime and wake-up times synchronized with natural 90-minute ultradian sleep cycles to eliminate morning sleep inertia and maximize restorative rest.',
+        'article_content': SLEEP_ARTICLE,
+    },
+    {
+        'slug': 'permutations-combinations-calculator',
+        'title': 'Permutations & Combinations Calculator',
+        'category': 'math',
+        'meta_title': 'Permutations and Combinations Calculator - nPr & nCr Solver | CalculatorHub',
+        'meta_description': 'Compute permutations (nPr) and combinations (nCr) with and without repetition. Features step-by-step factorial algebraic expansion and subset sample generation.',
+        'article_content': PERMUTATIONS_COMBINATIONS_ARTICLE,
+    },
+    {
+        'slug': 'force-calculator',
+        'title': 'Newton Force Calculator',
+        'category': 'other',
+        'meta_title': 'Newton Force Calculator - F = ma, Weight, Friction & Centripetal Solver | CalculatorHub',
+        'meta_description': 'Solve Newton’s Second Law of Motion (F = ma) for force, mass, or acceleration. Features planetary gravity weight presets, friction physics, and multi-unit conversions.',
+        'article_content': FORCE_ARTICLE,
     },
 ]
 
