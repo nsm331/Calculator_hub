@@ -79,6 +79,12 @@ from calculators.default_articles_batch13 import (
     MEAN_MEDIAN_MODE_ARTICLE,
     POWER_CONVERTER_ARTICLE,
 )
+from calculators.default_articles_batch14 import (
+    APR_APY_ARTICLE,
+    BAC_ARTICLE,
+    QUADRATIC_ARTICLE,
+    ENERGY_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -535,6 +541,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Power Converter - Watts, Horsepower, kW, BTU/h & dBm | CalculatorHub',
         'meta_description': 'Convert power units across Watts, Kilowatts, Mechanical & Metric Horsepower, BTU/h, Tons of Refrigeration, and dBm. Includes appliance energy cost estimation.',
         'article_content': POWER_CONVERTER_ARTICLE,
+    },
+    # Batch 15 Calculators (User Batch #14)
+    {
+        'slug': 'apr-vs-apy-calculator',
+        'title': 'APR vs APY Calculator',
+        'category': 'financial',
+        'meta_title': 'APR vs APY Calculator - Nominal to Effective Compounding | CalculatorHub',
+        'meta_description': 'Convert APR to APY and APY to APR across daily, monthly, and continuous compounding. Compare investment returns and true loan borrowing costs.',
+        'article_content': APR_APY_ARTICLE,
+    },
+    {
+        'slug': 'bac-calculator',
+        'title': 'Blood Alcohol Content (BAC) Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Blood Alcohol Calculator (BAC) - Widmark Impairment Estimator | CalculatorHub',
+        'meta_description': 'Estimate your blood alcohol concentration (BAC) using the clinical Widmark equation. Features drink log builder, legal driving limit checker, and sobering time calculator.',
+        'article_content': BAC_ARTICLE,
+    },
+    {
+        'slug': 'quadratic-formula-calculator',
+        'title': 'Quadratic Equation Solver',
+        'category': 'math',
+        'meta_title': 'Quadratic Formula Calculator - Roots, Vertex & Parabola Graph | CalculatorHub',
+        'meta_description': 'Solve quadratic equations (ax² + bx + c = 0) with real or complex roots. Features step-by-step discriminant analysis, vertex coordinates, and interactive graph.',
+        'article_content': QUADRATIC_ARTICLE,
+    },
+    {
+        'slug': 'kinetic-potential-energy-calculator',
+        'title': 'Kinetic & Potential Energy Calculator',
+        'category': 'other',
+        'meta_title': 'Kinetic & Potential Energy Calculator - Free Fall & Work Solver | CalculatorHub',
+        'meta_description': 'Calculate kinetic energy (½mv²), gravitational potential energy (mgh), mechanical conservation, and free fall impact velocity with multi-unit conversions.',
+        'article_content': ENERGY_ARTICLE,
     },
 ]
 

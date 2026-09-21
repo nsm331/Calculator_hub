@@ -637,6 +637,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Physics of Power", calc.article_content)
 
+    def test_apr_vs_apy_calculator_view(self):
+        response = self.client.get(reverse('apr_vs_apy_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "APR vs APY Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/apr_apy.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='apr-vs-apy-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Mathematical Definition of Nominal APR", calc.article_content)
+
+    def test_bac_calculator_view(self):
+        response = self.client.get(reverse('bac_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Blood Alcohol Content (BAC)")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/bac.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='bac-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Classical Widmark Kinetic Equation", calc.article_content)
+
+    def test_quadratic_formula_calculator_view(self):
+        response = self.client.get(reverse('quadratic_formula_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Quadratic Equation Solver")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/quadratic.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='quadratic-formula-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Rigorous Derivation of the Quadratic Formula", calc.article_content)
+
+    def test_energy_calculator_view(self):
+        response = self.client.get(reverse('energy_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kinetic &amp; Potential Energy")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/energy.js")
+        self.assertNotContains(response, "js/force.js")
+        calc = Calculator.objects.filter(slug='kinetic-potential-energy-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Translational Kinetic Energy", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -746,6 +790,14 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('sleep_calculator'))
         self.client.get(reverse('permutations_combinations_calculator'))
         self.client.get(reverse('force_calculator'))
+        self.client.get(reverse('annuity_payout_calculator'))
+        self.client.get(reverse('army_body_fat_calculator'))
+        self.client.get(reverse('mean_median_mode_calculator'))
+        self.client.get(reverse('power_converter'))
+        self.client.get(reverse('apr_vs_apy_calculator'))
+        self.client.get(reverse('bac_calculator'))
+        self.client.get(reverse('quadratic_formula_calculator'))
+        self.client.get(reverse('energy_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -801,6 +853,14 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "sleep-calculator")
         self.assertContains(response, "permutations-combinations-calculator")
         self.assertContains(response, "force-calculator")
+        self.assertContains(response, "annuity-payout-calculator")
+        self.assertContains(response, "army-body-fat-calculator")
+        self.assertContains(response, "mean-median-mode-calculator")
+        self.assertContains(response, "power-converter")
+        self.assertContains(response, "apr-vs-apy-calculator")
+        self.assertContains(response, "bac-calculator")
+        self.assertContains(response, "quadratic-formula-calculator")
+        self.assertContains(response, "kinetic-potential-energy-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

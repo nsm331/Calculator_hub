@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}APR vs APY Calculator - Convert Nominal Rate to Effective Yield | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Convert between nominal APR and effective APY with daily, monthly, and continuous compounding schedules. Compare investment growth and loan borrowing costs.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .apr-mode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+    .apr-mode-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        color: var(--color-text-muted);
+        transition: all var(--transition-fast);
+    }
+    .apr-mode-btn:hover {
+        border-color: var(--color-accent-blue);
+        color: var(--color-text-main);
+    }
+    .apr-mode-btn.active {
+        background: var(--color-accent-blue);
+        border-color: var(--color-accent-blue);
+        color: #ffffff;
+    }
+    .apr-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .apr-input-group {
+        min-width: 0;
+    }
+    .apr-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .apr-input-group input,
+    .apr-input-group select {
+        width: 100%;
+        min-width: 0 !important;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 0.92rem;
+    }
+    .apr-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .apr-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #apr-primary-result {
+        font-size: clamp(1.75rem, 5vw, 2.6rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .apr-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .apr-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .apr-metric-val {
+        font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .apr-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .apr-table {
+        width: 100%;
+        min-width: 480px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .apr-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--color-accent-blue);
+    }
+    .apr-scroll-hint {
+        display: none;
+        font-size: 0.78rem;
+        color: var(--color-text-muted);
+        text-align: right;
+        margin-bottom: 4px;
+    }
+    @media (max-width: 640px) {
+        .apr-scroll-hint {
+            display: block;
+        }
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#financial" style="color: var(--color-text-muted); text-decoration: none;">Financial Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">APR vs APY Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            APR vs APY Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Seamlessly convert between nominal Annual Percentage Rate (APR) and effective Annual Percentage Yield (APY) across any compounding frequency.
+        </p>
+    </header>
+
+    <!-- Interactive Mode Switcher -->
+    <div class="apr-mode-container" role="tablist">
+        <button type="button" class="apr-mode-btn active" data-mode="apr_to_apy" role="tab" aria-selected="true">
+            APR &rarr; APY (Investments)
+        </button>
+        <button type="button" class="apr-mode-btn" data-mode="apy_to_apr" role="tab" aria-selected="false">
+            APY &rarr; APR (Nominal Rate)
+        </button>
+        <button type="button" class="apr-mode-btn" data-mode="compare" role="tab" aria-selected="false">
+            Compounding Growth Analysis
+        </button>
+    </div>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <div class="apr-grid">
+            <div class="apr-input-group">
+                <label id="apr-rate-label" for="apr-rate-val">Nominal APR (%)</label>
+                <input type="number" id="apr-rate-val" value="7.50" step="0.01" min="0" max="1000" placeholder="e.g. 7.50">
+            </div>
+
+            <div class="apr-input-group" id="apr-freq-group">
+                <label for="apr-freq">Compounding Frequency</label>
+                <select id="apr-freq">
+                    <option value="1">Annually (1x/year)</option>
+                    <option value="2">Semiannually (2x/year)</option>
+                    <option value="4">Quarterly (4x/year)</option>
+                    <option value="12" selected>Monthly (12x/year - standard)</option>
+                    <option value="26">Bi-Weekly (26x/year)</option>
+                    <option value="52">Weekly (52x/year)</option>
+                    <option value="365">Daily (365x/year)</option>
+                    <option value="continuous">Continuously (e^r)</option>
+                </select>
+            </div>
+
+            <div class="apr-input-group" id="apr-principal-group">
+                <label for="apr-principal-val">Initial Principal ($)</label>
+                <input type="number" id="apr-principal-val" value="10000" step="100" min="1" max="100000000" placeholder="e.g. 10000">
+            </div>
+
+            <div class="apr-input-group" id="apr-years-group">
+                <label for="apr-years-val">Investment Horizon (Years)</label>
+                <input type="number" id="apr-years-val" value="5" step="0.5" min="0.1" max="100" placeholder="e.g. 5">
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <button type="button" id="apr-calc-btn" class="btn btn-primary" style="width: 100%; min-height: 46px; font-weight: 700; font-size: 0.95rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #ffffff; border: none; cursor: pointer;">
+                Calculate Rates &amp; Yields
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="apr-results-section">
+        <!-- Hero Result Card -->
+        <div class="apr-hero-card">
+            <div class="apr-hero-header">
+                <span id="apr-res-title" style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Effective Annual Percentage Yield (APY)
+                </span>
+                <span id="apr-formula-badge" class="apr-badge">
+                    APY = (1 + r/m)^m - 1
+                </span>
+            </div>
+            <div id="apr-primary-result">7.7633% APY</div>
+            <div id="apr-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 8px;">
+                Compounding adds <strong>+0.2633%</strong> (+26 basis points) over nominal 7.5% APR.
+            </div>
+            <span id="apr-diff-badge" class="apr-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-accent-emerald);">
+                +0.263% Compounding Boost
+            </span>
+        </div>
+
+        <!-- Investment Simulation Card -->
+        <div id="apr-invest-card" style="margin-bottom: 24px;">
+            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Portfolio Growth Simulation
+            </h3>
+            <div class="apr-metrics-grid">
+                <div class="apr-metric-box">
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Simple Interest Future Value</span>
+                    <span id="apr-simple-balance" class="apr-metric-val" style="color: var(--color-text-main);">$13,750.00</span>
+                    <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Without interest on interest</span>
+                </div>
+
+                <div class="apr-metric-box">
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Compounded Future Value</span>
+                    <span id="apr-compound-balance" class="apr-metric-val" style="color: var(--color-accent-blue);">$14,532.94</span>
+                    <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">With periodic compounding</span>
+                </div>
+
+                <div class="apr-metric-box">
+                    <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Compounding Advantage</span>
+                    <span id="apr-compound-advantage" class="apr-metric-val" style="color: var(--color-accent-emerald);">+$782.94</span>
+                    <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Extra earnings from compounding</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Multi-Frequency Matrix Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 6px;">
+                Multi-Frequency Compounding Spectrum
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0 0 10px;">
+                How the nominal APR evolves into effective APY across all standard financial compounding frequencies.
+            </p>
+            <div class="apr-scroll-hint">&larr; Swipe horizontally to view full matrix &rarr;</div>
+            <div class="apr-table-wrap">
+                <table class="apr-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 10px 12px; white-space: nowrap;">Compounding Frequency</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Effective Yield (APY)</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Compounding Spread</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">1-Year Growth on $10,000</th>
+                        </tr>
+                    </thead>
+                    <tbody id="apr-matrix-tbody">
+                        <!-- Populated via apr_apy.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/apr_apy.js' %}"></script>
+{% endblock %}

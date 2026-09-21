@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Blood Alcohol Content (BAC) Calculator - Forensic Widmark Model | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Estimate blood alcohol concentration (BAC), time to sober up, and legal driving limits using standard drinks and the clinical Widmark pharmacokinetics formula.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .bac-switch-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    .bac-gender-btn, .bac-unit-btn {
+        flex: 1;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-border-light);
+        background: var(--color-bg-card-alt);
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .bac-gender-btn:hover, .bac-unit-btn:hover {
+        border-color: var(--color-accent-blue);
+        color: var(--color-text-main);
+    }
+    .bac-gender-btn.active, .bac-unit-btn.active {
+        background: var(--color-accent-blue);
+        border-color: var(--color-accent-blue);
+        color: #ffffff;
+    }
+    .bac-input-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .bac-input-group {
+        min-width: 0;
+    }
+    .bac-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .bac-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 44px;
+    }
+    .bac-input-wrap input {
+        flex: 1;
+        min-width: 0 !important;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 0.95rem;
+        outline: none;
+    }
+    .bac-unit-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        margin-left: 6px;
+    }
+    .bac-drink-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .bac-drink-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 14px;
+        text-align: center;
+    }
+    .bac-drink-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--color-text-main);
+        margin-bottom: 2px;
+    }
+    .bac-drink-sub {
+        font-size: 0.76rem;
+        color: var(--color-text-muted);
+        margin-bottom: 12px;
+    }
+    .bac-counter {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+    .bac-counter-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--color-border-light);
+        background: var(--color-bg-card);
+        color: var(--color-text-main);
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .bac-counter-btn:hover {
+        background: var(--color-accent-blue);
+        color: #ffffff;
+        border-color: var(--color-accent-blue);
+    }
+    .bac-counter-count {
+        font-size: 1.3rem;
+        font-weight: 800;
+        min-width: 28px;
+        text-align: center;
+        color: var(--color-text-main);
+    }
+    .bac-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .bac-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #bac-primary-result {
+        font-size: clamp(2rem, 6vw, 3rem);
+        font-weight: 900;
+        line-height: 1.2;
+        margin: 10px 0 6px;
+        word-break: break-word;
+    }
+    .bac-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .bac-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .bac-metric-val {
+        font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .bac-badge {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#fitness" style="color: var(--color-text-muted); text-decoration: none;">Fitness &amp; Health</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Blood Alcohol Content (BAC)</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Blood Alcohol Content (BAC) Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Model estimated blood alcohol levels, pharmacokinetics, elimination rates, and legal driving sobriety timelines using the clinical Widmark equation.
+        </p>
+    </header>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <!-- Biological Gender & Unit Selectors -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 16px; margin-bottom: 16px;">
+            <div>
+                <label style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--color-text-main);">
+                    Biological Sex (Widmark Distribution Ratio)
+                </label>
+                <div class="bac-switch-container">
+                    <button type="button" class="bac-gender-btn active" data-gender="male">Male (r = 0.68)</button>
+                    <button type="button" class="bac-gender-btn" data-gender="female">Female (r = 0.55)</button>
+                </div>
+            </div>
+
+            <div>
+                <label style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--color-text-main);">
+                    Measurement Unit System
+                </label>
+                <div class="bac-switch-container">
+                    <button type="button" class="bac-unit-btn active" data-unit="imperial">Imperial (lbs / oz)</button>
+                    <button type="button" class="bac-unit-btn" data-unit="metric">Metric (kg / ml)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body Weight & Time Elapsed Row -->
+        <div class="bac-input-row">
+            <div class="bac-input-group">
+                <label for="bac-weight-val">Body Weight</label>
+                <div class="bac-input-wrap">
+                    <input type="number" id="bac-weight-val" value="180" step="1" min="60" max="700" placeholder="180">
+                    <span id="bac-weight-unit" class="bac-unit-label">lbs</span>
+                </div>
+            </div>
+
+            <div class="bac-input-group">
+                <label for="bac-hours-val">Time Since First Drink</label>
+                <div class="bac-input-wrap">
+                    <input type="number" id="bac-hours-val" value="2.0" step="0.5" min="0" max="48" placeholder="2.0">
+                    <span class="bac-unit-label">hours</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standard Drink Counter Section -->
+        <h3 style="font-size: 1rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+            Standard Drinks Consumed (~14g Pure Ethanol Each)
+        </h3>
+        <div class="bac-drink-grid">
+            <!-- Regular Beer Card -->
+            <div class="bac-drink-card">
+                <div class="bac-drink-title">Standard Beer / Cider</div>
+                <div class="bac-drink-sub">12 fl oz (355ml) &bull; 5% ABV</div>
+                <div class="bac-counter">
+                    <button type="button" id="bac-beer-minus" class="bac-counter-btn" aria-label="Decrease beer count">&minus;</button>
+                    <span id="bac-beer-count" class="bac-counter-count">3</span>
+                    <button type="button" id="bac-beer-plus" class="bac-counter-btn" aria-label="Increase beer count">+</button>
+                </div>
+            </div>
+
+            <!-- Wine Card -->
+            <div class="bac-drink-card">
+                <div class="bac-drink-title">Table Wine</div>
+                <div class="bac-drink-sub">5 fl oz (150ml) &bull; 12% ABV</div>
+                <div class="bac-counter">
+                    <button type="button" id="bac-wine-minus" class="bac-counter-btn" aria-label="Decrease wine count">&minus;</button>
+                    <span id="bac-wine-count" class="bac-counter-count">0</span>
+                    <button type="button" id="bac-wine-plus" class="bac-counter-btn" aria-label="Increase wine count">+</button>
+                </div>
+            </div>
+
+            <!-- Hard Liquor / Shot Card -->
+            <div class="bac-drink-card">
+                <div class="bac-drink-title">Distilled Spirits (Shot)</div>
+                <div class="bac-drink-sub">1.5 fl oz (44ml) &bull; 40% ABV (80 proof)</div>
+                <div class="bac-counter">
+                    <button type="button" id="bac-shot-minus" class="bac-counter-btn" aria-label="Decrease shot count">&minus;</button>
+                    <span id="bac-shot-count" class="bac-counter-count">0</span>
+                    <button type="button" id="bac-shot-plus" class="bac-counter-btn" aria-label="Increase shot count">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Drink Adder Accordion / Row -->
+        <details style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px; margin-bottom: 20px;">
+            <summary style="font-weight: 700; font-size: 0.88rem; cursor: pointer; color: var(--color-accent-blue);">
+                + Add Custom Drink (Cocktail, Craft Beer, High ABV)
+            </summary>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr)); gap: 12px; margin-top: 14px; align-items: end;">
+                <div class="bac-input-group">
+                    <label for="bac-custom-vol" style="font-size: 0.8rem;">Volume (oz or ml)</label>
+                    <input type="number" id="bac-custom-vol" placeholder="e.g. 16" min="1" step="0.5" style="width: 100%; height: 40px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;">
+                </div>
+                <div class="bac-input-group">
+                    <label for="bac-custom-abv" style="font-size: 0.8rem;">Alcohol by Vol (%)</label>
+                    <input type="number" id="bac-custom-abv" placeholder="e.g. 8.5" min="0.1" max="100" step="0.1" style="width: 100%; height: 40px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;">
+                </div>
+                <div>
+                    <button type="button" id="bac-custom-add" class="btn btn-secondary" style="width: 100%; height: 40px; font-weight: 600; font-size: 0.85rem; border-radius: var(--border-radius-sm); background: var(--color-bg-card); border: 1px solid var(--color-border-light); color: var(--color-text-main); cursor: pointer;">
+                        Log Custom
+                    </button>
+                </div>
+            </div>
+            <div id="bac-custom-list" style="margin-top: 10px; font-size: 0.82rem; color: var(--color-text-muted);"></div>
+        </details>
+
+        <!-- Submit Button -->
+        <div>
+            <button type="button" id="bac-calc-btn" class="btn btn-primary" style="width: 100%; min-height: 46px; font-weight: 700; font-size: 0.95rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #ffffff; border: none; cursor: pointer;">
+                Calculate Blood Alcohol Concentration
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="bac-results-section">
+        <!-- Hero Card -->
+        <div class="bac-hero-card">
+            <div class="bac-hero-header">
+                <span style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Estimated Blood Alcohol Concentration (BAC)
+                </span>
+                <span id="bac-legal-badge" class="bac-badge" style="background: rgba(239, 68, 68, 0.15); color: var(--color-accent-red, #ef4444);">
+                    Over Legal Limit (0.08%)
+                </span>
+            </div>
+
+            <div id="bac-primary-result" style="color: var(--color-accent-blue);">0.047%</div>
+
+            <div id="bac-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin-bottom: 12px;">
+                Estimated blood ethanol concentration based on 42.0g consumed over 2.0 hours.
+            </div>
+
+            <!-- Clinical Impairment Stage Box -->
+            <div style="background: var(--color-bg-card); border-left: 3px solid var(--color-accent-blue); padding: 10px 14px; border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0; font-size: 0.85rem; line-height: 1.5; color: var(--color-text-main);">
+                <strong>Clinical Stage &amp; Impairment: </strong>
+                <span id="bac-stage-desc">Subtle euphoria, mild relaxation, slight decrease in reaction time.</span>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="bac-metrics-grid">
+            <div class="bac-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Peak Theoretical BAC</span>
+                <span id="bac-peak-val" class="bac-metric-val" style="color: var(--color-text-main);">0.077%</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Before metabolic elimination</span>
+            </div>
+
+            <div class="bac-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Time to Legal Driving</span>
+                <span id="bac-time-drive" class="bac-metric-val" style="color: var(--color-accent-blue);">0.0 hrs</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Below 0.08% threshold</span>
+            </div>
+
+            <div class="bac-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Time to 0.00% (Sober)</span>
+                <span id="bac-time-sober" class="bac-metric-val" style="color: var(--color-accent-emerald);">3.1 hrs</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">At ~0.015%/hr zero-order rate</span>
+            </div>
+
+            <div class="bac-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Pure Alcohol Consumed</span>
+                <span id="bac-grams-val" class="bac-metric-val" style="color: var(--color-text-main);">42.0 g</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">~3.0 standard drinks</span>
+            </div>
+        </div>
+
+        <!-- Disclaimer Banner -->
+        <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: var(--border-radius-md); padding: 14px 18px; margin-bottom: 24px; font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.5;">
+            <strong style="color: #f59e0b;">Safety &amp; Legal Notice:</strong> This calculator provides purely theoretical scientific estimates based on the average Widmark equation. Individual alcohol absorption and metabolism vary dramatically based on genetics, stomach contents, medications, and liver enzyme activity. Never drink and drive regardless of theoretical estimates.
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/bac.js' %}"></script>
+{% endblock %}

@@ -87,6 +87,10 @@ class Calculator(models.Model):
             'army-body-fat-calculator': 'army_body_fat_calculator',
             'mean-median-mode-calculator': 'mean_median_mode_calculator',
             'power-converter': 'power_converter',
+            'apr-vs-apy-calculator': 'apr_vs_apy_calculator',
+            'bac-calculator': 'bac_calculator',
+            'quadratic-formula-calculator': 'quadratic_formula_calculator',
+            'kinetic-potential-energy-calculator': 'energy_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

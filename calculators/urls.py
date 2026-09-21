@@ -307,6 +307,28 @@ urlpatterns = [
         name='power_converter'
     ),
 
+    # Batch 15 Calculators (User Batch #14)
+    path(
+        'financial-calculators/apr-vs-apy-calculator/',
+        views.apr_vs_apy_calculator,
+        name='apr_vs_apy_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/bac-calculator/',
+        views.bac_calculator,
+        name='bac_calculator'
+    ),
+    path(
+        'math-calculators/quadratic-formula-calculator/',
+        views.quadratic_formula_calculator,
+        name='quadratic_formula_calculator'
+    ),
+    path(
+        'other-calculators/kinetic-potential-energy-calculator/',
+        views.energy_calculator,
+        name='energy_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

@@ -81,6 +81,12 @@ from .default_articles_batch13 import (
     MEAN_MEDIAN_MODE_ARTICLE,
     POWER_CONVERTER_ARTICLE,
 )
+from .default_articles_batch14 import (
+    APR_APY_ARTICLE,
+    BAC_ARTICLE,
+    QUADRATIC_ARTICLE,
+    ENERGY_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -891,6 +897,59 @@ def power_converter(request):
     }
     calculator = _get_or_seed_calculator('power-converter', default_data)
     return render(request, 'calculators/power_converter.html', {'calculator': calculator})
+
+
+# Batch 15 Calculators (User Batch #14)
+def apr_vs_apy_calculator(request):
+    """APR vs APY Calculator view."""
+    default_data = {
+        'title': 'APR vs APY Calculator',
+        'category': 'financial',
+        'meta_title': 'APR vs APY Calculator - Nominal to Effective Compounding | CalculatorHub',
+        'meta_description': 'Convert APR to APY and APY to APR across daily, monthly, and continuous compounding. Compare investment returns and true loan borrowing costs.',
+        'article_content': APR_APY_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('apr-vs-apy-calculator', default_data)
+    return render(request, 'calculators/apr_vs_apy_calculator.html', {'calculator': calculator})
+
+
+def bac_calculator(request):
+    """Blood Alcohol Content (BAC) Calculator view."""
+    default_data = {
+        'title': 'Blood Alcohol Content (BAC) Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Blood Alcohol Calculator (BAC) - Widmark Impairment Estimator | CalculatorHub',
+        'meta_description': 'Estimate your blood alcohol concentration (BAC) using the clinical Widmark equation. Features drink log builder, legal driving limit checker, and sobering time calculator.',
+        'article_content': BAC_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('bac-calculator', default_data)
+    return render(request, 'calculators/bac_calculator.html', {'calculator': calculator})
+
+
+def quadratic_formula_calculator(request):
+    """Quadratic Equation Solver view."""
+    default_data = {
+        'title': 'Quadratic Equation Solver',
+        'category': 'math',
+        'meta_title': 'Quadratic Formula Calculator - Roots, Vertex & Parabola Graph | CalculatorHub',
+        'meta_description': 'Solve quadratic equations (ax² + bx + c = 0) with real or complex roots. Features step-by-step discriminant analysis, vertex coordinates, and interactive graph.',
+        'article_content': QUADRATIC_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('quadratic-formula-calculator', default_data)
+    return render(request, 'calculators/quadratic_calculator.html', {'calculator': calculator})
+
+
+def energy_calculator(request):
+    """Kinetic & Potential Energy Calculator view."""
+    default_data = {
+        'title': 'Kinetic & Potential Energy Calculator',
+        'category': 'other',
+        'meta_title': 'Kinetic & Potential Energy Calculator - Free Fall & Work Solver | CalculatorHub',
+        'meta_description': 'Calculate kinetic energy (½mv²), gravitational potential energy (mgh), mechanical conservation, and free fall impact velocity with multi-unit conversions.',
+        'article_content': ENERGY_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('kinetic-potential-energy-calculator', default_data)
+    return render(request, 'calculators/energy_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

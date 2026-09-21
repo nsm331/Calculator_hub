@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Quadratic Equation Solver - Formula, Roots & Parabola Graph | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Solve quadratic equations ax² + bx + c = 0 step-by-step. Finds real and complex roots, discriminant, vertex, axis of symmetry, and renders dynamic interactive parabola graphs.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .quad-preset-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    .quad-preset-btn {
+        padding: 6px 14px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-border-light);
+        background: var(--color-bg-card-alt);
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    .quad-preset-btn:hover {
+        border-color: var(--color-accent-blue);
+        color: var(--color-text-main);
+    }
+    .quad-inputs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .quad-input-group {
+        min-width: 0;
+    }
+    .quad-input-group label {
+        display: block;
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .quad-input-group input {
+        width: 100%;
+        min-width: 0 !important;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: monospace;
+    }
+    .quad-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .quad-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #quad-primary-result {
+        font-size: clamp(1.6rem, 5vw, 2.5rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.25;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .quad-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .quad-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .quad-metric-val {
+        font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .quad-graph-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 18px;
+        margin-bottom: 24px;
+    }
+    .quad-svg-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        aspect-ratio: 480 / 260;
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-border-light);
+        overflow: hidden;
+    }
+    .quad-badge {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 4px;
+    }
+    .quad-step-box {
+        background: var(--color-bg-card);
+        border-left: 3px solid var(--color-accent-blue);
+        padding: 12px 16px;
+        border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+        margin-bottom: 10px;
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#math" style="color: var(--color-text-muted); text-decoration: none;">Math Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Quadratic Equation Solver</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Quadratic Equation Solver
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Solve algebraic quadratic equations \(ax^2 + bx + c = 0\) with real and complex roots, discriminant analysis, vertex coordinates, and interactive parabola graphing.
+        </p>
+    </header>
+
+    <!-- Preset Scenarios -->
+    <div class="quad-preset-container">
+        <span style="font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted); align-self: center; margin-right: 4px;">Presets:</span>
+        <button type="button" class="quad-preset-btn" data-preset="two_real">Two Real Roots (x² - 5x + 6)</button>
+        <button type="button" class="quad-preset-btn" data-preset="double_root">Double Root (x² + 6x + 9)</button>
+        <button type="button" class="quad-preset-btn" data-preset="complex">Complex Roots (x² - 2x + 5)</button>
+        <button type="button" class="quad-preset-btn" data-preset="inverted">Concave Down (-x² + 4x - 3)</button>
+    </div>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <div style="font-family: monospace; font-size: 1.25rem; font-weight: 700; color: var(--color-accent-blue); text-align: center; margin-bottom: 18px; letter-spacing: 0.5px;">
+            <span style="color: var(--color-text-muted);">Standard Form:</span> a·x² + b·x + c = 0
+        </div>
+
+        <div class="quad-inputs-grid">
+            <div class="quad-input-group">
+                <label for="quad-a-val">Coefficient a (≠ 0)</label>
+                <input type="number" id="quad-a-val" value="1" step="any" placeholder="1">
+            </div>
+
+            <div class="quad-input-group">
+                <label for="quad-b-val">Coefficient b</label>
+                <input type="number" id="quad-b-val" value="-5" step="any" placeholder="-5">
+            </div>
+
+            <div class="quad-input-group">
+                <label for="quad-c-val">Constant c</label>
+                <input type="number" id="quad-c-val" value="6" step="any" placeholder="6">
+            </div>
+        </div>
+
+        <div>
+            <button type="button" id="quad-calc-btn" class="btn btn-primary" style="width: 100%; min-height: 46px; font-weight: 700; font-size: 0.95rem; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #ffffff; border: none; cursor: pointer;">
+                Solve Quadratic Equation
+            </button>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="quad-results-section">
+        <!-- Hero Roots Display Card -->
+        <div class="quad-hero-card">
+            <div class="quad-hero-header">
+                <span style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Calculated Roots (Solutions)
+                </span>
+                <span id="quad-disc-badge" class="quad-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--color-accent-emerald);">
+                    Two Real Roots (Δ &gt; 0)
+                </span>
+            </div>
+
+            <div id="quad-primary-result">x₁ = 3 &nbsp;&bull;&nbsp; x₂ = 2</div>
+
+            <div id="quad-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5;">
+                Discriminant &Delta; = <strong>1.0000 &gt; 0</strong> &bull; Two distinct real roots.
+            </div>
+        </div>
+
+        <!-- Metric Properties Grid -->
+        <div class="quad-metrics-grid">
+            <div class="quad-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Discriminant (Δ = b² - 4ac)</span>
+                <span id="quad-disc-val" class="quad-metric-val" style="color: var(--color-accent-blue);">1.0000</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Determines root nature</span>
+            </div>
+
+            <div class="quad-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Parabola Vertex (h, k)</span>
+                <span id="quad-vertex-val" class="quad-metric-val" style="color: var(--color-text-main);">(2.5, -0.25) [Min]</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Extremum turning point</span>
+            </div>
+
+            <div class="quad-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Axis of Symmetry</span>
+                <span id="quad-axis-val" class="quad-metric-val" style="color: var(--color-text-main);">x = 2.5000</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Vertical reflection axis</span>
+            </div>
+
+            <div class="quad-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Y-Intercept</span>
+                <span id="quad-yint-val" class="quad-metric-val" style="color: var(--color-text-main);">(0, 6)</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Evaluation at x = 0</span>
+            </div>
+        </div>
+
+        <!-- Equivalent Canonical Forms -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Canonical Algebraic Representations
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 14px;">
+                <div style="background: var(--color-bg-card); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-border-light);">
+                    <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Vertex Form [ y = a(x - h)² + k ]</span>
+                    <span id="quad-vform-val" style="font-size: 0.95rem; font-weight: 700; font-family: monospace; color: var(--color-accent-blue); display: block; margin-top: 4px;">y = (x - 2.5)² - 0.25</span>
+                </div>
+                <div style="background: var(--color-bg-card); padding: 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-border-light);">
+                    <span style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Factored Form [ y = a(x - x₁)(x - x₂) ]</span>
+                    <span id="quad-fform-val" style="font-size: 0.95rem; font-weight: 700; font-family: monospace; color: var(--color-accent-emerald); display: block; margin-top: 4px;">y = (x - 3)(x - 2)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parabola SVG Graph -->
+        <div class="quad-graph-card">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 4px;">
+                Dynamic Parabola Curve &amp; Root Geometry
+            </h4>
+            <p style="font-size: 0.82rem; color: var(--color-text-muted); margin: 0 0 14px;">
+                Interactive vector graph depicting the quadratic curve, roots (x-intercepts), vertex, and symmetry axis.
+            </p>
+            <div class="quad-svg-container">
+                <svg id="quad-svg-graph" viewBox="0 0 480 260" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; display: block;"></svg>
+            </div>
+        </div>
+
+        <!-- Step-by-Step Derivation Accordion -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Step-by-Step Quadratic Formula Derivation
+            </h4>
+            <div id="quad-steps-container">
+                <!-- Populated via quadratic.js -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/quadratic.js' %}"></script>
+{% endblock %}

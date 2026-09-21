@@ -98,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Army Body Fat Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/army-body-fat-calculator/' },
             { title: 'Mean, Median & Mode Calculator', category: 'Math', url: '/math-calculators/mean-median-mode-calculator/' },
             { title: 'Power & Wattage Converter', category: 'Other', url: '/other-calculators/power-converter/' },
+            { title: 'APR vs APY Calculator', category: 'Financial', url: '/financial-calculators/apr-vs-apy-calculator/' },
+            { title: 'Blood Alcohol Content (BAC) Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/bac-calculator/' },
+            { title: 'Quadratic Equation Solver', category: 'Math', url: '/math-calculators/quadratic-formula-calculator/' },
+            { title: 'Kinetic & Potential Energy Calculator', category: 'Other', url: '/other-calculators/kinetic-potential-energy-calculator/' },
         ];
 
         searchInput.addEventListener('input', () => {

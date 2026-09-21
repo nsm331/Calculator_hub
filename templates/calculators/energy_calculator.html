@@ -1,0 +1,451 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Kinetic & Potential Energy Calculator - Classical Work-Energy | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate kinetic energy (Ek = ½mv²), gravitational potential energy (Ep = mgh), and free-fall impact velocity with dynamic 10-unit conversions.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .energy-mode-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+    .energy-mode-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        color: var(--color-text-muted);
+        transition: all var(--transition-fast);
+    }
+    .energy-mode-btn:hover {
+        border-color: var(--color-accent-blue);
+        color: var(--color-text-main);
+    }
+    .energy-mode-btn.active {
+        background: var(--color-accent-blue);
+        border-color: var(--color-accent-blue);
+        color: #ffffff;
+    }
+    .energy-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    .energy-input-group {
+        min-width: 0;
+    }
+    .energy-input-group label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .energy-input-wrap {
+        display: flex;
+        gap: 6px;
+    }
+    .energy-input-wrap input {
+        flex: 1;
+        min-width: 0 !important;
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 12px;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+    }
+    .energy-input-wrap select,
+    .energy-input-group > select {
+        height: 44px;
+        border-radius: var(--border-radius-sm);
+        border: 1px solid var(--color-input-border);
+        background: var(--color-input-bg);
+        color: var(--color-input-text);
+        padding: 0 10px;
+        font-size: 0.88rem;
+    }
+    .energy-hero-card {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 22px;
+        margin-bottom: 20px;
+    }
+    .energy-hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    #energy-primary-result {
+        font-size: clamp(1.75rem, 5vw, 2.6rem);
+        font-weight: 900;
+        color: var(--color-accent-blue);
+        line-height: 1.2;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        margin: 12px 0 6px;
+    }
+    .energy-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .energy-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 16px;
+    }
+    .energy-metric-val {
+        font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+        font-weight: 800;
+        display: block;
+        margin-top: 4px;
+        word-break: break-word;
+    }
+    .energy-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-top: 8px;
+    }
+    .energy-table {
+        width: 100%;
+        min-width: 480px;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+    }
+    .energy-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 4px;
+        background: rgba(59, 130, 246, 0.15);
+        color: var(--color-accent-blue);
+    }
+    .energy-scroll-hint {
+        display: none;
+        font-size: 0.78rem;
+        color: var(--color-text-muted);
+        text-align: right;
+        margin-bottom: 4px;
+    }
+    @media (max-width: 640px) {
+        .energy-scroll-hint {
+            display: block;
+        }
+    }
+</style>
+
+<div class="calculator-container" style="max-width: 1000px; margin: 0 auto; padding: 20px 16px;">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#other" style="color: var(--color-text-muted); text-decoration: none;">Other Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Kinetic &amp; Potential Energy</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Kinetic &amp; Potential Energy Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Calculate classical kinetic motion energy \(E_k = \frac{1}{2}mv^2\), gravitational potential \(E_p = mgh\), and free-fall impact kinematics across multiple metric and imperial units.
+        </p>
+    </header>
+
+    <!-- Mode Selector Tabs -->
+    <div class="energy-mode-container" role="tablist">
+        <button type="button" class="energy-mode-btn active" data-mode="kinetic" role="tab" aria-selected="true">
+            Kinetic Energy (Ek)
+        </button>
+        <button type="button" class="energy-mode-btn" data-mode="potential" role="tab" aria-selected="false">
+            Potential Energy (Ep)
+        </button>
+        <button type="button" class="energy-mode-btn" data-mode="conservation" role="tab" aria-selected="false">
+            Conservation &amp; Free Fall
+        </button>
+    </div>
+
+    <!-- Main Calculator Form Card -->
+    <div class="card" style="background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 24px;">
+        <!-- Kinetic Energy Section -->
+        <div id="energy-kinetic-section">
+            <div style="margin-bottom: 16px;">
+                <label for="ke-solve-select" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--color-text-main);">
+                    Calculate Variable:
+                </label>
+                <select id="ke-solve-select" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px; font-size: 0.92rem;">
+                    <option value="energy" selected>Kinetic Energy (Ek) — from Mass &amp; Velocity</option>
+                    <option value="mass">Mass (m) — from Energy &amp; Velocity</option>
+                    <option value="vel">Velocity (v) — from Energy &amp; Mass</option>
+                </select>
+            </div>
+
+            <div class="energy-grid">
+                <div class="energy-input-group" id="ke-mass-group">
+                    <label for="ke-mass-val">Object Mass (m)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="ke-mass-val" value="1200" step="any" min="0" placeholder="1200">
+                        <select id="ke-mass-unit">
+                            <option value="kg" selected>kg</option>
+                            <option value="g">g</option>
+                            <option value="lb">lb</option>
+                            <option value="oz">oz</option>
+                            <option value="ton">ton</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group" id="ke-vel-group">
+                    <label for="ke-vel-val">Velocity / Speed (v)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="ke-vel-val" value="25" step="any" placeholder="25">
+                        <select id="ke-vel-unit">
+                            <option value="m_s" selected>m/s</option>
+                            <option value="km_h">km/h</option>
+                            <option value="mph">mph</option>
+                            <option value="ft_s">ft/s</option>
+                            <option value="knots">knots</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group" id="ke-energy-group" style="display: none;">
+                    <label for="ke-energy-val">Kinetic Energy (Ek)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="ke-energy-val" value="375000" step="any" min="0" placeholder="375000">
+                        <select id="ke-energy-unit">
+                            <option value="J" selected>J</option>
+                            <option value="kJ">kJ</option>
+                            <option value="MJ">MJ</option>
+                            <option value="Wh">Wh</option>
+                            <option value="cal">cal</option>
+                            <option value="ft_lbf">ft·lbf</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Potential Energy Section -->
+        <div id="energy-potential-section" style="display: none;">
+            <div style="margin-bottom: 16px;">
+                <label for="pe-solve-select" style="display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--color-text-main);">
+                    Calculate Variable:
+                </label>
+                <select id="pe-solve-select" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px; font-size: 0.92rem;">
+                    <option value="energy" selected>Potential Energy (Ep) — from Mass, Height &amp; Gravity</option>
+                    <option value="mass">Mass (m) — from Energy, Height &amp; Gravity</option>
+                    <option value="height">Height / Elevation (h) — from Energy, Mass &amp; Gravity</option>
+                </select>
+            </div>
+
+            <div class="energy-grid">
+                <div class="energy-input-group" id="pe-mass-group">
+                    <label for="pe-mass-val">Object Mass (m)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="pe-mass-val" value="75" step="any" min="0" placeholder="75">
+                        <select id="pe-mass-unit">
+                            <option value="kg" selected>kg</option>
+                            <option value="g">g</option>
+                            <option value="lb">lb</option>
+                            <option value="oz">oz</option>
+                            <option value="ton">ton</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group" id="pe-height-group">
+                    <label for="pe-height-val">Height Above Ground (h)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="pe-height-val" value="10" step="any" placeholder="10">
+                        <select id="pe-height-unit">
+                            <option value="m" selected>m</option>
+                            <option value="ft">ft</option>
+                            <option value="cm">cm</option>
+                            <option value="km">km</option>
+                            <option value="mi">mi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group" id="pe-gravity-group">
+                    <label for="pe-gravity-val">Gravitational Field (g)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="pe-gravity-val" value="9.80665" step="0.001" placeholder="9.81">
+                        <select id="pe-planet-select">
+                            <option value="9.80665" selected>Earth (9.81 m/s²)</option>
+                            <option value="1.62">Moon (1.62 m/s²)</option>
+                            <option value="3.721">Mars (3.72 m/s²)</option>
+                            <option value="24.79">Jupiter (24.79 m/s²)</option>
+                            <option value="274.0">Sun (274 m/s²)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group" id="pe-energy-group" style="display: none;">
+                    <label for="pe-energy-val">Potential Energy (Ep)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="pe-energy-val" value="7355" step="any" min="0" placeholder="7355">
+                        <select id="pe-energy-unit">
+                            <option value="J" selected>J</option>
+                            <option value="kJ">kJ</option>
+                            <option value="MJ">MJ</option>
+                            <option value="Wh">Wh</option>
+                            <option value="cal">cal</option>
+                            <option value="ft_lbf">ft·lbf</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conservation & Free Fall Section -->
+        <div id="energy-conservation-section" style="display: none;">
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 16px;">
+                Simulate a frictionless free fall: all gravitational potential converts completely into kinetic energy at ground impact (\(v = \sqrt{2gh}\)).
+            </p>
+            <div class="energy-grid">
+                <div class="energy-input-group">
+                    <label for="me-mass-val">Object Mass (m)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="me-mass-val" value="50" step="any" min="0" placeholder="50">
+                        <select id="me-mass-unit">
+                            <option value="kg" selected>kg</option>
+                            <option value="lb">lb</option>
+                            <option value="g">g</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group">
+                    <label for="me-height-val">Drop Height (h)</label>
+                    <div class="energy-input-wrap">
+                        <input type="number" id="me-height-val" value="20" step="any" min="0" placeholder="20">
+                        <select id="me-height-unit">
+                            <option value="m" selected>meters (m)</option>
+                            <option value="ft">feet (ft)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="energy-input-group">
+                    <label for="me-gravity-select">Gravitational Field (g)</label>
+                    <select id="me-gravity-select" style="width: 100%;">
+                        <option value="9.80665" selected>Earth (9.81 m/s²)</option>
+                        <option value="1.62">Moon (1.62 m/s²)</option>
+                        <option value="3.721">Mars (3.72 m/s²)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="energy-results-section">
+        <!-- Hero Card -->
+        <div class="energy-hero-card">
+            <div class="energy-hero-header">
+                <span id="energy-res-title" style="font-size: 0.88rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Calculated Kinetic Dynamics
+                </span>
+                <span id="energy-formula-badge" class="energy-badge">
+                    Ek = ½ · m · v²
+                </span>
+            </div>
+
+            <div id="energy-primary-result">375,000 Joules (J)</div>
+
+            <div id="energy-secondary-result" style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5;">
+                Kinetic energy of <strong>1200 kg</strong> at <strong>25 m/s</strong> &bull; <strong>375.00 kJ</strong>
+            </div>
+        </div>
+
+        <!-- Real-world Energy Equivalencies Grid -->
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+            Real-World Energy Equivalencies
+        </h3>
+        <div class="energy-metrics-grid">
+            <div class="energy-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Smartphone Recharges</span>
+                <span id="energy-eq-phone" class="energy-metric-val" style="color: var(--color-accent-blue);">8.68 full charges</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Based on ~12 Wh battery</span>
+            </div>
+
+            <div class="energy-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Dietary Food Calories</span>
+                <span id="energy-eq-food" class="energy-metric-val" style="color: var(--color-accent-emerald);">89.63 kcal</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">1 kcal = 4,184 Joules</span>
+            </div>
+
+            <div class="energy-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">TNT Equivalent</span>
+                <span id="energy-eq-tnt" class="energy-metric-val" style="color: var(--color-text-main);">89.63 g TNT</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Standard explosive energy</span>
+            </div>
+
+            <div class="energy-metric-box">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">10W LED Bulb Runtime</span>
+                <span id="energy-eq-led" class="energy-metric-val" style="color: var(--color-accent-blue);">10.4 hrs</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 2px;">Continuous illumination</span>
+            </div>
+        </div>
+
+        <!-- 10-Unit Conversion Matrix Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 18px; margin-bottom: 24px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 6px;">
+                Comprehensive Energy Unit Conversion Matrix
+            </h4>
+            <div class="energy-scroll-hint">&larr; Swipe horizontally to view full matrix &rarr;</div>
+            <div class="energy-table-wrap">
+                <table class="energy-table">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 10px 12px; white-space: nowrap;">Energy Unit</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Calculated Value</th>
+                            <th style="padding: 10px 12px; white-space: nowrap;">Scientific Definition &amp; Domain</th>
+                        </tr>
+                    </thead>
+                    <tbody id="energy-matrix-tbody">
+                        <!-- Populated via energy.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/energy.js' %}"></script>
+{% endblock %}
