@@ -321,9 +321,9 @@ document.addEventListener('DOMContentLoaded', function() {
         rows.forEach(r => {
             html += `
                 <tr style="border-bottom: 1px solid var(--color-border-light);">
-                    <td style="padding: 8px 12px; font-weight: 600; color: var(--color-accent-blue);">${r.sys}</td>
-                    <td style="padding: 8px 12px; font-weight: 700; color: var(--color-text-main);">${r.mag}</td>
-                    <td style="padding: 8px 12px; color: var(--color-text-muted);">${r.desc}</td>
+                    <td style="padding: 8px 12px; font-weight: 600; color: var(--color-accent-blue); white-space: nowrap;">${r.sys}</td>
+                    <td style="padding: 8px 12px; font-weight: 700; color: var(--color-text-main); white-space: nowrap;">${r.mag}</td>
+                    <td style="padding: 8px 12px; color: var(--color-text-muted); min-width: 150px;">${r.desc}</td>
                 </tr>
             `;
         });

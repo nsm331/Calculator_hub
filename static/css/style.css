@@ -2821,6 +2821,10 @@ textarea:focus,
     .hero-title {
         font-size: 26px;
     }
+
+    .calculator-card {
+        padding: 18px 14px;
+    }
 }
 
 /* --------------------------------------------------------------------------
