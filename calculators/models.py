@@ -75,6 +75,10 @@ class Calculator(models.Model):
             'water-intake-calculator': 'water_intake_calculator',
             'exponent-calculator': 'exponent_calculator',
             'fuel-cost-calculator': 'fuel_cost_calculator',
+            'cd-calculator': 'cd_calculator',
+            'macro-calculator': 'macro_calculator',
+            'log-calculator': 'log_calculator',
+            'density-calculator': 'density_calculator',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])

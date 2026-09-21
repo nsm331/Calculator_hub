@@ -86,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Speed, Distance & Time Calculator', category: 'Other', url: '/other-calculators/speed-distance-time-calculator/' },
             { title: 'Tip & Split Bill Calculator', category: 'Other', url: '/other-calculators/tip-calculator/' },
             { title: 'Fuel Cost & Mileage Trip Planner', category: 'Other', url: '/other-calculators/fuel-cost-calculator/' },
+            { title: 'Certificate of Deposit (CD) Calculator', category: 'Financial', url: '/financial-calculators/cd-calculator/' },
+            { title: 'Macronutrient Ratio Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/macronutrient-calculator/' },
+            { title: 'Logarithm Calculator (Natural & Base 10)', category: 'Math', url: '/math-calculators/logarithm-calculator/' },
+            { title: 'Physical Density Calculator', category: 'Other', url: '/other-calculators/density-calculator/' },
         ];
 
         searchInput.addEventListener('input', () => {

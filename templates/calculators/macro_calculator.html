@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ calculator.meta_title|default:"Macronutrient Ratio Calculator - Protein, Carb & Fat Grams by Goal | CalculatorHub" }}{% endblock %}
+{% block meta_description %}{{ calculator.meta_description|default:"Calculate optimal daily macronutrient gram targets for protein, carbohydrates, and healthy fats based on TDEE, metabolic profile, cutting, bulking, or maintenance." }}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#fitness">Fitness &amp; Health</a> &rsaquo; 
+        <span>Macronutrient Ratio Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Macronutrient Ratio Calculator" }}</h1>
+    <p class="page-lead">
+        Compute your exact daily caloric requirements, Mifflin-St Jeor TDEE, and optimal gram allocations for protein, carbohydrates, and dietary fats tailored to your athletic or weight-management goals.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Bioenergetic TDEE &amp; Macro Substrate Partitioning Engine</span>
+    </div>
+
+    <!-- Unit & Gender Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <!-- Unit Toggle -->
+        <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-outline macro-unit-btn active" data-unit="metric">Metric (kg, cm)</button>
+            <button type="button" class="btn btn-outline macro-unit-btn" data-unit="imperial">US Imperial (lbs, ft-in)</button>
+        </div>
+
+        <!-- Gender Toggle -->
+        <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-outline macro-gender-btn active" data-gender="male">👨 Male</button>
+            <button type="button" class="btn btn-outline macro-gender-btn" data-gender="female">👩 Female</button>
+        </div>
+    </div>
+
+    <form id="macro-form" onsubmit="return false;">
+        <!-- Biometric Parameters Grid -->
+        <div class="calculator-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+            <!-- Age -->
+            <div class="input-group">
+                <label for="macro-age" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Age (Years)
+                </label>
+                <input 
+                    type="number" 
+                    id="macro-age" 
+                    class="form-control" 
+                    value="28" 
+                    min="14" 
+                    max="100" 
+                    step="1" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    required
+                >
+            </div>
+
+            <!-- Weight -->
+            <div class="input-group">
+                <label for="macro-weight" id="macro-weight-label" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Body Weight (kg)
+                </label>
+                <input 
+                    type="number" 
+                    id="macro-weight" 
+                    class="form-control" 
+                    value="75" 
+                    min="30" 
+                    max="300" 
+                    step="0.5" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    required
+                >
+            </div>
+
+            <!-- Height Metric -->
+            <div class="input-group" id="macro-height-metric-group">
+                <label for="macro-height" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Height (cm)
+                </label>
+                <input 
+                    type="number" 
+                    id="macro-height" 
+                    class="form-control" 
+                    value="178" 
+                    min="100" 
+                    max="250" 
+                    step="1" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                >
+            </div>
+
+            <!-- Height Imperial -->
+            <div class="input-group" id="macro-height-imperial-group" style="display: none;">
+                <label class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Height (Feet &amp; Inches)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="macro-height-feet" value="5" min="3" max="8" style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;" placeholder="ft">
+                    <input type="number" id="macro-height-inches" value="10" min="0" max="11" style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 10px;" placeholder="in">
+                </div>
+            </div>
+
+            <!-- Physical Activity Level -->
+            <div class="input-group">
+                <label for="macro-activity" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Activity Level
+                </label>
+                <select id="macro-activity" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 500;">
+                    <option value="1.2">Sedentary (desk job, no exercise)</option>
+                    <option value="1.375">Light Activity (exercise 1-3 days/wk)</option>
+                    <option value="1.55" selected>Moderate Activity (exercise 3-5 days/wk)</option>
+                    <option value="1.725">Heavy Training (hard sports 6-7 days/wk)</option>
+                    <option value="1.9">Extreme Athlete (physical job + training)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Primary Goal Selection -->
+        <div style="margin-bottom: 20px;">
+            <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+                Physiological Goal &amp; Caloric Adjustment
+            </label>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline macro-goal-btn" data-delta="-0.20">🔥 Fat Loss (-20%)</button>
+                <button type="button" class="btn btn-outline macro-goal-btn" data-delta="-0.10">✂️ Moderate Deficit (-10%)</button>
+                <button type="button" class="btn btn-outline macro-goal-btn active" data-delta="0.0">⚖️ Weight Maintenance (TDEE)</button>
+                <button type="button" class="btn btn-outline macro-goal-btn" data-delta="0.10">💪 Lean Hypertrophy (+10%)</button>
+                <button type="button" class="btn btn-outline macro-goal-btn" data-delta="0.20">🏋️ Heavy Bulking (+20%)</button>
+            </div>
+        </div>
+
+        <!-- Macro Distribution Strategy -->
+        <div style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted);">
+                    Macronutrient Distribution Profile
+                </label>
+                <span id="macro-sum-indicator" style="font-size: 0.82rem; font-weight: 700; color: var(--color-accent-emerald);">Sum: 100%</span>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
+                <button type="button" class="btn btn-outline macro-preset-btn active" data-p="30" data-c="40" data-f="30">
+                    Balanced (40% C / 30% P / 30% F)
+                </button>
+                <button type="button" class="btn btn-outline macro-preset-btn" data-p="40" data-c="35" data-f="25">
+                    High Protein (35% C / 40% P / 25% F)
+                </button>
+                <button type="button" class="btn btn-outline macro-preset-btn" data-p="35" data-c="20" data-f="45">
+                    Low Carb (20% C / 35% P / 45% F)
+                </button>
+                <button type="button" class="btn btn-outline macro-preset-btn" data-p="25" data-c="5" data-f="70">
+                    Ketogenic (5% C / 25% P / 70% F)
+                </button>
+            </div>
+
+            <!-- Custom Percentage Sliders -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px 16px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                            <span style="color: var(--color-accent-blue);">🍗 Protein %:</span>
+                            <span id="slider-protein-val" style="color: var(--color-accent-blue);">30%</span>
+                        </div>
+                        <input type="range" id="slider-protein" min="10" max="60" value="30" step="5" style="width: 100%;">
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                            <span style="color: var(--color-accent-amber);">🍞 Carbs %:</span>
+                            <span id="slider-carbs-val" style="color: var(--color-accent-amber);">40%</span>
+                        </div>
+                        <input type="range" id="slider-carbs" min="5" max="70" value="40" step="5" style="width: 100%;">
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px;">
+                            <span style="color: var(--color-accent-rose);">🥑 Fats %:</span>
+                            <span id="slider-fats-val" style="color: var(--color-accent-rose);">30%</span>
+                        </div>
+                        <input type="range" id="slider-fats" min="15" max="75" value="30" step="5" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="macro-calculate-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Target Macronutrients &rarr;
+        </button>
+    </form>
+
+    <!-- Results Display -->
+    <div id="macro-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <h3 style="margin-bottom: 16px; font-size: 1.15rem; font-weight: 700; color: var(--color-text-main);">
+            Daily Nutritional &amp; Macronutrient Prescription
+        </h3>
+
+        <!-- Core Energy Stats -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block;">Target Calories</span>
+                <span id="res-macro-calories" style="font-size: 1.75rem; font-weight: 800; color: var(--color-accent-blue); display: block; margin-top: 4px;">2,450 kcal</span>
+                <span id="res-macro-goal-desc" style="font-size: 0.78rem; color: var(--color-text-muted);">Energy for maintenance</span>
+            </div>
+
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block;">Maintenance TDEE</span>
+                <span id="res-macro-tdee" style="font-size: 1.75rem; font-weight: 800; color: var(--color-text-main); display: block; margin-top: 4px;">2,450 kcal</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Total Daily Energy Expenditure</span>
+            </div>
+
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block;">Basal Metabolic Rate</span>
+                <span id="res-macro-bmr" style="font-size: 1.75rem; font-weight: 800; color: var(--color-text-muted); display: block; margin-top: 4px;">1,712 kcal</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Mifflin-St Jeor resting baseline</span>
+            </div>
+        </div>
+
+        <!-- 3-Pillar Macro Cards (Protein / Carbs / Fats) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px;">
+            <!-- Protein -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-top: 4px solid var(--color-accent-blue); border-radius: var(--border-radius-md); padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: var(--color-accent-blue); font-size: 0.9rem;">🍗 PROTEIN</span>
+                    <span id="res-protein-pct" style="font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted);">30%</span>
+                </div>
+                <div id="res-protein-grams" style="font-size: 1.85rem; font-weight: 800; color: var(--color-text-main); margin: 6px 0 2px;">184 g</div>
+                <div style="font-size: 0.82rem; color: var(--color-text-muted);">
+                    <span id="res-protein-cal">735 kcal</span> &bull; <span id="res-protein-ratio">2.45 g/kg</span>
+                </div>
+            </div>
+
+            <!-- Carbohydrates -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-top: 4px solid var(--color-accent-amber); border-radius: var(--border-radius-md); padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: var(--color-accent-amber); font-size: 0.9rem;">🍞 CARBOHYDRATES</span>
+                    <span id="res-carbs-pct" style="font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted);">40%</span>
+                </div>
+                <div id="res-carbs-grams" style="font-size: 1.85rem; font-weight: 800; color: var(--color-text-main); margin: 6px 0 2px;">245 g</div>
+                <div style="font-size: 0.82rem; color: var(--color-text-muted);">
+                    <span id="res-carbs-cal">980 kcal</span> &bull; <span id="res-carbs-ratio">3.27 g/kg</span>
+                </div>
+            </div>
+
+            <!-- Dietary Fats -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-top: 4px solid var(--color-accent-rose); border-radius: var(--border-radius-md); padding: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: var(--color-accent-rose); font-size: 0.9rem;">🥑 DIETARY FATS</span>
+                    <span id="res-fats-pct" style="font-size: 0.82rem; font-weight: 700; color: var(--color-text-muted);">30%</span>
+                </div>
+                <div id="res-fats-grams" style="font-size: 1.85rem; font-weight: 800; color: var(--color-text-main); margin: 6px 0 2px;">82 g</div>
+                <div style="font-size: 0.82rem; color: var(--color-text-muted);">
+                    <span id="res-fats-cal">735 kcal</span> &bull; <span id="res-fats-ratio">1.09 g/kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Proportional Macro Bar -->
+        <div style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px;">
+                <span style="color: var(--color-accent-blue);">Protein: <strong id="bar-p-text">30% (735 kcal)</strong></span>
+                <span style="color: var(--color-accent-amber);">Carbs: <strong id="bar-c-text">40% (980 kcal)</strong></span>
+                <span style="color: var(--color-accent-rose);">Fats: <strong id="bar-f-text">30% (735 kcal)</strong></span>
+            </div>
+            <div style="height: 16px; background: var(--color-border-light); border-radius: 8px; overflow: hidden; display: flex;">
+                <div id="bar-p" style="width: 30%; background: var(--color-accent-blue); transition: width 0.3s ease;"></div>
+                <div id="bar-c" style="width: 40%; background: var(--color-accent-amber); transition: width 0.3s ease;"></div>
+                <div id="bar-f" style="width: 30%; background: var(--color-accent-rose); transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+
+        <!-- Meal Distribution Schedule -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-main);">
+                    Sample Daily Meal Allocation
+                </h4>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem;">
+                    <label for="macro-meals-count" style="color: var(--color-text-muted); font-weight: 600;">Meals / Day:</label>
+                    <select id="macro-meals-count" style="height: 32px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600;">
+                        <option value="3">3 Meals</option>
+                        <option value="4" selected>4 Meals</option>
+                        <option value="5">5 Meals</option>
+                        <option value="6">6 Meals</option>
+                    </select>
+                </div>
+            </div>
+            <div style="overflow-x: auto; border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md);">
+                <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.86rem;">
+                    <thead>
+                        <tr style="background: var(--color-bg-card-alt); border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 10px 14px; text-align: left;">Meal Feeding</th>
+                            <th style="padding: 10px 14px;">Calories</th>
+                            <th style="padding: 10px 14px; color: var(--color-accent-blue);">Protein</th>
+                            <th style="padding: 10px 14px; color: var(--color-accent-amber);">Carbs</th>
+                            <th style="padding: 10px 14px; color: var(--color-accent-rose);">Fats</th>
+                        </tr>
+                    </thead>
+                    <tbody id="macro-meals-tbody">
+                        <!-- Populated dynamically via macro.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/macro.js' %}"></script>
+{% endblock %}

@@ -63,6 +63,12 @@ from .default_articles_batch10 import (
     EXPONENT_ARTICLE,
     FUEL_COST_ARTICLE,
 )
+from .default_articles_batch11 import (
+    CD_ARTICLE,
+    MACRO_ARTICLE,
+    LOG_ARTICLE,
+    DENSITY_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -716,6 +722,57 @@ def fuel_cost_calculator(request):
     return render(request, 'calculators/fuel_cost_calculator.html', {'calculator': calculator})
 
 
+# Batch 12 Calculators (User Batch #11)
+def cd_calculator(request):
+    """Certificate of Deposit (CD) Calculator view."""
+    default_data = {
+        'title': 'Certificate of Deposit (CD) Calculator',
+        'category': 'financial',
+        'meta_title': 'Certificate of Deposit (CD) Calculator - APY & Growth Schedule | CalculatorHub',
+        'meta_description': 'Calculate certificate of deposit maturity value, compound interest earnings, early withdrawal penalties, and after-tax growth schedules with daily or monthly compounding.',
+        'article_content': CD_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('cd-calculator', default_data)
+    return render(request, 'calculators/cd_calculator.html', {'calculator': calculator})
+
+
+def macro_calculator(request):
+    """Macronutrient Ratio Calculator view."""
+    default_data = {
+        'title': 'Macronutrient Ratio Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Macronutrient Ratio Calculator - Protein, Carb & Fat Grams by Goal | CalculatorHub',
+        'meta_description': 'Calculate optimal daily macronutrient gram targets for protein, carbohydrates, and healthy fats based on TDEE, metabolic profile, cutting, bulking, or maintenance.',
+        'article_content': MACRO_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('macro-calculator', default_data)
+    return render(request, 'calculators/macro_calculator.html', {'calculator': calculator})
+
+
+def log_calculator(request):
+    """Logarithm (Natural & Base 10) Calculator view."""
+    default_data = {
+        'title': 'Logarithm (Natural & Base 10) Calculator',
+        'category': 'math',
+        'meta_title': 'Logarithm Calculator - Log10, Natural Log (ln), Binary & Custom Base | CalculatorHub',
+        'meta_description': 'Evaluate common log, natural log (ln), binary log, and custom base logarithms with step-by-step change-of-base derivations, exponential proofs, and anti-logarithms.',
+        'article_content': LOG_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('log-calculator', default_data)
+    return render(request, 'calculators/logarithm_calculator.html', {'calculator': calculator})
+
+
+def density_calculator(request):
+    """Physical Density Calculator view."""
+    default_data = {
+        'title': 'Physical Density Calculator',
+        'category': 'other',
+        'meta_title': 'Physical Density Calculator - Mass, Volume & Specific Gravity Solver | CalculatorHub',
+        'meta_description': 'Calculate physical density, mass, or volume with multi-unit conversions across SI and Imperial metrics. Includes specific gravity, buoyancy simulation, and material presets.',
+        'article_content': DENSITY_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('density-calculator', default_data)
+    return render(request, 'calculators/density_calculator.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

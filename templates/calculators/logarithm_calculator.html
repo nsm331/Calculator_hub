@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Logarithm Calculator - Natural (ln), Base 10 (log) & Custom Base | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Free online logarithm calculator for natural log (ln), common log (log10), binary log (log2), custom base logb(x), and antilogarithms with step-by-step change-of-base derivation.{% endif %}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#math">Math Calculators</a> &rsaquo; 
+        <span>Logarithm Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Logarithm Calculator" }}</h1>
+    <p class="page-lead">
+        Compute common logarithms ($\log_{10}$), natural logarithms ($\ln$), binary logarithms ($\log_2$), arbitrary base $\log_b(x)$, and antilogarithms ($b^y$) with arbitrary precision and step-by-step change-of-base derivations.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Precision Transcendental Logarithm &amp; Antilog Engine</span>
+    </div>
+
+    <!-- Mode Selector Buttons -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Logarithm Calculation Mode
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline log-mode-btn active" data-mode="log10">
+                $\log_{10}(x)$ Base 10
+            </button>
+            <button type="button" class="btn btn-outline log-mode-btn" data-mode="ln">
+                $\ln(x)$ Natural (Base $e$)
+            </button>
+            <button type="button" class="btn btn-outline log-mode-btn" data-mode="log2">
+                $\log_2(x)$ Binary
+            </button>
+            <button type="button" class="btn btn-outline log-mode-btn" data-mode="custom">
+                $\log_b(x)$ Custom Base
+            </button>
+            <button type="button" class="btn btn-outline log-mode-btn" data-mode="antilog">
+                Antilog $b^y$
+            </button>
+        </div>
+    </div>
+
+    <form id="log-form" onsubmit="return false;">
+        <div class="calculator-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px;">
+            <!-- Base input (Visible for custom base and antilog) -->
+            <div class="input-group" id="log-base-group" style="display: none;">
+                <label for="log-base" id="log-base-label" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Logarithm Base ($b$)
+                </label>
+                <input 
+                    type="number" 
+                    id="log-base" 
+                    class="form-control" 
+                    value="2" 
+                    min="0.000001" 
+                    step="any" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                >
+                <small id="log-base-hint" style="color: var(--color-text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">
+                    Requirement: $b > 0$ and $b \neq 1$.
+                </small>
+            </div>
+
+            <!-- Main Argument / Exponent Input -->
+            <div class="input-group" id="log-arg-group">
+                <label for="log-arg" id="log-arg-label" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Argument ($x$)
+                </label>
+                <input 
+                    type="number" 
+                    id="log-arg" 
+                    class="form-control" 
+                    value="100" 
+                    min="0.0000000000001" 
+                    step="any" 
+                    style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    required
+                >
+                <small id="log-arg-hint" style="color: var(--color-text-muted); font-size: 0.78rem; display: block; margin-top: 4px;">
+                    Requirement: Argument must be strictly positive ($x > 0$).
+                </small>
+            </div>
+
+            <!-- Precision Select -->
+            <div class="input-group">
+                <label for="log-precision" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Decimal Precision
+                </label>
+                <select id="log-precision" style="width: 100%; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600;">
+                    <option value="4">4 Decimals</option>
+                    <option value="6" selected>6 Decimals</option>
+                    <option value="8">8 Decimals</option>
+                    <option value="10">10 Decimals</option>
+                    <option value="12">12 Decimals</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Preset Quick Examples -->
+        <div style="margin-bottom: 20px;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-right: 8px;">Quick Examples:</span>
+            <div style="display: inline-flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="log10" data-x="1000">log₁₀(1000)</button>
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="ln" data-x="2.7182818">ln(e)</button>
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="log2" data-x="1024">log₂(1024)</button>
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="custom" data-b="3" data-x="81">log₃(81)</button>
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="custom" data-b="5" data-x="125">log₅(125)</button>
+                <button type="button" class="btn btn-outline btn-sm log-preset-btn" data-mode="antilog" data-b="10" data-x="3">10³ (Antilog)</button>
+            </div>
+        </div>
+
+        <button type="button" id="log-calculate-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Logarithm &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="log-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span id="log-math-expression" style="font-size: 1.15rem; font-weight: 700; color: var(--color-text-muted);">
+                    $\log_{10}(100)$
+                </span>
+                <span id="log-status-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--color-accent-blue); padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">
+                    Exact Evaluation
+                </span>
+            </div>
+
+            <!-- Big Result -->
+            <div style="margin: 14px 0 6px;">
+                <span style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted); display: block;">Result Value ($y$)</span>
+                <div id="log-main-value" style="font-size: 2.4rem; font-weight: 900; color: var(--color-accent-blue); line-height: 1.2; word-break: break-all;">
+                    2
+                </div>
+            </div>
+
+            <div id="log-exponential-eq" style="font-size: 0.95rem; color: var(--color-text-muted); margin-top: 8px;">
+                Exponential Equivalence: <strong>10<sup>2</sup> = 100</strong>
+            </div>
+        </div>
+
+        <!-- Analytical Breakdown Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <!-- Step-by-Step Change of Base -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--color-accent-emerald); text-transform: uppercase; margin-bottom: 8px;">
+                    Change of Base Derivation
+                </h4>
+                <div id="log-step-formula" style="font-size: 0.92rem; font-family: monospace; color: var(--color-text-main); margin-bottom: 6px;">
+                    $\log_{b}(x) = \frac{\ln(x)}{\ln(b)}$
+                </div>
+                <div id="log-step-substitution" style="font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.5;">
+                    $\frac{\ln(100)}{\ln(10)} = \frac{4.605170}{2.302585} = 2$
+                </div>
+            </div>
+
+            <!-- Characteristic & Mantissa (Common Log) -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--color-accent-amber); text-transform: uppercase; margin-bottom: 8px;">
+                    Characteristic &amp; Mantissa
+                </h4>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 4px;">
+                    <span style="color: var(--color-text-muted);">Characteristic (Integer Part):</span>
+                    <strong id="log-char-val" style="color: var(--color-text-main);">2</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 6px;">
+                    <span style="color: var(--color-text-muted);">Mantissa (Fractional Part):</span>
+                    <strong id="log-mant-val" style="color: var(--color-text-main);">0.000000</strong>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--color-text-muted);">
+                    Representation: $y = \text{char} + \text{mant}$
+                </div>
+            </div>
+        </div>
+
+        <!-- Laws of Logarithms Quick Reference -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Algebraic Laws of Logarithms Reference
+            </h4>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 8px 10px;">Rule Name</th>
+                            <th style="padding: 8px 10px;">Algebraic Identity</th>
+                            <th style="padding: 8px 10px;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <td style="padding: 8px 10px; font-weight: 600;">Product Rule</td>
+                            <td style="padding: 8px 10px; font-family: monospace; color: var(--color-accent-blue);">$\log_b(xy) = \log_b(x) + \log_b(y)$</td>
+                            <td style="padding: 8px 10px; color: var(--color-text-muted);">Turns multiplication into addition</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <td style="padding: 8px 10px; font-weight: 600;">Quotient Rule</td>
+                            <td style="padding: 8px 10px; font-family: monospace; color: var(--color-accent-blue);">$\log_b(x/y) = \log_b(x) - \log_b(y)$</td>
+                            <td style="padding: 8px 10px; color: var(--color-text-muted);">Turns division into subtraction</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <td style="padding: 8px 10px; font-weight: 600;">Power Rule</td>
+                            <td style="padding: 8px 10px; font-family: monospace; color: var(--color-accent-blue);">$\log_b(x^k) = k \cdot \log_b(x)$</td>
+                            <td style="padding: 8px 10px; color: var(--color-text-muted);">Brings exponent down to front</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--color-border-light);">
+                            <td style="padding: 8px 10px; font-weight: 600;">Change of Base</td>
+                            <td style="padding: 8px 10px; font-family: monospace; color: var(--color-accent-blue);">$\log_b(x) = \frac{\ln(x)}{\ln(b)}$</td>
+                            <td style="padding: 8px 10px; color: var(--color-text-muted);">Enables evaluation in any computer language</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px 10px; font-weight: 600;">Identity &amp; Zero</td>
+                            <td style="padding: 8px 10px; font-family: monospace; color: var(--color-accent-blue);">$\log_b(b) = 1, \quad \log_b(1) = 0$</td>
+                            <td style="padding: 8px 10px; color: var(--color-text-muted);">Fundamental boundary points</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/logarithm.js' %}"></script>
+{% endblock %}

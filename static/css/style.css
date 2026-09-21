@@ -3642,7 +3642,15 @@ textarea:focus,
 .exp-mode-btn,
 .exp-preset-btn,
 .fuel-unit-btn,
-.fuel-preset-btn {
+.fuel-preset-btn,
+.cd-preset-btn,
+.macro-unit-btn,
+.macro-gender-btn,
+.macro-goal-btn,
+.macro-preset-btn,
+.log-mode-btn,
+.log-preset-btn,
+.density-mode-btn {
     background-color: #142337 !important;
     border: 1px solid #2b4971 !important;
     color: #f1f5f9 !important;
@@ -3685,7 +3693,15 @@ textarea:focus,
 .exp-mode-btn:hover,
 .exp-preset-btn:hover,
 .fuel-unit-btn:hover,
-.fuel-preset-btn:hover {
+.fuel-preset-btn:hover,
+.cd-preset-btn:hover,
+.macro-unit-btn:hover,
+.macro-gender-btn:hover,
+.macro-goal-btn:hover,
+.macro-preset-btn:hover,
+.log-mode-btn:hover,
+.log-preset-btn:hover,
+.density-mode-btn:hover {
     border-color: #38bdf8 !important;
     color: #38bdf8 !important;
     background-color: rgba(56, 189, 248, 0.15) !important;
@@ -3718,7 +3734,15 @@ textarea:focus,
 .exp-mode-btn.active,
 .exp-preset-btn.active,
 .fuel-unit-btn.active,
-.fuel-preset-btn.active {
+.fuel-preset-btn.active,
+.cd-preset-btn.active,
+.macro-unit-btn.active,
+.macro-gender-btn.active,
+.macro-goal-btn.active,
+.macro-preset-btn.active,
+.log-mode-btn.active,
+.log-preset-btn.active,
+.density-mode-btn.active {
     background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
     border-color: #38bdf8 !important;
     color: #ffffff !important;
@@ -3752,7 +3776,15 @@ textarea:focus,
 [data-theme="light"] .exp-mode-btn,
 [data-theme="light"] .exp-preset-btn,
 [data-theme="light"] .fuel-unit-btn,
-[data-theme="light"] .fuel-preset-btn {
+[data-theme="light"] .fuel-preset-btn,
+[data-theme="light"] .cd-preset-btn,
+[data-theme="light"] .macro-unit-btn,
+[data-theme="light"] .macro-gender-btn,
+[data-theme="light"] .macro-goal-btn,
+[data-theme="light"] .macro-preset-btn,
+[data-theme="light"] .log-mode-btn,
+[data-theme="light"] .log-preset-btn,
+[data-theme="light"] .density-mode-btn {
     background-color: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
@@ -3784,7 +3816,15 @@ textarea:focus,
 [data-theme="light"] .exp-mode-btn:hover,
 [data-theme="light"] .exp-preset-btn:hover,
 [data-theme="light"] .fuel-unit-btn:hover,
-[data-theme="light"] .fuel-preset-btn:hover {
+[data-theme="light"] .fuel-preset-btn:hover,
+[data-theme="light"] .cd-preset-btn:hover,
+[data-theme="light"] .macro-unit-btn:hover,
+[data-theme="light"] .macro-gender-btn:hover,
+[data-theme="light"] .macro-goal-btn:hover,
+[data-theme="light"] .macro-preset-btn:hover,
+[data-theme="light"] .log-mode-btn:hover,
+[data-theme="light"] .log-preset-btn:hover,
+[data-theme="light"] .density-mode-btn:hover {
     border-color: #1e60b5 !important;
     color: #1e60b5 !important;
     background-color: rgba(30, 96, 181, 0.08) !important;
@@ -3816,7 +3856,15 @@ textarea:focus,
 [data-theme="light"] .exp-mode-btn.active,
 [data-theme="light"] .exp-preset-btn.active,
 [data-theme="light"] .fuel-unit-btn.active,
-[data-theme="light"] .fuel-preset-btn.active {
+[data-theme="light"] .fuel-preset-btn.active,
+[data-theme="light"] .cd-preset-btn.active,
+[data-theme="light"] .macro-unit-btn.active,
+[data-theme="light"] .macro-gender-btn.active,
+[data-theme="light"] .macro-goal-btn.active,
+[data-theme="light"] .macro-preset-btn.active,
+[data-theme="light"] .log-mode-btn.active,
+[data-theme="light"] .log-preset-btn.active,
+[data-theme="light"] .density-mode-btn.active {
     background: #1e60b5 !important;
     border-color: #164e96 !important;
     color: #ffffff !important;

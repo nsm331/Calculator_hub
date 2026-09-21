@@ -241,6 +241,28 @@ urlpatterns = [
         name='fuel_cost_calculator'
     ),
 
+    # Batch 12 Calculators (User Batch #11)
+    path(
+        'financial-calculators/cd-calculator/',
+        views.cd_calculator,
+        name='cd_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/macronutrient-calculator/',
+        views.macro_calculator,
+        name='macro_calculator'
+    ),
+    path(
+        'math-calculators/logarithm-calculator/',
+        views.log_calculator,
+        name='log_calculator'
+    ),
+    path(
+        'other-calculators/density-calculator/',
+        views.density_calculator,
+        name='density_calculator'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

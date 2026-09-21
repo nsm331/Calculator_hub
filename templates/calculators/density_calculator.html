@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Physical Density Calculator - Mass, Volume, & Specific Gravity | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Free physical density calculator. Solve for density, mass, or volume with instant multi-unit conversion, material presets, specific gravity, and buoyancy behavior.{% endif %}{% endblock %}
+
+{% block content %}
+<div class="calculator-page-header">
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a> &rsaquo; 
+        <a href="{% url 'html_sitemap' %}#other">Other Calculators</a> &rsaquo; 
+        <span>Physical Density Calculator</span>
+    </div>
+    <h1 class="page-title">{{ calculator.title|default:"Physical Density Calculator" }}</h1>
+    <p class="page-lead">
+        Compute volumetric mass density ($\rho = m/V$), determine required mass, or solve for occupied volume with comprehensive metric and imperial unit conversions, material libraries, specific gravity, and aquatic buoyancy behavior.
+    </p>
+</div>
+
+<!-- Interactive Calculator Card -->
+<div class="calculator-card">
+    <div class="calculator-card-header">
+        <span class="card-subtitle-tag">Three-Way Thermodynamic Density, Mass &amp; Volume Solver</span>
+    </div>
+
+    <!-- Solver Mode Selector -->
+    <div style="margin-bottom: 22px;">
+        <label style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Target Variable to Solve
+        </label>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline density-mode-btn active" data-solve="density">
+                Solve for Density ($\rho = m / V$)
+            </button>
+            <button type="button" class="btn btn-outline density-mode-btn" data-solve="mass">
+                Solve for Mass ($m = \rho \cdot V$)
+            </button>
+            <button type="button" class="btn btn-outline density-mode-btn" data-solve="volume">
+                Solve for Volume ($V = m / \rho$)
+            </button>
+        </div>
+    </div>
+
+    <!-- Material Preset Dropdown -->
+    <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 14px 16px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <label for="density-material-select" style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-main);">
+                Standard Material Library Preset:
+            </label>
+            <select id="density-material-select" style="height: 38px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; padding: 0 10px;">
+                <option value="custom">-- Custom Substance --</option>
+                <option value="1.000">Pure Water (at 4°C) - 1.000 g/cm³</option>
+                <option value="1.025">Seawater (average) - 1.025 g/cm³</option>
+                <option value="19.32">Gold (Au) - 19.32 g/cm³</option>
+                <option value="10.49">Silver (Ag) - 10.49 g/cm³</option>
+                <option value="8.96">Copper (Cu) - 8.96 g/cm³</option>
+                <option value="7.87">Iron / Carbon Steel - 7.87 g/cm³</option>
+                <option value="2.70">Aluminum (Al) - 2.70 g/cm³</option>
+                <option value="11.34">Lead (Pb) - 11.34 g/cm³</option>
+                <option value="13.534">Mercury (liquid) - 13.534 g/cm³</option>
+                <option value="0.789">Ethanol (Alcohol) - 0.789 g/cm³</option>
+                <option value="0.92">Olive Oil - 0.92 g/cm³</option>
+                <option value="0.917">Ice (solid water) - 0.917 g/cm³</option>
+                <option value="0.65">Oak Wood (dry) - 0.65 g/cm³</option>
+                <option value="0.001225">Air (sea level, 15°C) - 0.001225 g/cm³</option>
+            </select>
+        </div>
+    </div>
+
+    <form id="density-form" onsubmit="return false;">
+        <div class="calculator-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px;">
+            <!-- Density Input Group -->
+            <div class="input-group" id="density-val-group">
+                <label for="density-val" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Density ($\rho$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="density-val" 
+                        class="form-control" 
+                        value="1.0" 
+                        min="0.00000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="density-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="g_cm3" selected>g/cm³</option>
+                        <option value="kg_m3">kg/m³</option>
+                        <option value="g_ml">g/mL</option>
+                        <option value="kg_l">kg/L</option>
+                        <option value="lb_ft3">lb/ft³</option>
+                        <option value="lb_in3">lb/in³</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Mass Input Group -->
+            <div class="input-group" id="density-mass-group">
+                <label for="density-mass" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Mass ($m$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="density-mass" 
+                        class="form-control" 
+                        value="500" 
+                        min="0.00000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="density-mass-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="g" selected>grams (g)</option>
+                        <option value="kg">kilograms (kg)</option>
+                        <option value="mg">milligrams (mg)</option>
+                        <option value="lb">pounds (lb)</option>
+                        <option value="oz">ounces (oz)</option>
+                        <option value="ton_metric">metric tons (t)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Volume Input Group -->
+            <div class="input-group" id="density-vol-group">
+                <label for="density-vol" class="input-label" style="display: block; font-weight: 600; margin-bottom: 6px; color: var(--color-text-main);">
+                    Volume ($V$)
+                </label>
+                <div style="display: flex; gap: 8px;">
+                    <input 
+                        type="number" 
+                        id="density-vol" 
+                        class="form-control" 
+                        value="500" 
+                        min="0.00000001" 
+                        step="any" 
+                        style="flex: 1; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); padding: 0 12px;"
+                    >
+                    <select id="density-vol-unit" style="width: 120px; height: 44px; border-radius: var(--border-radius-sm); border: 1px solid var(--color-input-border); background: var(--color-input-bg); color: var(--color-input-text); font-weight: 600; font-size: 0.85rem;">
+                        <option value="cm3" selected>cm³ (mL)</option>
+                        <option value="m3">m³</option>
+                        <option value="l">liters (L)</option>
+                        <option value="ml">milliliters (mL)</option>
+                        <option value="in3">in³</option>
+                        <option value="ft3">ft³</option>
+                        <option value="gal_us">gallons (US)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="density-calc-btn" class="btn btn-primary" style="width: 100%; height: 48px; font-size: 1.05rem; font-weight: 700; border-radius: var(--border-radius-sm); background: var(--color-accent-blue); color: #fff; border: none; cursor: pointer;">
+            Compute Physics Solution &rarr;
+        </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="density-results" style="margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--color-border-light);">
+        <!-- Primary Output Card -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 20px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <span id="density-res-label" style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted);">
+                    Calculated Density ($\rho$)
+                </span>
+                <span id="density-formula-badge" style="background: rgba(59, 130, 246, 0.15); color: var(--color-accent-blue); padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700;">
+                    $\rho = m / V$
+                </span>
+            </div>
+            <div style="margin: 14px 0 6px;">
+                <div id="density-primary-res" style="font-size: 2.5rem; font-weight: 900; color: var(--color-accent-blue); line-height: 1.2;">
+                    1.000000 g/cm³
+                </div>
+            </div>
+            <div id="density-secondary-res" style="font-size: 0.95rem; color: var(--color-text-muted);">
+                Equivalent: <strong>1,000.00 kg/m³</strong> &bull; <strong>62.43 lb/ft³</strong>
+            </div>
+        </div>
+
+        <!-- Analytical Indicators (Specific Gravity, Water Buoyancy, Air Buoyancy) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 24px;">
+            <!-- Specific Gravity -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Specific Gravity ($SG$)</span>
+                <span id="density-sg-val" style="font-size: 1.8rem; font-weight: 800; color: var(--color-text-main); display: block; margin-top: 4px;">1.000</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Relative to water at 4°C ($\rho_w = 1.0\text{ g/cm}^3$)</span>
+            </div>
+
+            <!-- Aquatic Buoyancy Behavior -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Behavior in Pure Water</span>
+                <span id="density-buoyancy-val" style="font-size: 1.2rem; font-weight: 800; color: var(--color-accent-emerald); display: block; margin-top: 8px;">
+                    ⚖️ Neutrally Buoyant
+                </span>
+                <span id="density-buoyancy-sub" style="font-size: 0.78rem; color: var(--color-text-muted); display: block; margin-top: 4px;">
+                    Submerged equilibrium
+                </span>
+            </div>
+
+            <!-- Mass / Volume Ratio Badge -->
+            <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+                <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">SI Standard Metric</span>
+                <span id="density-si-val" style="font-size: 1.6rem; font-weight: 800; color: var(--color-accent-amber); display: block; margin-top: 4px;">1,000 kg/m³</span>
+                <span style="font-size: 0.78rem; color: var(--color-text-muted);">Kilograms per cubic meter</span>
+            </div>
+        </div>
+
+        <!-- Equivalent Multi-Unit Conversions Table -->
+        <div style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-md); padding: 16px;">
+            <h4 style="font-size: 0.92rem; font-weight: 700; color: var(--color-text-main); margin-bottom: 12px;">
+                Unit Conversion Matrix
+            </h4>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--color-border-light); color: var(--color-text-muted);">
+                            <th style="padding: 8px 12px;">Physical Unit</th>
+                            <th style="padding: 8px 12px;">Magnitude</th>
+                            <th style="padding: 8px 12px;">Standard Classification</th>
+                        </tr>
+                    </thead>
+                    <tbody id="density-matrix-tbody">
+                        <!-- Populated via density.js -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+<div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+    {{ calculator.article_content|safe }}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/density.js' %}"></script>
+{% endblock %}

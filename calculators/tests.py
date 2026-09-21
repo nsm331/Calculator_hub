@@ -505,6 +505,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Vehicular Energy Consumption", calc.article_content)
 
+    def test_cd_calculator_view(self):
+        response = self.client.get(reverse('cd_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Certificate of Deposit")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/cd.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='cd-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Certificate of Deposit", calc.article_content)
+
+    def test_macro_calculator_view(self):
+        response = self.client.get(reverse('macro_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Macronutrient Ratio Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/macro.js")
+        self.assertNotContains(response, "js/calorie.js")
+        calc = Calculator.objects.filter(slug='macro-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Macronutrient", calc.article_content)
+
+    def test_log_calculator_view(self):
+        response = self.client.get(reverse('log_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logarithm Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/logarithm.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='log-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Logarithm", calc.article_content)
+
+    def test_density_calculator_view(self):
+        response = self.client.get(reverse('density_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Physical Density Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/density.js")
+        self.assertNotContains(response, "js/speed_distance_time.js")
+        calc = Calculator.objects.filter(slug='density-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Physical Density", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -552,6 +596,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "daily-water-intake-calculator")
         self.assertContains(response, "exponent-power-calculator")
         self.assertContains(response, "fuel-cost-calculator")
+        self.assertContains(response, "cd-calculator")
+        self.assertContains(response, "macronutrient-calculator")
+        self.assertContains(response, "logarithm-calculator")
+        self.assertContains(response, "density-calculator")
 
     def test_xml_sitemap_view(self):
         # Trigger calculator creation first
@@ -598,6 +646,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('water_intake_calculator'))
         self.client.get(reverse('exponent_calculator'))
         self.client.get(reverse('fuel_cost_calculator'))
+        self.client.get(reverse('cd_calculator'))
+        self.client.get(reverse('macro_calculator'))
+        self.client.get(reverse('log_calculator'))
+        self.client.get(reverse('density_calculator'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -645,6 +697,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "daily-water-intake-calculator")
         self.assertContains(response, "exponent-power-calculator")
         self.assertContains(response, "fuel-cost-calculator")
+        self.assertContains(response, "cd-calculator")
+        self.assertContains(response, "macronutrient-calculator")
+        self.assertContains(response, "logarithm-calculator")
+        self.assertContains(response, "density-calculator")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

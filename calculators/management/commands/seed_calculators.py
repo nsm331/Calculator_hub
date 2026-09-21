@@ -61,6 +61,12 @@ from calculators.default_articles_batch10 import (
     EXPONENT_ARTICLE,
     FUEL_COST_ARTICLE,
 )
+from calculators.default_articles_batch11 import (
+    CD_ARTICLE,
+    MACRO_ARTICLE,
+    LOG_ARTICLE,
+    DENSITY_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -418,6 +424,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Fuel Cost & Mileage Trip Planner - Gas Mileage, Tolls & Carpool Split | CalculatorHub',
         'meta_description': 'Calculate road trip fuel costs, gas consumption, toll charges, and passenger carpool splits using MPG or L/100km fuel economy metrics.',
         'article_content': FUEL_COST_ARTICLE,
+    },
+    # Batch 12 Calculators (User Batch #11)
+    {
+        'slug': 'cd-calculator',
+        'title': 'Certificate of Deposit (CD) Calculator',
+        'category': 'financial',
+        'meta_title': 'Certificate of Deposit (CD) Calculator - APY & Growth Schedule | CalculatorHub',
+        'meta_description': 'Calculate certificate of deposit maturity value, compound interest earnings, early withdrawal penalties, and after-tax growth schedules with daily or monthly compounding.',
+        'article_content': CD_ARTICLE,
+    },
+    {
+        'slug': 'macro-calculator',
+        'title': 'Macronutrient Ratio Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Macronutrient Ratio Calculator - Protein, Carb & Fat Grams by Goal | CalculatorHub',
+        'meta_description': 'Calculate optimal daily macronutrient gram targets for protein, carbohydrates, and healthy fats based on TDEE, metabolic profile, cutting, bulking, or maintenance.',
+        'article_content': MACRO_ARTICLE,
+    },
+    {
+        'slug': 'log-calculator',
+        'title': 'Logarithm (Natural & Base 10) Calculator',
+        'category': 'math',
+        'meta_title': 'Logarithm Calculator - Log10, Natural Log (ln), Binary & Custom Base | CalculatorHub',
+        'meta_description': 'Evaluate common log, natural log (ln), binary log, and custom base logarithms with step-by-step change-of-base derivations, exponential proofs, and anti-logarithms.',
+        'article_content': LOG_ARTICLE,
+    },
+    {
+        'slug': 'density-calculator',
+        'title': 'Physical Density Calculator',
+        'category': 'other',
+        'meta_title': 'Physical Density Calculator - Mass, Volume & Specific Gravity Solver | CalculatorHub',
+        'meta_description': 'Calculate physical density, mass, or volume with multi-unit conversions across SI and Imperial metrics. Includes specific gravity, buoyancy simulation, and material presets.',
+        'article_content': DENSITY_ARTICLE,
     },
 ]
 
