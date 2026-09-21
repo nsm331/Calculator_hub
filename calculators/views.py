@@ -93,6 +93,12 @@ from .default_articles_batch15 import (
     CIRCLE_ARTICLE,
     PRESSURE_ARTICLE,
 )
+from .default_articles_batch16 import (
+    SIMPLE_INTEREST_ARTICLE,
+    CALORIES_BURNED_ARTICLE,
+    RATIO_PROPORTION_ARTICLE,
+    COOKING_MEASUREMENTS_ARTICLE,
+)
 
 
 def _get_or_seed_calculator(slug, default_data):
@@ -1009,6 +1015,61 @@ def pressure_converter(request):
     }
     calculator = _get_or_seed_calculator('pressure-converter', default_data)
     return render(request, 'calculators/pressure_converter.html', {'calculator': calculator})
+
+
+# --------------------------------------------------------------------------
+# Batch 16 Calculators
+# --------------------------------------------------------------------------
+def simple_interest_calculator(request):
+    """Simple Interest Calculator view."""
+    default_data = {
+        'title': 'Simple Interest Calculator',
+        'category': 'financial',
+        'meta_title': 'Simple Interest Calculator - Formula, Accrued Interest & Balance | CalculatorHub',
+        'meta_description': 'Calculate simple interest (I = Prt), final loan or investment balance, and compare 365-day exact vs 360-day ordinary banker interest conventions.',
+        'article_content': SIMPLE_INTEREST_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('simple-interest-calculator', default_data)
+    return render(request, 'calculators/simple_interest_calculator.html', {'calculator': calculator})
+
+
+def calories_burned_calculator(request):
+    """Calories Burned by Activity Calculator view."""
+    default_data = {
+        'title': 'Calories Burned by Activity Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Calories Burned by Activity Calculator - MET Energy Expenditure | CalculatorHub',
+        'meta_description': 'Calculate calories burned across 35+ physical activities, sports, running, walking, and gym exercises using clinical MET energy expenditure formulas.',
+        'article_content': CALORIES_BURNED_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('calories-burned-calculator', default_data)
+    return render(request, 'calculators/calories_burned_calculator.html', {'calculator': calculator})
+
+
+def ratio_calculator(request):
+    """Ratio & Proportion Calculator view."""
+    default_data = {
+        'title': 'Ratio & Proportion Calculator',
+        'category': 'math',
+        'meta_title': 'Ratio & Proportion Calculator - Solve Proportions, Simplify & Scale | CalculatorHub',
+        'meta_description': 'Solve proportions (A:B = C:D), simplify ratios to lowest terms using GCD, scale ratios up/down, divide a total quantity into ratio parts, and compute aspect ratios.',
+        'article_content': RATIO_PROPORTION_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('ratio-calculator', default_data)
+    return render(request, 'calculators/ratio_calculator.html', {'calculator': calculator})
+
+
+def cooking_measurement_converter(request):
+    """Kitchen Cooking Measurements Converter view."""
+    default_data = {
+        'title': 'Kitchen Cooking Measurements Converter',
+        'category': 'other',
+        'meta_title': 'Kitchen Cooking Measurement Converter - Cups, Grams, Tbsp & Ingredients | CalculatorHub',
+        'meta_description': 'Convert kitchen cooking and baking measurements. Convert volume to weight for flour, sugar, butter, and liquids. Supports US cups, metric grams, tbsp, tsp, fl oz, and ml.',
+        'article_content': COOKING_MEASUREMENTS_ARTICLE,
+    }
+    calculator = _get_or_seed_calculator('cooking-measurement-converter', default_data)
+    return render(request, 'calculators/cooking_measurement_converter.html', {'calculator': calculator})
 
 
 # --------------------------------------------------------------------------

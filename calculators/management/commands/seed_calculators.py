@@ -91,6 +91,12 @@ from calculators.default_articles_batch15 import (
     CIRCLE_ARTICLE,
     PRESSURE_ARTICLE,
 )
+from calculators.default_articles_batch16 import (
+    SIMPLE_INTEREST_ARTICLE,
+    CALORIES_BURNED_ARTICLE,
+    RATIO_PROPORTION_ARTICLE,
+    COOKING_MEASUREMENTS_ARTICLE,
+)
 
 
 CALCULATORS_DATA = [
@@ -613,6 +619,39 @@ CALCULATORS_DATA = [
         'meta_title': 'Atmospheric Pressure Converter - Barometric Formula, Altitude & Units | CalculatorHub',
         'meta_description': 'Convert between atm, psi, bar, kPa, mmHg, inHg, and Torr. Includes barometric formula elevation pressure calculator and water boiling point variations.',
         'article_content': PRESSURE_ARTICLE,
+    },
+    # Batch 16 Calculators
+    {
+        'slug': 'simple-interest-calculator',
+        'title': 'Simple Interest Calculator',
+        'category': 'financial',
+        'meta_title': 'Simple Interest Calculator - Formula, Accrued Interest & Balance | CalculatorHub',
+        'meta_description': 'Calculate simple interest (I = Prt), final loan or investment balance, and compare 365-day exact vs 360-day ordinary banker interest conventions.',
+        'article_content': SIMPLE_INTEREST_ARTICLE,
+    },
+    {
+        'slug': 'calories-burned-calculator',
+        'title': 'Calories Burned by Activity Calculator',
+        'category': 'fitness-and-health',
+        'meta_title': 'Calories Burned by Activity Calculator - MET Energy Expenditure | CalculatorHub',
+        'meta_description': 'Calculate calories burned across 35+ physical activities, sports, running, walking, and gym exercises using clinical MET energy expenditure formulas.',
+        'article_content': CALORIES_BURNED_ARTICLE,
+    },
+    {
+        'slug': 'ratio-calculator',
+        'title': 'Ratio & Proportion Calculator',
+        'category': 'math',
+        'meta_title': 'Ratio & Proportion Calculator - Solve Proportions, Simplify & Scale | CalculatorHub',
+        'meta_description': 'Solve proportions (A:B = C:D), simplify ratios to lowest terms using GCD, scale ratios up/down, divide a total quantity into ratio parts, and compute aspect ratios.',
+        'article_content': RATIO_PROPORTION_ARTICLE,
+    },
+    {
+        'slug': 'cooking-measurement-converter',
+        'title': 'Kitchen Cooking Measurements Converter',
+        'category': 'other',
+        'meta_title': 'Kitchen Cooking Measurement Converter - Cups, Grams, Tbsp & Ingredients | CalculatorHub',
+        'meta_description': 'Convert kitchen cooking and baking measurements. Convert volume to weight for flour, sugar, butter, and liquids. Supports US cups, metric grams, tbsp, tsp, fl oz, and ml.',
+        'article_content': COOKING_MEASUREMENTS_ARTICLE,
     },
 ]
 

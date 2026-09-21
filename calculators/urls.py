@@ -351,6 +351,28 @@ urlpatterns = [
         name='pressure_converter'
     ),
 
+    # Batch 17 Calculators (User Batch #16)
+    path(
+        'financial-calculators/simple-interest-calculator/',
+        views.simple_interest_calculator,
+        name='simple_interest_calculator'
+    ),
+    path(
+        'fitness-and-health-calculators/calories-burned-calculator/',
+        views.calories_burned_calculator,
+        name='calories_burned_calculator'
+    ),
+    path(
+        'math-calculators/ratio-calculator/',
+        views.ratio_calculator,
+        name='ratio_calculator'
+    ),
+    path(
+        'other-calculators/cooking-measurement-converter/',
+        views.cooking_measurement_converter,
+        name='cooking_measurement_converter'
+    ),
+
     # Sitemap & Institutional Informational Pages
     path('sitemap/', views.html_sitemap, name='html_sitemap'),
     path('about/', views.about, name='about'),

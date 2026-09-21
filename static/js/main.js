@@ -106,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: 'Total Daily Energy Expenditure (TDEE) Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/tdee-calculator/' },
             { title: 'Circle (Area & Circumference) Calculator', category: 'Math', url: '/math-calculators/circle-calculator/' },
             { title: 'Atmospheric Pressure Converter', category: 'Other', url: '/other-calculators/pressure-converter/' },
+            { title: 'Simple Interest Calculator', category: 'Financial', url: '/financial-calculators/simple-interest-calculator/' },
+            { title: 'Calories Burned by Activity Calculator', category: 'Fitness & Health', url: '/fitness-and-health-calculators/calories-burned-calculator/' },
+            { title: 'Ratio & Proportion Calculator', category: 'Math', url: '/math-calculators/ratio-calculator/' },
+            { title: 'Kitchen Cooking Measurements Converter', category: 'Other', url: '/other-calculators/cooking-measurement-converter/' },
         ];
 
         searchInput.addEventListener('input', () => {

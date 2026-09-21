@@ -725,6 +725,50 @@ class CalculatorNetTests(TestCase):
         self.assertIsNotNone(calc)
         self.assertIn("Hydrostatic Fundamental Equation", calc.article_content)
 
+    def test_simple_interest_calculator_view(self):
+        response = self.client.get(reverse('simple_interest_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Simple Interest Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/simple_interest.js")
+        self.assertNotContains(response, "js/loan.js")
+        calc = Calculator.objects.filter(slug='simple-interest-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Theory, Mechanics & Applications of Simple Interest", calc.article_content)
+
+    def test_calories_burned_calculator_view(self):
+        response = self.client.get(reverse('calories_burned_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Calories Burned by Activity")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/calories_burned.js")
+        self.assertNotContains(response, "js/bmi.js")
+        calc = Calculator.objects.filter(slug='calories-burned-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Metabolic Equivalents & Energy Expenditure", calc.article_content)
+
+    def test_ratio_calculator_view(self):
+        response = self.client.get(reverse('ratio_calculator'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ratio &amp; Proportion Calculator")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/ratio.js")
+        self.assertNotContains(response, "js/scientific.js")
+        calc = Calculator.objects.filter(slug='ratio-calculator').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Proportion Solving, GCD Reduction & Dimensional Scaling", calc.article_content)
+
+    def test_cooking_measurement_converter_view(self):
+        response = self.client.get(reverse('cooking_measurement_converter'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Kitchen Cooking Measurements")
+        self.assertContains(response, "katex.min.css")
+        self.assertContains(response, "js/cooking.js")
+        self.assertNotContains(response, "js/density.js")
+        calc = Calculator.objects.filter(slug='cooking-measurement-converter').first()
+        self.assertIsNotNone(calc)
+        self.assertIn("Culinary Physics: Volume vs. Mass Conversions", calc.article_content)
+
     def test_html_sitemap_view(self):
         response = self.client.get(reverse('html_sitemap'))
         self.assertEqual(response.status_code, 200)
@@ -846,6 +890,10 @@ class CalculatorNetTests(TestCase):
         self.client.get(reverse('tdee_calculator'))
         self.client.get(reverse('circle_calculator'))
         self.client.get(reverse('pressure_converter'))
+        self.client.get(reverse('simple_interest_calculator'))
+        self.client.get(reverse('calories_burned_calculator'))
+        self.client.get(reverse('ratio_calculator'))
+        self.client.get(reverse('cooking_measurement_converter'))
 
         response = self.client.get('/sitemap.xml')
         self.assertEqual(response.status_code, 200)
@@ -913,6 +961,10 @@ class CalculatorNetTests(TestCase):
         self.assertContains(response, "tdee-calculator")
         self.assertContains(response, "circle-calculator")
         self.assertContains(response, "pressure-converter")
+        self.assertContains(response, "simple-interest-calculator")
+        self.assertContains(response, "calories-burned-calculator")
+        self.assertContains(response, "ratio-calculator")
+        self.assertContains(response, "cooking-measurement-converter")
 
     def test_robots_txt_view(self):
         response = self.client.get('/robots.txt')

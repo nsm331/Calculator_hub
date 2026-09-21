@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Kitchen Cooking Measurement Converter - Cups, Grams, Tbsp &amp; Ingredients | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Convert kitchen cooking and baking measurements. Convert volume to weight for flour, sugar, butter, and liquids. Supports US cups, metric grams, tbsp, tsp, fl oz, and ml.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .cook-container {
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .cook-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+        background: var(--color-bg-card-alt);
+        padding: 6px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border);
+    }
+    .cook-tab-btn {
+        flex: 1;
+        min-width: 140px;
+        padding: 10px 14px;
+        background: transparent;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+    .cook-tab-btn.active {
+        background: var(--color-primary);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .cook-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+        margin-bottom: 24px;
+    }
+    .cook-form-group {
+        margin-bottom: 18px;
+    }
+    .cook-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .cook-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .cook-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .cook-input-wrap input,
+    .cook-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 1rem;
+        font-weight: 600;
+        outline: none;
+        padding: 0 6px;
+    }
+    .cook-result-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        text-align: center;
+        margin-top: 20px;
+    }
+    .cook-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    .cook-table th {
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .cook-table td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+    .recipe-textarea {
+        width: 100%;
+        height: 140px;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 12px;
+        color: var(--color-input-text);
+        font-family: inherit;
+        font-size: 0.9rem;
+        resize: vertical;
+        outline: none;
+    }
+    .recipe-textarea:focus {
+        border-color: var(--color-primary);
+    }
+</style>
+
+<div class="cook-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#other" style="color: var(--color-text-muted); text-decoration: none;">Other Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Kitchen Cooking Measurements</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Kitchen Cooking Measurements Converter
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Convert cooking volume to weight using ingredient densities (cups to grams for flour, sugar, butter), translate culinary volume units, scale recipe yields, and convert oven temperatures.
+        </p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="cook-tabs" role="tablist">
+        <button class="cook-tab-btn active" data-mode="ingredient">1. Ingredient Volume &harr; Weight</button>
+        <button class="cook-tab-btn" data-mode="volume">2. Kitchen Volume Ladder</button>
+        <button class="cook-tab-btn" data-mode="scaler">3. Recipe Yield Scaler</button>
+        <button class="cook-tab-btn" data-mode="oven">4. Oven Temperature</button>
+    </div>
+
+    <!-- Section 1: Ingredient Volume <-> Weight Converter -->
+    <div id="cook-sec-ingredient" class="cook-card">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+            Convert Baking &amp; Cooking Ingredients by Density
+        </h2>
+
+        <!-- Ingredient Picker -->
+        <div class="cook-form-group">
+            <label for="ing-select">Select Ingredient</label>
+            <div class="cook-input-wrap">
+                <select id="ing-select">
+                    <optgroup label="Flours &amp; Grains">
+                        <option value="flour-ap" selected>All-Purpose Flour (125 g/cup)</option>
+                        <option value="flour-cake">Cake Flour (114 g/cup)</option>
+                        <option value="flour-bread">Bread Flour (127 g/cup)</option>
+                        <option value="flour-whole">Whole Wheat Flour (130 g/cup)</option>
+                        <option value="oats">Rolled Oats (90 g/cup)</option>
+                        <option value="rice">White Rice (uncooked) (185 g/cup)</option>
+                    </optgroup>
+                    <optgroup label="Sugars &amp; Sweeteners">
+                        <option value="sugar-white">Granulated White Sugar (200 g/cup)</option>
+                        <option value="sugar-brown">Brown Sugar, packed (220 g/cup)</option>
+                        <option value="sugar-powdered">Powdered / Confectioners (120 g/cup)</option>
+                        <option value="honey">Honey / Maple Syrup (340 g/cup)</option>
+                    </optgroup>
+                    <optgroup label="Fats &amp; Dairy">
+                        <option value="butter">Butter (227 g/cup = 2 sticks)</option>
+                        <option value="oil-veg">Vegetable / Canola Oil (218 g/cup)</option>
+                        <option value="oil-olive">Olive Oil (216 g/cup)</option>
+                        <option value="milk">Whole Milk (244 g/cup)</option>
+                        <option value="cream">Heavy Cream (238 g/cup)</option>
+                        <option value="yogurt">Greek Yogurt (245 g/cup)</option>
+                        <option value="water">Water (236.6 g/cup)</option>
+                    </optgroup>
+                    <optgroup label="Leaveners &amp; Seasonings">
+                        <option value="cocoa">Cocoa Powder (100 g/cup)</option>
+                        <option value="salt">Table Salt (288 g/cup)</option>
+                        <option value="baking-powder">Baking Powder / Soda (220 g/cup)</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+
+        <!-- Quantity & Units Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto 1fr; gap: 12px; align-items: end;">
+            <div class="cook-form-group" style="margin-bottom: 0;">
+                <label for="ing-amount">Amount</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="ing-amount" value="1.5" min="0" step="any" placeholder="1.5">
+                </div>
+            </div>
+
+            <div class="cook-form-group" style="margin-bottom: 0;">
+                <label for="ing-from-unit">From Unit</label>
+                <div class="cook-input-wrap">
+                    <select id="ing-from-unit">
+                        <optgroup label="Volume Units">
+                            <option value="us-cup" selected>US Cups</option>
+                            <option value="metric-cup">Metric Cups (250 mL)</option>
+                            <option value="tbsp">Tablespoons (tbsp)</option>
+                            <option value="tsp">Teaspoons (tsp)</option>
+                            <option value="fl-oz">Fluid Ounces (fl oz)</option>
+                            <option value="ml">Milliliters (mL)</option>
+                            <option value="liter">Liters (L)</option>
+                        </optgroup>
+                        <optgroup label="Weight Units">
+                            <option value="g">Grams (g)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                            <option value="oz">Ounces (oz)</option>
+                            <option value="lb">Pounds (lb)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Swap Button -->
+            <button id="ing-swap-btn" type="button" title="Swap Units" style="height: 46px; width: 44px; background: var(--color-bg-card-alt); border: 1px solid var(--color-border); border-radius: var(--border-radius-sm); color: var(--color-primary); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+                &harr;
+            </button>
+
+            <div class="cook-form-group" style="margin-bottom: 0;">
+                <label for="ing-to-unit">To Unit</label>
+                <div class="cook-input-wrap">
+                    <select id="ing-to-unit">
+                        <optgroup label="Weight Units">
+                            <option value="g" selected>Grams (g)</option>
+                            <option value="oz">Ounces (oz)</option>
+                            <option value="lb">Pounds (lb)</option>
+                            <option value="kg">Kilograms (kg)</option>
+                        </optgroup>
+                        <optgroup label="Volume Units">
+                            <option value="us-cup">US Cups</option>
+                            <option value="metric-cup">Metric Cups (250 mL)</option>
+                            <option value="tbsp">Tablespoons (tbsp)</option>
+                            <option value="tsp">Teaspoons (tsp)</option>
+                            <option value="fl-oz">Fluid Ounces (fl oz)</option>
+                            <option value="ml">Milliliters (mL)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="cook-result-hero">
+            <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Converted Measurement</span>
+            <div id="ing-result">
+                <div style="font-size: 28px; font-weight: 800; color: var(--color-primary);">187.5 <span style="font-size: 18px; color: var(--color-text-primary); font-weight: 600;">Grams (g)</span></div>
+            </div>
+            <div id="ing-formula" style="margin-top: 8px; font-size: 0.85rem; color: var(--color-text-muted);">
+                1.5 US Cups of All-Purpose Flour = 187.5 Grams (Bulk density: 125 g/US Cup)
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Universal Kitchen Volume Ladder -->
+    <div id="cook-sec-volume" class="cook-card" style="display: none;">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 6px; color: var(--color-text-main);">
+            Universal Kitchen Volume Ladder
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0 0 16px;">
+            See an instant volumetric equivalence across all standard culinary and baking volume units:
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;">
+            <div class="cook-form-group" style="margin-bottom: 0;">
+                <label for="vol-amount">Enter Volume</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="vol-amount" value="1" min="0" step="any" placeholder="1">
+                </div>
+            </div>
+            <div class="cook-form-group" style="margin-bottom: 0;">
+                <label for="vol-unit">Unit</label>
+                <div class="cook-input-wrap">
+                    <select id="vol-unit">
+                        <option value="us-cup" selected>US Cups</option>
+                        <option value="tbsp">Tablespoons (tbsp)</option>
+                        <option value="tsp">Teaspoons (tsp)</option>
+                        <option value="fl-oz">Fluid Ounces (fl oz)</option>
+                        <option value="ml">Milliliters (mL)</option>
+                        <option value="metric-cup">Metric Cups (250 mL)</option>
+                        <option value="pint">US Pints</option>
+                        <option value="quart">US Quarts</option>
+                        <option value="gallon">US Gallons</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="border: 1px solid var(--color-border-light); border-radius: var(--border-radius-sm); overflow: hidden;">
+            <table class="cook-table">
+                <thead>
+                    <tr>
+                        <th>Volumetric Measurement</th>
+                        <th>Equivalent Value</th>
+                    </tr>
+                </thead>
+                <tbody id="vol-table-body">
+                    <!-- Dynamic rows inserted by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 3: Recipe Servings Multiplier -->
+    <div id="cook-sec-scaler" class="cook-card" style="display: none;">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 6px; color: var(--color-text-main);">
+            Recipe Servings Scaler
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0 0 16px;">
+            Scale ingredient quantities automatically when cooking for larger crowds or smaller family portions:
+        </p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end; margin-bottom: 18px;">
+            <div>
+                <label for="scaler-orig" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Original Servings</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="scaler-orig" value="4" min="1" step="1">
+                </div>
+            </div>
+            <div>
+                <label for="scaler-target" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Desired Servings</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="scaler-target" value="6" min="1" step="1">
+                </div>
+            </div>
+            <div style="height: 46px; display: flex; align-items: center; padding: 0 16px; background: rgba(0, 122, 255, 0.1); border: 1px solid var(--color-primary); border-radius: var(--border-radius-sm); font-weight: 800; color: var(--color-primary);" id="scaler-factor">
+                1.50x
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+                <label for="scaler-recipe-text" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+                    Paste Ingredients (1 per line, starting with number)
+                </label>
+                <textarea id="scaler-recipe-text" class="recipe-textarea" placeholder="2 cups flour&#10;1 1/2 tsp baking powder&#10;0.5 cup sugar&#10;2 large eggs&#10;3/4 cup milk">2 cups flour
+1 1/2 tsp baking powder
+0.5 cup sugar
+2 large eggs
+3/4 cup milk</textarea>
+            </div>
+            <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">
+                    Scaled Ingredients
+                </label>
+                <div id="scaler-recipe-output" style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-sm); padding: 12px; height: 140px; overflow-y: auto; font-size: 0.9rem; line-height: 1.6;">
+                    <!-- Scaled output inserted by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Oven Temperature Converter -->
+    <div id="cook-sec-oven" class="cook-card" style="display: none;">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 6px; color: var(--color-text-main);">
+            Oven Temperature Converter &amp; Gas Marks
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0 0 16px;">
+            Convert oven heat between standard Fahrenheit, Celsius, Fan-Forced (convection), and British Gas Marks:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div>
+                <label for="oven-f" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Fahrenheit (&deg;F)</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="oven-f" value="350" step="5">
+                </div>
+            </div>
+            <div>
+                <label for="oven-c" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Celsius (&deg;C)</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="oven-c" value="177" step="5">
+                </div>
+            </div>
+            <div>
+                <label for="oven-fan-c" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Fan-Forced (&deg;C)</label>
+                <div class="cook-input-wrap">
+                    <input type="number" id="oven-fan-c" value="157" readonly style="color: var(--color-primary);">
+                </div>
+            </div>
+            <div>
+                <label for="oven-gas" style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px;">Gas Mark</label>
+                <div class="cook-input-wrap">
+                    <select id="oven-gas">
+                        <option value="1/4">Gas Mark 1/4 (225&deg;F / 110&deg;C)</option>
+                        <option value="1/2">Gas Mark 1/2 (250&deg;F / 120&deg;C)</option>
+                        <option value="1">Gas Mark 1 (275&deg;F / 140&deg;C)</option>
+                        <option value="2">Gas Mark 2 (300&deg;F / 150&deg;C)</option>
+                        <option value="3">Gas Mark 3 (325&deg;F / 165&deg;C)</option>
+                        <option value="4" selected>Gas Mark 4 (350&deg;F / 177&deg;C)</option>
+                        <option value="5">Gas Mark 5 (375&deg;F / 190&deg;C)</option>
+                        <option value="6">Gas Mark 6 (400&deg;F / 204&deg;C)</option>
+                        <option value="7">Gas Mark 7 (425&deg;F / 218&deg;C)</option>
+                        <option value="8">Gas Mark 8 (450&deg;F / 232&deg;C)</option>
+                        <option value="9">Gas Mark 9 (475&deg;F / 246&deg;C)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="oven-desc" style="background: var(--color-bg-card-alt); border: 1px solid var(--color-border-light); border-radius: var(--border-radius-sm); padding: 14px; text-align: center; font-size: 0.95rem; font-weight: 700; color: var(--color-primary);">
+            Gas Mark 4: Moderate, standard cakes &amp; cookies
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/cooking.js' %}"></script>
+{% endblock %}

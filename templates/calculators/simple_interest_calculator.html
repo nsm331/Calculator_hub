@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Simple Interest Calculator - Formula, Accrued Interest & Balance | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate simple interest (I = Prt), final loan or investment balance, and compare 365-day exact vs 360-day ordinary banker interest conventions.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .si-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .si-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+        background: var(--color-bg-card-alt);
+        padding: 6px;
+        border-radius: var(--border-radius-md);
+        border: 1px solid var(--color-border);
+    }
+    .si-tab-btn {
+        flex: 1;
+        min-width: 140px;
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        border-radius: var(--border-radius-sm);
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+    .si-tab-btn.active {
+        background: var(--color-primary);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+    .si-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+        .si-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .si-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+    }
+    .si-form-group {
+        margin-bottom: 18px;
+    }
+    .si-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .si-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .si-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .si-input-wrap span.prefix,
+    .si-input-wrap span.suffix {
+        color: var(--color-text-muted);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .si-input-wrap input,
+    .si-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: monospace;
+        outline: none;
+        padding: 0 8px;
+    }
+    .si-results-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .si-hero-val {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-weight: 900;
+        color: var(--color-primary);
+        line-height: 1.1;
+        margin: 8px 0;
+        font-family: monospace;
+    }
+    .si-metrics-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .si-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+        padding: 14px;
+        text-align: center;
+    }
+    .si-metric-box .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        display: block;
+        margin-bottom: 4px;
+    }
+    .si-metric-box .val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        font-family: monospace;
+        color: var(--color-text-main);
+    }
+    .si-bar-wrap {
+        height: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        margin: 12px 0 6px;
+    }
+    .si-bar-p {
+        background: var(--color-primary);
+        height: 100%;
+        transition: width 0.3s;
+    }
+    .si-bar-i {
+        background: var(--color-success);
+        height: 100%;
+        transition: width 0.3s;
+    }
+    .si-table-wrap {
+        max-height: 320px;
+        overflow-y: auto;
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+    }
+    .si-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .si-table th {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .si-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+        font-family: monospace;
+    }
+</style>
+
+<div class="si-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#financial" style="color: var(--color-text-muted); text-decoration: none;">Financial Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Simple Interest Calculator</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Simple Interest Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Compute simple interest accrued ($I = Prt$), final loan or investment balance, periodic gains, and compare 365-day exact vs 360-day ordinary banker's day-count rules.
+        </p>
+    </header>
+
+    <!-- Mode Selector Tabs -->
+    <div class="si-tabs" role="tablist">
+        <button class="si-tab-btn active" data-mode="standard">Standard (End Balance)</button>
+        <button class="si-tab-btn" data-mode="principal">Solve for Principal (P)</button>
+        <button class="si-tab-btn" data-mode="rate">Solve for Rate (r)</button>
+        <button class="si-tab-btn" data-mode="time">Solve for Time (t)</button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="si-grid">
+        <!-- Input Form Card -->
+        <div class="si-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Calculation Parameters
+            </h2>
+
+            <!-- Target Interest Input (for Solve modes) -->
+            <div class="si-form-group" id="si-target-interest-group" style="display: none;">
+                <label for="si-target-interest">Target Accrued Interest (I)</label>
+                <div class="si-input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="si-target-interest" value="1500" min="0" step="any" placeholder="1500">
+                </div>
+            </div>
+
+            <!-- Principal (P) -->
+            <div class="si-form-group" id="si-principal-group">
+                <label for="si-principal">Starting Principal Amount (P)</label>
+                <div class="si-input-wrap">
+                    <span class="prefix">$</span>
+                    <input type="number" id="si-principal" value="10000" min="0" step="any" placeholder="10000">
+                </div>
+            </div>
+
+            <!-- Annual Rate (r) -->
+            <div class="si-form-group" id="si-rate-group">
+                <label for="si-rate">Annual Interest Rate (r)</label>
+                <div class="si-input-wrap">
+                    <input type="number" id="si-rate" value="6.5" min="0" step="0.01" placeholder="6.5">
+                    <span class="suffix">% per year</span>
+                </div>
+            </div>
+
+            <!-- Term Duration (t) -->
+            <div class="si-form-group" id="si-term-group">
+                <label for="si-term">Loan or Investment Term (t)</label>
+                <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;">
+                    <div class="si-input-wrap">
+                        <input type="number" id="si-term" value="3" min="0" step="any" placeholder="3">
+                    </div>
+                    <div class="si-input-wrap">
+                        <select id="si-term-unit">
+                            <option value="years" selected>Years</option>
+                            <option value="months">Months</option>
+                            <option value="days">Days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Day-count Convention -->
+            <div class="si-form-group" style="margin-bottom: 0;">
+                <label for="si-day-count">Day-Count Convention</label>
+                <div class="si-input-wrap">
+                    <select id="si-day-count">
+                        <option value="365" selected>Exact Interest (365 Days / Actual Year)</option>
+                        <option value="360">Ordinary Interest (360 Days / Banker's Rule)</option>
+                    </select>
+                </div>
+                <small style="display: block; color: var(--color-text-muted); margin-top: 6px; font-size: 0.78rem;">
+                    Ordinary rule uses 360 days/year, yielding approximately 1.39% more interest.
+                </small>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div class="si-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Interest &amp; Balance Breakdown
+            </h2>
+
+            <div class="si-results-hero">
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Simple Interest Accrued</span>
+                <div id="si-total-interest" class="si-hero-val">$1,950.00</div>
+                <span style="font-size: 0.9rem; color: var(--color-text-muted);">
+                    End Balance: <strong id="si-end-balance" style="color: var(--color-text-main); font-family: monospace;">$11,950.00</strong>
+                </span>
+            </div>
+
+            <!-- Principal vs Interest ratio bar -->
+            <div style="margin-bottom: 18px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600;">
+                    <span style="color: var(--color-primary);">Principal: <span id="si-principal-ratio">83.7%</span></span>
+                    <span style="color: var(--color-success);">Interest: <span id="si-interest-ratio">16.3%</span></span>
+                </div>
+                <div class="si-bar-wrap">
+                    <div id="si-bar-principal" class="si-bar-p" style="width: 83.7%;"></div>
+                    <div id="si-bar-interest" class="si-bar-i" style="width: 16.3%;"></div>
+                </div>
+            </div>
+
+            <!-- Periodic Breakdown Metrics -->
+            <div class="si-metrics-row">
+                <div class="si-metric-box">
+                    <span class="label">Interest / Year</span>
+                    <span id="si-periodic-year" class="val">$650.00</span>
+                </div>
+                <div class="si-metric-box">
+                    <span class="label">Interest / Month</span>
+                    <span id="si-periodic-month" class="val">$54.17</span>
+                </div>
+                <div class="si-metric-box">
+                    <span class="label">Interest / Day</span>
+                    <span id="si-periodic-day" class="val">$1.78</span>
+                </div>
+            </div>
+
+            <!-- Compound Opportunity Cost Callout -->
+            <div style="background: rgba(0, 122, 255, 0.08); border: 1px solid rgba(0, 122, 255, 0.2); border-radius: var(--border-radius-sm); padding: 14px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--color-primary);">Compound Growth Opportunity</span>
+                    <span id="si-compound-diff" style="font-size: 0.95rem; font-weight: 800; font-family: monospace; color: var(--color-primary);">+$129.43</span>
+                </div>
+                <p id="si-compound-notice" style="margin: 0; font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4;">
+                    Compound interest would yield $12,079.43 total ($129.43 more).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annual Accumulation Schedule Card -->
+    <div class="si-card" id="si-schedule-card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0; margin-bottom: 14px; color: var(--color-text-main);">
+            Year-by-Year Linear Growth Schedule
+        </h3>
+        <div class="si-table-wrap">
+            <table class="si-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Starting Principal</th>
+                        <th>Interest Accrued</th>
+                        <th>Cumulative Interest</th>
+                        <th>Ending Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="si-schedule-body">
+                    <!-- Dynamic rows inserted by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/simple_interest.js' %}"></script>
+{% endblock %}

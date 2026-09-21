@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if calculator.meta_title %}{{ calculator.meta_title }}{% elif meta_title %}{{ meta_title }}{% else %}Calories Burned by Activity Calculator - MET Energy Expenditure | CalculatorHub{% endif %}{% endblock %}
+{% block meta_description %}{% if calculator.meta_description %}{{ calculator.meta_description }}{% elif meta_description %}{{ meta_description }}{% else %}Calculate calories burned across 35+ physical activities, sports, running, walking, and gym exercises using clinical MET energy expenditure formulas.{% endif %}{% endblock %}
+
+{% block content %}
+<style>
+    .cb-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px;
+    }
+    .cb-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 860px) {
+        .cb-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    .cb-card {
+        background: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+    }
+    .cb-form-group {
+        margin-bottom: 18px;
+    }
+    .cb-form-group label {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: var(--color-text-main);
+    }
+    .cb-input-wrap {
+        display: flex;
+        align-items: center;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-border);
+        border-radius: var(--border-radius-sm);
+        padding: 0 12px;
+        height: 46px;
+        transition: border-color 0.2s;
+    }
+    .cb-input-wrap:focus-within {
+        border-color: var(--color-primary);
+    }
+    .cb-input-wrap input,
+    .cb-input-wrap select {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-input-text);
+        font-size: 0.95rem;
+        font-weight: 600;
+        outline: none;
+        padding: 0 6px;
+    }
+    .cb-results-hero {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-md);
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .cb-hero-val {
+        font-size: clamp(2.2rem, 6vw, 3.2rem);
+        font-weight: 900;
+        color: var(--color-accent-orange, #f59e0b);
+        line-height: 1.1;
+        margin: 8px 0 4px;
+        font-family: monospace;
+    }
+    .cb-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    .cb-metric-box {
+        background: var(--color-bg-card-alt);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+        padding: 14px;
+        text-align: center;
+    }
+    .cb-metric-box .label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--color-text-muted);
+        display: block;
+        margin-bottom: 4px;
+    }
+    .cb-metric-box .val {
+        font-size: 1.15rem;
+        font-weight: 800;
+        font-family: monospace;
+        color: var(--color-text-main);
+    }
+    .cb-food-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    @media (max-width: 500px) {
+        .cb-food-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    .cb-food-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+        padding: 10px;
+        text-align: center;
+    }
+    .cb-food-icon {
+        font-size: 1.5rem;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .cb-food-qty {
+        font-size: 1.1rem;
+        font-weight: 800;
+        font-family: monospace;
+        color: var(--color-text-main);
+    }
+    .cb-food-name {
+        font-size: 0.72rem;
+        color: var(--color-text-muted);
+        display: block;
+    }
+    .cb-table-wrap {
+        max-height: 340px;
+        overflow-y: auto;
+        border: 1px solid var(--color-border-light);
+        border-radius: var(--border-radius-sm);
+    }
+    .cb-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .cb-table th {
+        position: sticky;
+        top: 0;
+        background: var(--color-bg-card-alt);
+        padding: 10px 12px;
+        font-weight: 700;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+    }
+    .cb-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+</style>
+
+<div class="cb-container">
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb" style="margin-bottom: 16px; font-size: 0.85rem;">
+        <ol style="display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; gap: 6px; color: var(--color-text-muted);">
+            <li><a href="{% url 'home' %}" style="color: var(--color-text-muted); text-decoration: none;">Home</a></li>
+            <li>/</li>
+            <li><a href="{% url 'html_sitemap' %}#fitness" style="color: var(--color-text-muted); text-decoration: none;">Fitness &amp; Health Calculators</a></li>
+            <li>/</li>
+            <li style="color: var(--color-text-main); font-weight: 600;" aria-current="page">Calories Burned by Activity</li>
+        </ol>
+    </nav>
+
+    <!-- Header Block -->
+    <header class="calculator-header" style="margin-bottom: 24px;">
+        <h1 style="font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; color: var(--color-text-main); margin-bottom: 8px;">
+            Calories Burned by Activity Calculator
+        </h1>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; line-height: 1.5; margin: 0;">
+            Determine your total gross energy expenditure and net workout calories burned across 35+ sports, exercises, running, cycling, and daily activities using clinical ACSM MET formulas.
+        </p>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="cb-grid">
+        <!-- Input Form Card -->
+        <div class="cb-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Exercise Details
+            </h2>
+
+            <!-- Activity Selection -->
+            <div class="cb-form-group">
+                <label for="cb-activity">Physical Activity or Sport</label>
+                <div class="cb-input-wrap">
+                    <select id="cb-activity">
+                        <optgroup label="Running &amp; Jogging">
+                            <option value="run-5" data-met="8.3">Running - 5.0 mph (12 min/mile)</option>
+                            <option value="run-6" data-met="9.8" selected>Running - 6.0 mph (10 min/mile)</option>
+                            <option value="run-7" data-met="11.0">Running - 7.0 mph (8.5 min/mile)</option>
+                            <option value="run-8" data-met="11.8">Running - 8.0 mph (7.5 min/mile)</option>
+                            <option value="run-9" data-met="12.8">Running - 9.0 mph (6.7 min/mile)</option>
+                            <option value="run-10" data-met="14.5">Running - 10.0 mph (6 min/mile)</option>
+                        </optgroup>
+                        <optgroup label="Walking &amp; Hiking">
+                            <option value="walk-2" data-met="2.5">Walking - Leisurely (2.0 mph)</option>
+                            <option value="walk-3" data-met="3.5">Walking - Moderate (3.0 mph)</option>
+                            <option value="walk-35" data-met="4.3">Walking - Brisk Pace (3.5 mph)</option>
+                            <option value="walk-4" data-met="5.0">Walking - Very Brisk (4.0 mph)</option>
+                            <option value="hike-cross" data-met="6.0">Hiking - Cross-country trails</option>
+                            <option value="hike-pack" data-met="7.5">Hiking - With heavy backpack</option>
+                        </optgroup>
+                        <optgroup label="Cycling &amp; Biking">
+                            <option value="cycle-leisure" data-met="5.8">Cycling - Leisure (10-12 mph)</option>
+                            <option value="cycle-mod" data-met="8.0">Cycling - Moderate (12-14 mph)</option>
+                            <option value="cycle-vig" data-met="10.0">Cycling - Vigorous (14-16 mph)</option>
+                            <option value="cycle-stat-mod" data-met="7.0">Stationary Bike - Moderate effort</option>
+                            <option value="cycle-stat-vig" data-met="10.5">Stationary Bike - Vigorous / Spin</option>
+                        </optgroup>
+                        <optgroup label="Swimming">
+                            <option value="swim-leisure" data-met="6.0">Swimming - Recreational / Leisure</option>
+                            <option value="swim-mod" data-met="8.0">Swimming - Freestyle laps (moderate)</option>
+                            <option value="swim-vig" data-met="10.0">Swimming - Freestyle laps (vigorous)</option>
+                            <option value="swim-breast" data-met="10.3">Swimming - Breaststroke</option>
+                            <option value="swim-fly" data-met="13.8">Swimming - Butterfly stroke</option>
+                        </optgroup>
+                        <optgroup label="Gym, Strength &amp; Conditioning">
+                            <option value="gym-weights" data-met="3.5">Weight Lifting - General resistance</option>
+                            <option value="gym-weights-vig" data-met="5.0">Weight Lifting - Vigorous / Powerlifting</option>
+                            <option value="gym-circuit" data-met="8.0">Circuit Training / HIIT</option>
+                            <option value="gym-calisthenics" data-met="8.0">Calisthenics - Vigorous effort</option>
+                            <option value="gym-jump-rope" data-met="12.3">Jumping Rope - Fast pace</option>
+                            <option value="gym-rowing" data-met="8.5">Rowing Machine - Vigorous effort</option>
+                            <option value="gym-elliptical" data-met="7.5">Elliptical Trainer - Moderate effort</option>
+                            <option value="gym-yoga" data-met="3.0">Yoga / Hatha / Stretching</option>
+                        </optgroup>
+                        <optgroup label="Sports &amp; Team Activities">
+                            <option value="sport-basketball" data-met="8.0">Basketball - Competitive game</option>
+                            <option value="sport-soccer" data-met="10.0">Soccer - Competitive match</option>
+                            <option value="sport-tennis" data-met="8.0">Tennis - Singles</option>
+                            <option value="sport-boxing" data-met="10.0">Boxing / Martial Arts sparring</option>
+                            <option value="sport-volleyball" data-met="4.0">Volleyball - Competitive</option>
+                            <option value="sport-golf" data-met="4.8">Golf - Walking &amp; carrying clubs</option>
+                        </optgroup>
+                        <optgroup label="Daily Living &amp; Work">
+                            <option value="daily-clean" data-met="3.3">House Cleaning / Mopping</option>
+                            <option value="daily-garden" data-met="4.0">Gardening / Yard Work</option>
+                            <option value="daily-stairs" data-met="8.0">Carrying Heavy Loads Up Stairs</option>
+                        </optgroup>
+                        <optgroup label="Custom Input">
+                            <option value="custom">Custom MET Value...</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Custom MET input (conditionally visible) -->
+            <div class="cb-form-group" id="cb-custom-met-group" style="display: none;">
+                <label for="cb-custom-met">Custom Metabolic Equivalent (MET)</label>
+                <div class="cb-input-wrap">
+                    <input type="number" id="cb-custom-met" value="7.0" min="1" max="25" step="0.1" placeholder="7.0">
+                </div>
+            </div>
+
+            <!-- Body Weight -->
+            <div class="cb-form-group">
+                <label for="cb-weight">Your Body Weight</label>
+                <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;">
+                    <div class="cb-input-wrap">
+                        <input type="number" id="cb-weight" value="75" min="20" max="300" step="any" placeholder="75">
+                    </div>
+                    <div class="cb-input-wrap">
+                        <select id="cb-weight-unit">
+                            <option value="kg" selected>Kilograms (kg)</option>
+                            <option value="lbs">Pounds (lbs)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="cb-form-group" style="margin-bottom: 0;">
+                <label>Exercise Duration</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div class="cb-input-wrap">
+                        <input type="number" id="cb-hours" value="0" min="0" max="24" step="1" placeholder="0">
+                        <span style="color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600;">hrs</span>
+                    </div>
+                    <div class="cb-input-wrap">
+                        <input type="number" id="cb-minutes" value="45" min="0" max="59" step="1" placeholder="45">
+                        <span style="color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600;">mins</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Card -->
+        <div class="cb-card">
+            <h2 style="font-size: 1.15rem; font-weight: 700; margin-top: 0; margin-bottom: 16px; color: var(--color-text-main);">
+                Energy Expenditure Results
+            </h2>
+
+            <div class="cb-results-hero">
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block;">Total Gross Calories Burned</span>
+                <div id="cb-gross-calories" class="cb-hero-val">463</div>
+                <span style="font-size: 0.9rem; color: var(--color-text-muted);">
+                    Net Exercise Burn: <strong id="cb-net-calories" style="color: var(--color-text-main); font-family: monospace;">416</strong> kcal
+                </span>
+            </div>
+
+            <!-- Metrics Row -->
+            <div class="cb-metrics-grid">
+                <div class="cb-metric-box">
+                    <span class="label">Hourly Burn Rate</span>
+                    <span id="cb-burn-rate-hour" class="val">617 kcal/hr</span>
+                </div>
+                <div class="cb-metric-box">
+                    <span class="label">Minute Burn Rate</span>
+                    <span id="cb-burn-rate-min" class="val">10.3 kcal/min</span>
+                </div>
+                <div class="cb-metric-box">
+                    <span class="label">Activity Intensity</span>
+                    <span id="cb-met-display" class="val">9.8 METs</span>
+                </div>
+            </div>
+
+            <!-- Food Equivalents -->
+            <h3 style="font-size: 0.9rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin: 0 0 8px;">
+                Caloric Food Equivalent
+            </h3>
+            <div class="cb-food-grid">
+                <div class="cb-food-item">
+                    <span class="cb-food-icon">🍕</span>
+                    <span id="cb-food-pizza" class="cb-food-qty">1.6</span>
+                    <span class="cb-food-name">Pizza Slices</span>
+                </div>
+                <div class="cb-food-item">
+                    <span class="cb-food-icon">🍩</span>
+                    <span id="cb-food-donut" class="cb-food-qty">1.8</span>
+                    <span class="cb-food-name">Glazed Donuts</span>
+                </div>
+                <div class="cb-food-item">
+                    <span class="cb-food-icon">🥤</span>
+                    <span id="cb-food-soda" class="cb-food-qty">3.3</span>
+                    <span class="cb-food-name">12oz Sodas</span>
+                </div>
+                <div class="cb-food-item">
+                    <span class="cb-food-icon">🍌</span>
+                    <span id="cb-food-banana" class="cb-food-qty">4.4</span>
+                    <span class="cb-food-name">Bananas</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Activity Durations Card -->
+    <div class="cb-card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-top: 0; margin-bottom: 6px; color: var(--color-text-main);">
+            Equivalent Duration in Other Physical Activities
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--color-text-muted); margin: 0 0 14px;">
+            Here is how long you would need to perform alternative exercises at your current body weight to burn the exact same number of calories:
+        </p>
+        <div class="cb-table-wrap">
+            <table class="cb-table">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Intensity</th>
+                        <th>Burn Rate</th>
+                        <th>Duration Needed</th>
+                    </tr>
+                </thead>
+                <tbody id="cb-comp-body">
+                    <!-- Dynamic rows inserted by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEO Educational Article (Positioned strictly above #ad-bottom-content) -->
+    <div class="article-content-wrapper seo-article" style="margin-top: 32px;">
+        {{ calculator.article_content|safe }}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/calories_burned.js' %}"></script>
+{% endblock %}

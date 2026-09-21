@@ -95,6 +95,10 @@ class Calculator(models.Model):
             'tdee-calculator': 'tdee_calculator',
             'circle-calculator': 'circle_calculator',
             'pressure-converter': 'pressure_converter',
+            'simple-interest-calculator': 'simple_interest_calculator',
+            'calories-burned-calculator': 'calories_burned_calculator',
+            'ratio-calculator': 'ratio_calculator',
+            'cooking-measurement-converter': 'cooking_measurement_converter',
         }
         if self.slug in slug_to_url_name:
             return reverse(slug_to_url_name[self.slug])
